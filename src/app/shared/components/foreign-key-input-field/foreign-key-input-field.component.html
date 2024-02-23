@@ -1,0 +1,26 @@
+<mat-form-field class="w-full" appearance="outline">
+    <mat-label>{{ label }}</mat-label>
+    <mat-icon matPrefix svgIcon="heroicons_solid:user"></mat-icon>
+    <input matInput [formControl]="inputValue" [value]="getValue" required readonly>
+    <button mat-icon-button matSuffix [matMenuTriggerFor]="menu" class="h-full flex flex-col">
+        <mat-icon svgIcon="feather:more-vertical"></mat-icon>
+    </button>
+    <mat-menu #menu="matMenu">
+        <!-- <button mat-menu-item (click)="openList(apiUrl, fieldsType, fieldsDisplayed, columnsQuantity, selectedItemsLimit, fieldDisplayedInLabel, searchableFields)">
+            <mat-icon svgIcon="feather:search"></mat-icon>
+            Pesquisar
+        </button> -->
+        <button mat-menu-item (click)="openSelectableItemsListDialog()">
+            <mat-icon svgIcon="feather:search"></mat-icon>
+            Pesquisar
+        </button>
+        <button mat-menu-item (click)="openFormDialog('new', null)">
+            <mat-icon svgIcon="feather:plus"></mat-icon>
+            Adicionar
+        </button>
+        <button mat-menu-item (click)="removeItensOnInputField()">
+            <mat-icon svgIcon="feather:x"></mat-icon>
+            Apagar
+        </button>
+    </mat-menu>
+</mat-form-field>

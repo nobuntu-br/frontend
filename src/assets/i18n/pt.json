@@ -1,0 +1,228 @@
+{
+"Customers": {
+        "Customers": "Clientes",
+        "company": "company",
+        "lastName": "Ultimo Nome",
+        "firstName": "Primeiro Nome",
+        "emailAddress": "Email",
+        "jobTitle": "Cargo",
+        "businessPhone": "Telefone Comercial",
+        "homePhone": "Telefone residencial ",
+        "mobilePhone": "Celular",
+        "faxNumber": "Numero de Fax",
+        "address": "Endereço",
+        "city": "Cidade",
+        "stateProvince": "Província Estadual ",
+        "zipPostalCode": "Código Postal ",
+        "countryRegion": "Região do país",
+        "webPage": "web Page",
+        "notes": "Notas",
+        "attachments": "Anexos"
+    },
+"Employees": {
+        "Employees": "Funcionario",
+        "company": "company",
+        "lastName": "Ultimo Nome",
+        "firstName": "Primeiro Nome",
+        "emailAddress": "Email",
+        "jobTitle": "Cargo",
+        "businessPhone": "Telefone Comercial",
+        "homePhone": "Telefone residencial ",
+        "mobilePhone": "Celular",
+        "faxNumber": "Numero de Fax",
+        "address": "Endereço",
+        "city": "Cidade",
+        "stateProvince": "Província Estadual ",
+        "zipPostalCode": "Código Postal ",
+        "countryRegion": "Região do país",
+        "webPage": "web Page",
+        "notes": "Notas",
+        "attachments": "Anexos"
+    },
+"InventoryTransactionTypes": {
+        "InventoryTransactionTypes": " Tipos de transação de inventário",
+        "typeName": "Tipo"
+    },
+"InventoryTransactions": {
+        "InventoryTransactions": " Transações de inventário",
+        "transactionType": "Tipos de Transações",
+        "transactionCreatedDate": "Data de criação da transação",
+        "transactionModifiedDate": " Data de modificação da transação",
+        "product": "Produto",
+        "quantity": "Quantidade",
+        "purchaseOrder": "Ordem de Compra ",
+        "customerOrder": "Pedido do Cliente",
+        "comments": "Comentarios"
+    },
+"Invoices": {
+        "Invoices": "Faturas",
+        "order": "Pedido",
+        "invoiceDate": "Data da fatura",
+        "dueDate": "Data de Vencimento",
+        "tax": "Imposto",
+        "shipping": "Envio",
+        "amountDue": "Valor devido"
+    },
+"OrderDetails": {
+        "OrderDetails": "Detalhes do Pedido",
+        "order": "Pedido",
+        "product": "Produto",
+        "quantity": "Quantidade",
+        "unitPrice": "Preço Unitario",
+        "discount": "Disconto",
+        "status": "status",
+        "dateAllocated": "Data Alocada",
+        "purchaseOrderId": " ID do pedido de compra",
+        "inventoryId": "ID Inventario"
+    },
+"OrderDetailsStatus": {
+        "OrderDetailsStatus": "Status dos detalhes do pedido",
+        "statusName": "Nome de Status"
+    },
+"Orders": {
+        "Orders": "Pedidos",
+        "employee": "Empregado",
+        "customer": "Cliente",
+        "orderDate": "order Date",
+        "shippedDate": "shipped Date",
+        "shipper": "shipper",
+        "shipName": "ship Name",
+        "shipAddress": "ship Address",
+        "shipCity": "ship City",
+        "shipStateProvince": "ship State Province",
+        "shipZipPostalCode": "ship Zip Postal Code",
+        "shipCountryRegion": "ship Country Region",
+        "shippingFee": "shipping Fee",
+        "taxes": "taxes",
+        "paymentType": "payment Type",
+        "paidDate": "paid Date",
+        "notes": "notes",
+        "taxRate": "tax Rate",
+        "taxStatus": "tax Status",
+        "status": "status",
+        "orderDetails": "order Details"
+    },
+"OrdersStatus": {
+        "OrdersStatus": "Status de Pedido",
+        "statusName": "Nome de Status"
+    },
+"OrdersTaxStatus": {
+        "OrdersTaxStatus": "Status fiscal dos pedidos ",
+        "taxStatusName": "Nome do status fiscal "
+    },
+"SalesReports": {
+        "SalesReports": "Relatório de vendas ",
+        "display": "Mostrar",
+        "title": "Titulo",
+        "filterRowSource": "Filtrar Origem da Linha",
+        "padrao": "Padrão"
+    },
+"Shippers": {
+        "Shippers": "Expedidores",
+        "company": "company",
+        "lastName": "last Name",
+        "firstName": "first Name",
+        "emailAddress": "email Address",
+        "jobTitle": "job Title",
+        "businessPhone": "business Phone",
+        "homePhone": "home Phone",
+        "mobilePhone": "mobile Phone",
+        "faxNumber": "fax Number",
+        "address": "address",
+        "city": "city",
+        "stateProvince": "state Province",
+        "zipPostalCode": "zip Postal Code",
+        "countryRegion": "country Region",
+        "webPage": "web Page",
+        "notes": "notes",
+        "attachments": "attachments"
+    },
+"Products": {
+        "Products": "Produtos",
+        "supplierIds": "supplier Ids",
+        "productCode": "product Code",
+        "productName": "product Name",
+        "description": "description",
+        "standardCost": "standard Cost",
+        "listPrice": "list Price",
+        "reorderLevel": "reorder Level",
+        "targetLevel": "target Level",
+        "quantityPerUnit": "quantity Per Unit",
+        "discontinued": "discontinued",
+        "minimumReorderQuantity": "minimum Reorder Quantity",
+        "category": "category",
+        "attachments": "attachments"
+    },
+"PurchaseOrderDetails": {
+        "PurchaseOrderDetails": "Detalhes do pedido de compra",
+        "purchaseOrder": "purchase Order",
+        "product": "product",
+        "quantity": "quantity",
+        "unitCost": "unit Cost",
+        "dateReceived": "date Received",
+        "postedToInventory": "posted To Inventory",
+        "inventory": "inventory"
+    },
+"PurchaseOrderStatus": {
+        "PurchaseOrderStatus": "Status do pedido de compra",
+        "status": "status"
+    },
+"PurchaseOrders": {
+        "PurchaseOrders": "Ordens de Compra",
+        "supplier": "supplier",
+        "createdBy": "created By",
+        "submittedDate": "submitted Date",
+        "creationDate": "creation Date",
+        "status": "status",
+        "expectedDate": "expected Date",
+        "shippingFee": "shipping Fee",
+        "taxes": "taxes",
+        "paymentDate": "payment Date",
+        "paymentAmount": "payment Amount",
+        "paymentMethod": "payment Method",
+        "notes": "notes",
+        "approvedBy": "approved By",
+        "approvedDate": "approved Date",
+        "submittedBy": "submitted By",
+        "purchaseOrderDetails": "purchase Order Details"
+    },
+"Suppliers": {
+        "Suppliers": "Fornecedores",
+        "company": "company",
+        "lastName": "Ultimo Nome",
+        "firstName": "Primeiro Nome",
+        "emailAddress": "Email",
+        "jobTitle": "Cargo",
+        "businessPhone": "Telefone Comercial",
+        "homePhone": "Telefone residencial ",
+        "mobilePhone": "Celular",
+        "faxNumber": "Numero de Fax",
+        "address": "Endereço",
+        "city": "Cidade",
+        "stateProvince": "Província Estadual ",
+        "zipPostalCode": "Código Postal ",
+        "countryRegion": "Região do país",
+        "webPage": "web Page",
+        "notes": "Notas",
+        "attachments": "Anexos"
+    },
+"Strings": {
+        "Strings": "Strings",
+        "stringData": "string Data"
+    },
+"Company": {
+        "Company": "Empresa",
+        "name": "name",
+        "databaseSchema": "database Schema"
+    },
+"Application": {
+        "Application": "Aplicação",
+        "name": "name"
+    },
+"CompanyApplicationToken": {
+        "CompanyApplicationToken": "Token de aplicativo da empresa ",
+        "company": "company",
+        "application": "application",
+        "token": "token"
+    }
+}

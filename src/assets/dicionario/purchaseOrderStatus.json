@@ -1,0 +1,30 @@
+{
+    "config":{ 
+        "modified": "2024-02-22T21:01:13.539934Z", 
+        "description": "Purchase Order Status",  
+        "name": "PurchaseOrderStatus", 
+        "apiUrl": "http://localhost:8080/api/purchaseOrderStatus",
+        "route": "purchaseOrderStatus",
+        "localStorage": false,
+        "filter": true, 
+        "searchable": true, 
+        "addNew": true, 
+        "edit": true, 
+        "columnsQuantity": 3,
+        "delete": true,
+        "isFormStepper": false,
+        "isLinearFormStepper": false
+    }, 
+    "attributes": [ 
+        { 
+            "name":"status", 
+            "type": "string", 
+            "mask": "Texto", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+        }
+    ] 
+}

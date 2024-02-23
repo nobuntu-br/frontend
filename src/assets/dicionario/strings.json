@@ -1,0 +1,30 @@
+{
+    "config":{ 
+        "modified": "2024-02-22T21:01:20.139652Z", 
+        "description": "Strings",  
+        "name": "Strings", 
+        "apiUrl": "http://localhost:8080/api/strings",
+        "route": "strings",
+        "localStorage": false,
+        "filter": true, 
+        "searchable": true, 
+        "addNew": true, 
+        "edit": true, 
+        "columnsQuantity": 3,
+        "delete": true,
+        "isFormStepper": false,
+        "isLinearFormStepper": false
+    }, 
+    "attributes": [ 
+        { 
+            "name":"stringData", 
+            "type": "string", 
+            "mask": "Texto", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+        }
+    ] 
+}

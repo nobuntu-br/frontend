@@ -1,0 +1,59 @@
+<div>
+    <ng-container *transloco="let t; read: 'filter-number-range-component'">
+        <p class="operationsDisplay">{{fullOperationDisplay}}</p>
+        <p class="display">{{display}}</p>
+
+        <p>Value 1: {{value1}}</p>
+        <p>Value 2: {{value2}}</p>
+        <p>Operator: {{operator}}</p>
+        
+        <!-- <input class="display" type="text" class="w-full" [(ngModel)]="operationsDisplay" class="display" disabled style="text-align: end;" style="font-size: small; color: #1A237E;"/> -->
+        <!-- <input type="text" class="w-full" [(ngModel)]="display" class="display" disabled style="text-align: end; width: 100%;"/> -->
+        
+        <div style="width: 100%; text-align: end;">
+            <button (click)="removeAll()">
+                CE
+            </button>
+            <button (click)="removeLastNumber()">
+                <img
+                class="w-full"
+                [src]="'assets/icons/backspace.svg'"
+                [alt]="backspace">
+            </button>
+        </div>
+        <!-- <button (click)="clear()">Remove All</button> -->
+        <div class="clickableNumbersTabBackground" style="display: flex;">
+            <div class="flex grid grid-cols-3" style="width: 100%;">
+                <button (click)="appendToDisplay('7')">7</button>
+                <button (click)="appendToDisplay('8')">8</button>
+                <button (click)="appendToDisplay('9')">9</button>
+                <button (click)="appendToDisplay('4')">4</button>
+                <button (click)="appendToDisplay('5')">5</button>
+                <button (click)="appendToDisplay('6')">6</button>
+                <button (click)="appendToDisplay('1')">1</button>
+                <button (click)="appendToDisplay('2')">2</button>
+                <button (click)="appendToDisplay('3')">3</button>
+                <button (click)="appendToDisplay('0')">0</button>
+                <button *ngIf="decimalSeparator=='point'" (click)="appendToDisplay('.')">.</button>
+                <button *ngIf="decimalSeparator=='comma'" (click)="appendToDisplay(',')">,</button>
+                <button (click)="appendToDisplay('=')">=</button>
+            </div>
+            <div class="grid grid-cols-1" style="width: 25%; border-left: solid;">
+                <button (click)="appendToDisplay('/')">/</button>
+                <button (click)="appendToDisplay('*')">*</button>
+                <button (click)="appendToDisplay('-')">-</button>
+                <button (click)="appendToDisplay('+')">+</button>
+            </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+            <button mat-button (click)="closeCalculator()">
+                {{t("cancel")}}
+            </button>
+
+            <button mat-button mat-button (click)="closeCalculator()">
+                {{t("ok")}}
+            </button>
+        </div>
+    </ng-container>
+  </div>
+  

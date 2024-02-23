@@ -1,0 +1,847 @@
+{
+    "config":{ 
+        "modified": "2024-02-22T21:00:58.55555Z", 
+        "description": "Tabela de Pedidos",  
+        "name": "Orders", 
+        "apiUrl": "http://localhost:8080/api/orders",
+        "route": "orders",
+        "formTabs": ["Geral", "Dados", "Detalhes do pedido"], 
+        "localStorage": false,
+        "filter": true, 
+        "searchable": true, 
+        "addNew": true, 
+        "edit": true, 
+        "columnsQuantity": 3,
+        "delete": true,
+        "isFormStepper": false,
+        "isLinearFormStepper": false
+    }, 
+    "attributes": [ 
+        { 
+            "name":"employee", 
+            "type": "foreignKey", 
+            "className": "Employees", 
+            "many": false, 
+            "apiUrl": "http://localhost:8080/",
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "forageinKey": "id", 
+            "lookup": true, 
+            "viewDetails": true, 
+        "searchable": true, 
+        "addNew": true, 
+            "properties": [ 
+                { 
+                    "type": "Texto", 
+                    "name": "company", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                },
+                { 
+                    "type": "Texto", 
+                    "name": "lastName", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                },
+                { 
+                    "type": "Texto", 
+                    "name": "firstName", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                },
+                { 
+                    "type": "Texto", 
+                    "name": "emailAddress", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                },
+                { 
+                    "type": "Texto", 
+                    "name": "jobTitle", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                },
+                { 
+                    "type": "Texto", 
+                    "name": "businessPhone", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                },
+                { 
+                    "type": "Texto", 
+                    "name": "homePhone", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                },
+                { 
+                    "type": "Texto", 
+                    "name": "mobilePhone", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                },
+                { 
+                    "type": "Texto", 
+                    "name": "faxNumber", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                },
+                { 
+                    "type": "TextoLongo", 
+                    "name": "address", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                },
+                { 
+                    "type": "Texto", 
+                    "name": "city", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                },
+                { 
+                    "type": "Texto", 
+                    "name": "stateProvince", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                },
+                { 
+                    "type": "Texto", 
+                    "name": "zipPostalCode", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                },
+                { 
+                    "type": "Texto", 
+                    "name": "countryRegion", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                },
+                { 
+                    "type": "TextoLongo", 
+                    "name": "webPage", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                },
+                { 
+                    "type": "TextoLongo", 
+                    "name": "notes", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                },
+                { 
+                    "type": "Binary", 
+                    "name": "attachments", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                }
+            ] ,
+            "visibleForm": true 
+        },
+        { 
+            "name":"customer", 
+            "type": "foreignKey", 
+            "className": "Customers", 
+            "many": false, 
+            "apiUrl": "http://localhost:8080/",
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "forageinKey": "id", 
+            "lookup": true, 
+            "viewDetails": true, 
+        "searchable": true, 
+        "addNew": true, 
+            "properties": [ 
+                { 
+                    "type": "Texto", 
+                    "name": "company", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                },
+                { 
+                    "type": "Texto", 
+                    "name": "lastName", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                },
+                { 
+                    "type": "Texto", 
+                    "name": "firstName", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                },
+                { 
+                    "type": "Texto", 
+                    "name": "emailAddress", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                },
+                { 
+                    "type": "Texto", 
+                    "name": "jobTitle", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                },
+                { 
+                    "type": "Texto", 
+                    "name": "businessPhone", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                },
+                { 
+                    "type": "Texto", 
+                    "name": "homePhone", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                },
+                { 
+                    "type": "Texto", 
+                    "name": "mobilePhone", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                },
+                { 
+                    "type": "Texto", 
+                    "name": "faxNumber", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                },
+                { 
+                    "type": "TextoLongo", 
+                    "name": "address", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                },
+                { 
+                    "type": "Texto", 
+                    "name": "city", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                },
+                { 
+                    "type": "Texto", 
+                    "name": "stateProvince", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                },
+                { 
+                    "type": "Texto", 
+                    "name": "zipPostalCode", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                },
+                { 
+                    "type": "Texto", 
+                    "name": "countryRegion", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                },
+                { 
+                    "type": "TextoLongo", 
+                    "name": "webPage", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                },
+                { 
+                    "type": "TextoLongo", 
+                    "name": "notes", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                },
+                { 
+                    "type": "Binary", 
+                    "name": "attachments", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                }
+            ] ,
+            "visibleForm": true 
+        },
+        { 
+            "name":"orderDate", 
+            "type": "date", 
+            "mask": "DateTime", 
+            "formTab": "Geral", 
+            "visibleCard": false, 
+            "visibleGrid": false, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": false 
+        },
+        { 
+            "name":"shippedDate", 
+            "type": "date", 
+            "mask": "DateTime", 
+            "formTab": "Geral", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+        },
+        { 
+            "name":"shipper", 
+            "type": "foreignKey", 
+            "className": "Shippers", 
+            "many": false, 
+            "apiUrl": "http://localhost:8080/",
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "forageinKey": "id", 
+            "lookup": true, 
+            "viewDetails": true, 
+        "searchable": true, 
+        "addNew": true, 
+            "properties": [ 
+                { 
+                    "type": "Texto", 
+                    "name": "company", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                },
+                { 
+                    "type": "Texto", 
+                    "name": "lastName", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                },
+                { 
+                    "type": "Texto", 
+                    "name": "firstName", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                },
+                { 
+                    "type": "Texto", 
+                    "name": "emailAddress", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                },
+                { 
+                    "type": "Texto", 
+                    "name": "jobTitle", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                },
+                { 
+                    "type": "Texto", 
+                    "name": "businessPhone", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                },
+                { 
+                    "type": "Texto", 
+                    "name": "homePhone", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                },
+                { 
+                    "type": "Texto", 
+                    "name": "mobilePhone", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                },
+                { 
+                    "type": "Texto", 
+                    "name": "faxNumber", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                },
+                { 
+                    "type": "TextoLongo", 
+                    "name": "address", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                },
+                { 
+                    "type": "Texto", 
+                    "name": "city", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                },
+                { 
+                    "type": "Texto", 
+                    "name": "stateProvince", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                },
+                { 
+                    "type": "Texto", 
+                    "name": "zipPostalCode", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                },
+                { 
+                    "type": "Texto", 
+                    "name": "countryRegion", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                },
+                { 
+                    "type": "TextoLongo", 
+                    "name": "webPage", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                },
+                { 
+                    "type": "TextoLongo", 
+                    "name": "notes", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                },
+                { 
+                    "type": "Binary", 
+                    "name": "attachments", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                }
+            ] ,
+            "visibleForm": true 
+        },
+        { 
+            "name":"shipName", 
+            "type": "string", 
+            "mask": "Texto", 
+            "formTab": "Dados", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+        },
+        { 
+            "name":"shipAddress", 
+            "type": "string string", 
+            "mask": "TextoLongo", 
+            "formTab": "Geral", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+        },
+        { 
+            "name":"shipCity", 
+            "type": "string", 
+            "mask": "Texto", 
+            "formTab": "Geral", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+        },
+        { 
+            "name":"shipStateProvince", 
+            "type": "string", 
+            "mask": "Texto", 
+            "formTab": "Geral", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+        },
+        { 
+            "name":"shipZipPostalCode", 
+            "type": "string", 
+            "mask": "Texto", 
+            "formTab": "Geral", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+        },
+        { 
+            "name":"shipCountryRegion", 
+            "type": "string", 
+            "mask": "Texto", 
+            "formTab": "Geral", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+        },
+        { 
+            "name":"shippingFee", 
+            "type": "number", 
+            "mask": "Double", 
+            "formTab": "Geral", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+        },
+        { 
+            "name":"taxes", 
+            "type": "number", 
+            "mask": "Double", 
+            "formTab": "Geral", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+        },
+        { 
+            "name":"paymentType", 
+            "type": "string", 
+            "mask": "Texto", 
+            "formTab": "Dados", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+        },
+        { 
+            "name":"paidDate", 
+            "type": "date", 
+            "mask": "DateTime", 
+            "formTab": "Dados", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+        },
+        { 
+            "name":"notes", 
+            "type": "string string", 
+            "mask": "TextoLongo", 
+            "formTab": "Dados", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+        },
+        { 
+            "name":"taxRate", 
+            "type": "number", 
+            "mask": "Double", 
+            "formTab": "Dados", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+        },
+        { 
+            "name":"taxStatus", 
+            "type": "foreignKey", 
+            "className": "OrdersTaxStatus", 
+            "many": false, 
+            "apiUrl": "http://localhost:8080/",
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "forageinKey": "id", 
+            "lookup": true, 
+            "viewDetails": true, 
+        "searchable": true, 
+        "addNew": true, 
+            "properties": [ 
+                { 
+                    "type": "Texto", 
+                    "name": "taxStatusName", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                }
+            ] ,
+            "visibleForm": true 
+        },
+        { 
+            "name":"status", 
+            "type": "foreignKey", 
+            "className": "OrdersStatus", 
+            "many": false, 
+            "apiUrl": "http://localhost:8080/",
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "forageinKey": "id", 
+            "lookup": true, 
+            "viewDetails": true, 
+        "searchable": true, 
+        "addNew": true, 
+            "properties": [ 
+                { 
+                    "type": "Texto", 
+                    "name": "statusName", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                }
+            ] ,
+            "visibleForm": true 
+        },
+        { 
+            "name": "orderDetails", 
+            "type": "subForm", 
+            "many": true, 
+            "className": "OrderDetails", 
+            "apiUrl": "http://localhost:8080/",
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "forageinKey": "id", 
+            "lookup": true, 
+            "viewDetails": true, 
+        "searchable": true, 
+        "addNew": true, 
+            "properties": [ 
+                { 
+                    "type": "Orders", 
+                    "name": "order", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                },
+                { 
+                    "type": "Products", 
+                    "name": "product", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                },
+                { 
+                    "type": "Double", 
+                    "name": "quantity", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                },
+                { 
+                    "type": "Double", 
+                    "name": "unitPrice", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                },
+                { 
+                    "type": "Double", 
+                    "name": "discount", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                },
+                { 
+                    "type": "OrderDetailsStatus", 
+                    "name": "status", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                },
+                { 
+                    "type": "DateTime", 
+                    "name": "dateAllocated", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                },
+                { 
+                    "type": "Inteiro", 
+                    "name": "purchaseOrderId", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                },
+                { 
+                    "type": "Inteiro", 
+                    "name": "inventoryId", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                }
+            ] ,
+            "visibleForm": true 
+        }
+    ] 
+}

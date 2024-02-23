@@ -1,0 +1,95 @@
+{
+    "config":{ 
+        "modified": "2024-02-22T21:01:26.820329Z", 
+        "description": "Application that can be used by a company",  
+        "name": "CompanyApplicationToken", 
+        "apiUrl": "http://localhost:8080/api/companyApplicationToken",
+        "route": "companyApplicationToken",
+        "localStorage": false,
+        "filter": true, 
+        "searchable": true, 
+        "addNew": true, 
+        "edit": true, 
+        "columnsQuantity": 3,
+        "delete": true,
+        "isFormStepper": false,
+        "isLinearFormStepper": false
+    }, 
+    "attributes": [ 
+        { 
+            "name":"company", 
+            "type": "foreignKey", 
+            "className": "Company", 
+            "many": false, 
+            "apiUrl": "http://localhost:8080/",
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "forageinKey": "id", 
+            "lookup": true, 
+            "viewDetails": true, 
+        "searchable": true, 
+        "addNew": true, 
+            "properties": [ 
+                { 
+                    "type": "Texto", 
+                    "name": "name", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                },
+                { 
+                    "type": "Texto", 
+                    "name": "databaseSchema", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                }
+            ] ,
+            "visibleForm": true 
+        },
+        { 
+            "name":"application", 
+            "type": "foreignKey", 
+            "className": "Application", 
+            "many": false, 
+            "apiUrl": "http://localhost:8080/",
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "forageinKey": "id", 
+            "lookup": true, 
+            "viewDetails": true, 
+        "searchable": true, 
+        "addNew": true, 
+            "properties": [ 
+                { 
+                    "type": "Texto", 
+                    "name": "name", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+                }
+            ] ,
+            "visibleForm": true 
+        },
+        { 
+            "name":"token", 
+            "type": "string", 
+            "mask": "Texto", 
+            "visibleCard": true, 
+            "visibleGrid": true, 
+            "visibleFilter": true, 
+            "visibleList": true, 
+            "visibleForm": true 
+        }
+    ] 
+}

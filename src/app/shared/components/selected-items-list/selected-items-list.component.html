@@ -1,0 +1,24 @@
+<div style="display: flex; flex-direction: column; height: 100%;">
+
+  <search-input-field [displayedfieldsName]="displayedfieldsName" [fieldsType]="fieldsType" [apiUrl]="apiUrl"
+    (removeAllComponentsOnViewFunction)="removeAllComponentsOnView()"
+    (returnedItemsToCreate)="createItemsOnList($event, displayedfieldsName)" [searchableFields]="searchableFields">
+  </search-input-field>
+
+  <div style="flex:1; overflow-y: auto; overflow-x: auto;">
+    <ng-container #placeToRender></ng-container>
+  </div>
+
+  <div id="fixedButtons">
+    <a mat-fab matTooltip="Return" (click)="closeThisDialog()">
+      <mat-icon svgIcon="heroicons_solid:chevron-left"></mat-icon>
+    </a>
+    <a mat-fab matTooltip="Search" (click)="openListDialog()">
+      <mat-icon svgIcon="feather:search"></mat-icon>
+    </a>
+    <a mat-fab matTooltip="Add" (click)="openFormDialog('new', null)">
+      <mat-icon svgIcon="heroicons_solid:plus"></mat-icon>
+    </a>
+  </div>
+
+</div>

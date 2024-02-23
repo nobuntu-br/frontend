@@ -1,0 +1,8 @@
+<mat-form-field appearance="outline" class="w-full">
+    <mat-label>{{ label }}</mat-label>
+    <mat-select [formControl]="inputValue">
+        <mat-option *ngFor="let value of valuesList" [value]="value[returnedVariable]">
+        {{value[displayedSelectedVariableOnInputField]}}
+        </mat-option>
+    </mat-select>
+</mat-form-field>
