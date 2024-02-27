@@ -10,7 +10,6 @@ import { DefaultListComponent } from '../components/default-list/default-list.co
 import { CalculatorComponent } from '../components/calculator/calculator.component';
 import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { SelectedItemsListComponent } from '../components/selected-items-list/selected-items-list.component';
 
 interface dialogConfiguration {
   width?: string,
@@ -50,14 +49,6 @@ export class FormGeneratorService {
       id: [null],
     });
   }
-
-  // createComponentsOnView(target: ViewContainerRef, formBuilder: FormBuilder, resourceForm: FormGroup, matDialog: MatDialog, className: string, fieldsName: string[], fieldsType: string[]) {
-  //   console.log(fieldsName)
-  //   fieldsName.forEach((fieldName: string, index) => {
-  //     // console.log(fieldName + "-" + fieldsType[index]);
-  //     this.createComponent(target, resourceForm, matDialog, className, fieldName, fieldsType[index], null, fieldName, null);
-  //   });
-  // }
 
   //TODO remover código repetitivo
   createComponent(
@@ -112,53 +103,6 @@ export class FormGeneratorService {
         break;
       }
       case 'foreignKey': {
-        // createdComponent = target.createComponent(ForeignKeyInputFieldComponent);
-        // createdComponent.instance.label = labelTittle;
-        // createdComponent.instance.apiUrl = "http://localhost:8080/api/employees";
-        // createdComponent.instance.fieldsDisplayed = ['firstName', "lastName", "company", 'city', "businessPhone", "createdAt"];
-        // createdComponent.instance.fieldsType = ['string', 'string', 'string', 'string', 'string', 'date'];
-        // createdComponent.instance.columnsQuantity = 3;
-        // createdComponent.instance.fieldDisplayedInLabel = "firstName";
-
-        // createdComponent.instance.searchableFields = ["firstName", "company"];
-
-        /*
-        createdComponent = target.createComponent(InputFieldComponent);
-        createdComponent.instance.label = labelTittle;
-        createdComponent.instance.svgIcon = "feather:search";
-        createdComponent.instance.isRequired = false;
-
-        createdComponent.instance.actionOnClickInIcon = () => {
-          const dialogRef= this.openDialog(matDialog, SelectedItemsListComponent, {
-            width: '100%',
-            height: '100%',
-            maxWidth: '100vw',
-            maxHeight: '100vh',
-            panelClass: 'full-screen-dialog',
-            data: {
-              itemsDisplayed: [],
-              columnsQuantity: 2,
-              displayedfieldsName: value.propertiesAttributes.map(attribute => attribute.name),
-              fieldsType: value.propertiesAttributes.map(attribute => attribute.type),
-              userConfig: null,
-              selectedItemsLimit: null,
-              apiUrl: value.apiUrl,
-              JSONPath: JSONPath,
-              searchableFields: null,
-              isSelectable: true,
-              className: className,
-              fieldName: fieldName,
-            }
-          });
-
-          dialogRef.afterClosed().subscribe(result => {
-            console.log(`Dialog result: ${result}`);
-            if (result == null) return;
-            createdComponent.instance.inputValue = result;
-          });
-          
-        }
-        */
         createdComponent = target.createComponent(ForeignKeyInputFieldComponent);
         createdComponent.instance.label = labelTittle;
         createdComponent.instance.fieldName = fieldName;

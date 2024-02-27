@@ -46,7 +46,9 @@ export abstract class BaseResourceFormComponent<T extends BaseResourceModel> imp
   protected route: ActivatedRoute;
   protected router: Router;
   protected formBuilder: FormBuilder;
-
+  /**
+   * Service que opera as funções de armazenamento de dados do formuário no local storage
+   */
   protected localStorageFormService: LocalStorageFormService;
   private translocoService: TranslocoService;
 

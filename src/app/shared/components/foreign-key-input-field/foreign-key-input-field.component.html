@@ -1,26 +1,30 @@
 <mat-form-field class="w-full" appearance="outline">
+
     <mat-label>{{ label }}</mat-label>
     <mat-icon matPrefix svgIcon="heroicons_solid:user"></mat-icon>
-    <input matInput [formControl]="inputValue" [value]="getValue" required readonly>
+    <input matInput [formControl]="inputValue" [value]="displayedValue" required readonly>
+
     <button mat-icon-button matSuffix [matMenuTriggerFor]="menu" class="h-full flex flex-col">
         <mat-icon svgIcon="feather:more-vertical"></mat-icon>
     </button>
+
     <mat-menu #menu="matMenu">
-        <!-- <button mat-menu-item (click)="openList(apiUrl, fieldsType, fieldsDisplayed, columnsQuantity, selectedItemsLimit, fieldDisplayedInLabel, searchableFields)">
+        <button mat-menu-item (click)="openDefaultListToSelectItems()">
             <mat-icon svgIcon="feather:search"></mat-icon>
-            Pesquisar
-        </button> -->
-        <button mat-menu-item (click)="openSelectableItemsListDialog()">
-            <mat-icon svgIcon="feather:search"></mat-icon>
-            Pesquisar
+            <ng-container *transloco='let t'>{{ t('foreign-key-input-field.search') }}</ng-container>
         </button>
-        <button mat-menu-item (click)="openFormDialog('new', null)">
+        <button mat-menu-item (click)="openSelectableItemsListDialogToEditItems()">
+            <mat-icon svgIcon="create"></mat-icon>
+            <ng-container *transloco='let t'>{{ t('foreign-key-input-field.edit') }}</ng-container>
+        </button>
+        <button mat-menu-item (click)="openFormDialogToCreateItem('new', null)">
             <mat-icon svgIcon="feather:plus"></mat-icon>
-            Adicionar
+            <ng-container *transloco='let t'>{{ t('foreign-key-input-field.add') }}</ng-container>
         </button>
         <button mat-menu-item (click)="removeItensOnInputField()">
             <mat-icon svgIcon="feather:x"></mat-icon>
-            Apagar
+            <ng-container *transloco='let t'>{{ t('foreign-key-input-field.clean') }}</ng-container>
         </button>
     </mat-menu>
+
 </mat-form-field>

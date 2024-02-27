@@ -1,11 +1,11 @@
-<div style="display: block; background-color: white;" class="mb-4 p-2 rounded-2xl shadow hover:shadow-lg" (click)="onClick()">
-    <div style="display: flex; flex-direction: row; margin: auto;">
+<div style="display: block; background-color: white; width: 100%;" class="mb-4 p-2 rounded-2xl shadow hover:shadow-lg" (click)="onClick()">
+    <div style="display: flex; flex-direction: row; margin: auto; width: 100%;">
 
-        <mat-radio-button  [value]="isSelected" (click)="selectItem(null)" *ngIf="isSelectable == true && isCheckBox == false"></mat-radio-button>
+        <mat-radio-button  [value]="isSelected" (click)="selectItem(null)" *ngIf="isSelectable == true && isCheckBox == false && isSingleOption == true"></mat-radio-button>
 
         <mat-checkbox  [checked]="isSelected" (change)="selectItem($event)" *ngIf="isSelectable == true && isCheckBox == true"></mat-checkbox>
 
-        <div id="cardBase" [ngStyle]="customStyle" style="display: grid; width: 100%; align-content: space-evenly;">
+        <div id="cardData" [ngStyle]="customStyle">
             <ng-container #placeToRender></ng-container>
         </div>
         

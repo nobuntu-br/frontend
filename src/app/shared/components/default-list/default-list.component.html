@@ -6,7 +6,7 @@
 
   <div *ngIf="isSelectable == true"
     style="display: flex; flex-direction: row; width: 100%; background-color: white; border-radius: 5px; margin-bottom: 5px;">
-    <mat-checkbox [checked]="selectAllCheckBox" *ngIf="selectedItemsLimit == itemsDisplayed.length"
+    <mat-checkbox [checked]="selectAllCheckBox" *ngIf="selectedItemsLimit == itemsDisplayed?.length"
       (change)="onSelectedItemsCheckBoxChange($event)"></mat-checkbox>
     <p style="margin: auto;">{{selectedItems.length}}
       <ng-container *transloco='let t'>{{t('selector-list.selectedValues') }}</ng-container>
@@ -19,7 +19,7 @@
   <div style="flex:1; overflow-y: auto; overflow-x: auto;">
     <ng-container #placeToRender></ng-container>
   </div>
-  <!-- 
+<!--   
   <div *ngFor="let item of itemsDisplayed">
     <selectable-card
       [itemDisplayed]="item"
@@ -35,7 +35,7 @@
       [isCheckbox]="true"
       
     ></selectable-card>
-  </div> -->
+  </div>  -->
   <!-- 
   <default-table
   [itemsDisplayed]="itemsDisplayed"
@@ -45,21 +45,9 @@
   
   ></default-table> -->
 
-
-
-  <!-- TODO aparecer isso pra no caso de for selecionável e retornar oq foi sleecionado -->
-  <!-- <div *ngIf="isSelectable == true" style="flex-direction: row; margin: auto;">
-    <button mat-button (click)="select()">
-      <ng-container *transloco='let t'>{{ t('selector-list.confirm')}}</ng-container>
-    </button>
-    <button mat-button (click)="cancel()">
-      <ng-container *transloco='let t'>{{ t('selector-list.cancel')}}</ng-container>
-    </button>
-  </div> -->
-
   <!-- TODO colocar o transoco nesse componente, ler a documentacao dele pra ver como fazer -->
   <div style="display: flex; justify-content: center; width: 100%; background-color: white;">
-    <mat-paginator #paginator (page)="handlePageEvent($event)" [length]="itemsDisplayed.length"
+    <mat-paginator #paginator (page)="handlePageEvent($event)" [length]="itemsDisplayed != null ? itemsDisplayed.length : 0"
       [pageSize]="maxDisplayedItems" [disabled]="false" [showFirstLastButtons]="true"
       [pageSizeOptions]="[5,10,25,50,100]" [hidePageSize]="false" [pageIndex]="0" aria-label="Select page">
     </mat-paginator>
@@ -68,6 +56,9 @@
   <div id="fixedButtons">
     <button *ngIf="isOpenedOnDialog == true" mat-fab class="px-6 ml-3" (click)="return()">
       <mat-icon svgIcon="mat_solid:keyboard_backspace"></mat-icon>
+    </button>
+    <button *ngIf="selectedItems.length > 0 && isOpenedOnDialog == true" mat-fab class="px-6 ml-3" (click)="returnWithSelectedItems()">
+      <mat-icon svgIcon="mat_solid:check"></mat-icon>
     </button>
     <button *ngIf="selectedItems.length > 0 && isAbleToDelete == true" (click)="deleteSelectedItens()" mat-fab
       class="">

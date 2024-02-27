@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, Input, Output, ViewChild, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild, ViewContainerRef } from '@angular/core';
 import { DateFieldComponent } from '../date-field/date-field.component';
 import { FieldComponent } from '../field/field.component';
 
@@ -7,18 +7,29 @@ import { FieldComponent } from '../field/field.component';
   templateUrl: './selectable-card.component.html',
   styleUrls: ['./selectable-card.component.scss'],
 })
-export class SelectableCardComponent implements AfterViewInit{
+export class SelectableCardComponent implements AfterViewInit, OnInit{
 
+  /**
+   * Campo com os dados do item que será apresenados na lista.
+   * @example ['nome':'Maria', 'idade':'44'].
+   */
   @Input() itemDisplayed: any;
   /**
-   * Nome da classe na qual o formulário pertence
+   * Nome da classe na qual o formulário pertence.
+   * @example "Produto".
    */
   @Input() className : string;
+  /**
+   * Quantidade de colunas que esse Card terá.
+   * @example "3".
+   * Em telas de dispositivos móveis, sempre será 1.
+   */
   @Input() columnsQuantity: number = 1;
   @Input() displayedfieldsName: string[];
   @Input() fieldsType: string[];
   @Input() userConfig: any;
   @Input() isCheckBox: boolean = true;
+  @Input() isSingleOption: boolean = false;
   @Input() isSelectable: boolean = true;
   @Input() isEditable: boolean = false;
   @Output() eventClick = new EventEmitter<void>();
@@ -28,10 +39,12 @@ export class SelectableCardComponent implements AfterViewInit{
   columnsQuantityStyle;
   @Input() isSelected: boolean = false;
   
-
   @ViewChild('placeToRender', {read: ViewContainerRef}) target!: ViewContainerRef;
 
   constructor(){
+  }
+  ngOnInit(): void {
+    if(this.itemDisplayed == null) throw new Error("ItemDisplayed is null");
   }
 
   ngAfterViewInit(): void {
