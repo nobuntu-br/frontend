@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule, NgSwitch, NgSwitchCase, NgSwitchDefault } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { FuseCardModule } from '@fuse/components/card';
 import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
 import { RouterModule } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -53,6 +52,7 @@ import { SideNavComponent } from './components/side-nav/side-nav.component';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { ConfirmationDialogComponent } from './components/confirmation-dialog/confirmation-dialog.component';
+import { LanguagesComponent } from './components/languages/languages.component';
 
 export const loader = ['en', 'pt'].reduce((acc, lang) => {
     acc[lang] = () => import(`../../assets/i18n/${lang}.json`);
@@ -64,7 +64,6 @@ export const loader = ['en', 'pt'].reduce((acc, lang) => {
         CommonModule,
         FormsModule,
         ReactiveFormsModule,
-        FuseCardModule,
         MatIconModule,
         RouterModule,
         MatFormFieldModule,
@@ -110,7 +109,6 @@ export const loader = ['en', 'pt'].reduce((acc, lang) => {
         MatInputModule,
         BaseResourceFilterComponent,
         MatDialogModule,
-        FuseCardModule,
         CalculatorComponent,
         InputFieldComponent,
         MatButtonModule,
@@ -118,10 +116,12 @@ export const loader = ['en', 'pt'].reduce((acc, lang) => {
         DefaultListComponent,
         GeneratedStepperFormComponent,
         TranslocoModule,
-        DinamicBaseResourceFormComponent
+        DinamicBaseResourceFormComponent,
+        LanguagesComponent
     ],
     declarations: [
         BaseResourceFilterComponent,
+        LanguagesComponent,
         FilterPeriodComponent,
         CalculatorComponent,
         FilterTextComponent,
