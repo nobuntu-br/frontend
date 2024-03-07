@@ -1,0 +1,87 @@
+{
+    "base-resource-filter-component": {
+        "field": "Field",
+        "and": "and",
+        "or": "or",
+        "ok": "Ok",
+        "cancel": "Cancel"
+    },
+    "filter-period-component": {
+        "field": "Field",
+        "initialDate": "Initial Date",
+        "finalDate": "Final Date",
+        "dateFormatLabel": "MM/DD/YYYY",
+        "ok": "Ok",
+        "cancel": "Cancel",
+        "operation": "Operation",
+        "day": "Day",
+        "month": "Month",
+        "year": "Year",
+        "week": "Week",
+        "completeDate": "Complete Date",
+        "equal": "Equal",
+        "different": "Different",
+        "afterThan": "After than...",
+        "afterOrEqualThan": "After or Equal...",
+        "beforeThan": "Before than...",
+        "beforeOrEqualThan": "Before or Equal...",
+        "between": "Between.."
+    },
+    "filter-number-range-component": {
+        "field": "Field",
+        "initialNumber": "Initial Number",
+        "finalNumber": "Final Number",
+        "ok": "Ok",
+        "cancel": "Cancel"
+    },
+    "filter-text-component": {
+        "operation": "Operation",
+        "equal": "Equal",
+        "different": "Different",
+        "startWith": "Start With",
+        "endWith": "End With",
+        "contains": "Contains",
+        "dontContains": "Don't Contains"
+    },
+    "filter-number-component": {
+        "operation": "Operation",
+        "equal": "Equal",
+        "different": "Different",
+        "biggerThan": "Bigger than...",
+        "biggerOrEqualThan": "Bigger or Equal...",
+        "smallerThan": "Smaller than...",
+        "smallerOrEqualThan": "Smaller or Equal...",
+        "between": "Between..",
+        "initialNumber": "Initial Number",
+        "finalNumber": "Final Number"
+    },
+    "filter-boolean-component": {
+        "value": "Value",
+        "true": "True",
+        "false": "False"
+    },
+    "selector-list": {
+        "search": "Search",
+        "selectedValues": "Selected values",
+        "confirm": "Confirm",
+        "cancel": "Cancel"
+    },
+    "Variations": {
+        "variationCode": "Variation code",
+        "optionColumn": "Option Column",
+        "product": "Product",
+        "optionLine": "Option line"
+    },
+    "Alerts": {
+        "createErrorMessage": "Error while creating",
+        "createSuccessMessage": "Create successful",
+        "readErrorMessage": "Error while reading data",
+        "updateErrorMessage": "Error while updating",
+        "updateSuccessMessage": "Update successful",
+        "deleteErrorMessage": "Error while deleting",
+        "deleteSuccessMessage": "Delete successful",
+        "defaultSuccessMessage": "Operation successful",
+        "defaultErrorMessage": "Operation error",
+        "rememberToSave": "Tem certeza de que deseja sair? Suas alterações podem não ser salvas."
+    }
+}
