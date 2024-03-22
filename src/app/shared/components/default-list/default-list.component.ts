@@ -414,7 +414,7 @@ export class DefaultListComponent implements AfterViewInit, OnDestroy {
       return;
     }
 
-    let dialogMessage: string = this.translocoService.translate("confirmation-dialog.messageToConfirmDelete");
+    let dialogMessage: string = this.translocoService.translate("componentsBase.confirmation-dialog.messageToConfirmDelete");
 
     //Irá abrir o dialog para perguntar para o usuário se ele tem certeza se quer remover os itens e depois dará continuidade com base na resposta selecionada pelo usuário.
     this.openConfirmationDialog(dialogMessage).afterClosed().pipe(take(1)).subscribe((result: boolean) => {
@@ -422,13 +422,13 @@ export class DefaultListComponent implements AfterViewInit, OnDestroy {
 
         this.selectedItems.forEach((item) => {
           this.http.delete(this.apiUrl + '/' + item.id).subscribe({
-            error: (error) => alert(this.translocoService.translate("Alerts.deleteErrorMessage")),
+            error: (error) => alert(this.translocoService.translate("componentsBase.Alerts.deleteErrorMessage")),
           }).unsubscribe();
         });
 
         this.selectedItems = [];
 
-        alert(this.translocoService.translate("Alerts.deleteSuccessMessage"));
+        alert(this.translocoService.translate("componentsBase.Alerts.deleteSuccessMessage"));
 
         this.getData(this.apiUrl);
       }

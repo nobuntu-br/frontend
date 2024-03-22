@@ -1,4 +1,4 @@
-<div style="display: flex; flex-direction: column; height: 100%;">
+<div style="display: flex; flex-direction: column; width: 100%; height: 100%;">
   <search-input-field [displayedfieldsName]="displayedfieldsName" [fieldsType]="fieldsType" [apiUrl]="apiUrl"
     (removeAllComponentsOnViewFunction)="removeAllComponentsOnView()"
     (returnedItemsToCreate)="createItemsOnList($event)" [searchableFields]="searchableFields">
@@ -9,7 +9,7 @@
     <mat-checkbox [checked]="selectAllCheckBox" *ngIf="selectedItemsLimit == itemsDisplayed?.length"
       (change)="onSelectedItemsCheckBoxChange($event)"></mat-checkbox>
     <p style="margin: auto;">{{selectedItems.length}}
-      <ng-container *transloco='let t'>{{t('selector-list.selectedValues') }}</ng-container>
+      <ng-container *transloco='let t; read:"componentsBase"'>{{t('selector-list.selectedValues') }}</ng-container>
     </p>
     <!-- <mat-icon svgIcon="list" style="margin: auto;"></mat-icon> -->
     <!-- TODO adicionar a opção de vizualizar com tabela -->

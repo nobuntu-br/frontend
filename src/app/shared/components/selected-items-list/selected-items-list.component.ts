@@ -183,7 +183,7 @@ export class SelectedItemsListComponent implements AfterViewInit, OnDestroy {
     this.itemsDisplayed.forEach((item) =>{
       this.httpClient.get(item.id).pipe(take(1)).subscribe({
         next: (data) => refreshedItems.push(data),
-        error: (error) => alert(this.translocoService.translate("Alerts.readErrorMessage")),
+        error: (error) => alert(this.translocoService.translate("componentsBase.Alerts.readErrorMessage")),
       });
     });
 
@@ -379,7 +379,7 @@ export class SelectedItemsListComponent implements AfterViewInit, OnDestroy {
 
     this.selectedItems = [];
 
-    alert(this.translocoService.translate("Alerts.deselectMessage"));
+    alert(this.translocoService.translate("componentsBase.Alerts.deselectMessage"));
 
     this.itemsDisplayed = remainingItems;
     this.createItemsOnList(this.itemsDisplayed);

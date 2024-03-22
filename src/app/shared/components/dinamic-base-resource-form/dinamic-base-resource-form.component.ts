@@ -212,7 +212,7 @@ export class DinamicBaseResourceFormComponent implements AfterViewInit {
         if (this.resourceForm == null) { console.error("ResourceForm não foi instanciado") }
         this.resourceForm.patchValue(resource) // binds loaded resource data to resourceForm
       },
-      error: (error) => alert(this.translocoService.translate("Alerts.readErrorMessage"))
+      error: (error) => alert(this.translocoService.translate("componentsBase.Alerts.readErrorMessage"))
     });
 
   }
@@ -247,7 +247,7 @@ export class DinamicBaseResourceFormComponent implements AfterViewInit {
         if (this.matDialogComponentRef == null) {
           this.actionsForSuccess(response);
         } else {
-          alert(this.translocoService.translate("Alerts.defaultSuccessMessage"));
+          alert(this.translocoService.translate("componentsBase.Alerts.defaultSuccessMessage"));
           this.matDialogComponentRef.close(response);
         }
       },
@@ -281,7 +281,7 @@ export class DinamicBaseResourceFormComponent implements AfterViewInit {
         if (this.dialogInjectorData == null) {
           this.actionsForSuccess(response);
         } else {
-          alert(this.translocoService.translate("Alerts.deleteSuccessMessage"));
+          alert(this.translocoService.translate("componentsBase.Alerts.deleteSuccessMessage"));
           this.matDialogComponentRef.close({ data: resource, action: "removed" });
         }
       },
@@ -290,7 +290,7 @@ export class DinamicBaseResourceFormComponent implements AfterViewInit {
   }
 
   protected actionsForSuccess(resource: any) {
-    alert(this.translocoService.translate("Alerts.defaultSuccessMessage"));
+    alert(this.translocoService.translate("componentsBase.Alerts.defaultSuccessMessage"));
     //Verifica se o componente foi aberto por um dialog
     if (this.matDialogComponentRef != null) {
       this.matDialogComponentRef.close();
@@ -307,7 +307,7 @@ export class DinamicBaseResourceFormComponent implements AfterViewInit {
 
     this.submittingForm = false;
 
-    alert(this.translocoService.translate("Alerts.defaultErrorMessage"));
+    alert(this.translocoService.translate("componentsBase.Alerts.defaultErrorMessage"));
 
     if (error.status === 422)
       this.serverErrorMessages = JSON.parse(error._body).errors;

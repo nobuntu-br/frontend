@@ -4,12 +4,32 @@ import { GeneratedStepperFormComponent } from '../components/generated-stepper-f
 import { FormGeneratorService } from './form-generator.service';
 import { FormGroup } from '@angular/forms';
 
-interface IAttributes {
-  name: string,
-  type: string,
-  formTab: string,
-  apiUrl?: string,
-  propertiesAttributes?: any[]
+/**
+   * Parâmetros usados para criação do formulário
+   * @param target referência da view para onde será criado e renderizado os componentes.
+   * @param getDataFromAPIFunction função que pegará os dados do backEnd dos dados pertencentes a classe do formulário.
+   * @param resourceForm formGroup do formulário que contém todos os campos do formulário.
+   * @param formOption opção do formulário que será utilizado para a pagina. Contendo formuário simples, por passos e outros.
+   * @param attributes informações relacionadas a todas as variáveis que irão gerar os campos do formulário.
+   * @param className nome da classe que o formulário pertence
+   * @param submitFormFunction função que realiza o envio dos dados do formuário para o backEnd.
+   * @param deleteFormFunction função que deleta a instância da classe do formulário.
+   * @param currentFormAction situação atual do formulário, sendo "create" para criação ou "edit" para edição de algum valor.
+   * @param JSONPath string que contém o caminho do arquivo JSON que orienta a criação das paginas
+   * @param formStepperStructure array contendo os nomes de cada passo do formuário de passos.
+   */
+interface ICreateFormParams {
+  target: ViewContainerRef,
+  getDataFromAPIFunction: () => void,
+  resourceForm: FormGroup,
+  formOption: string | null,
+  attributes,
+  className,
+  submitFormFunction: () => void,
+  deleteFormFunction: () => void,
+  currentFormAction: string,
+  JSONPath: string,
+  formStepperStructure?: string[] | null,
 }
 
 /**
@@ -21,7 +41,6 @@ interface IAttributes {
 export class GeneratedFormFactoryService {
 
   constructor(
-    private injector: Injector,
     private formGeneratorService: FormGeneratorService,
   ) {
 
@@ -37,7 +56,7 @@ export class GeneratedFormFactoryService {
    * @param deleteFormFunction função que deleta a instância da classe do formulário.
    * @param currentFormAction situação atual do formulário, sendo "create" para criação ou "edit" para edição de algum valor.
    */
-  getDataToCreateForm(JSONPath: string, JSONDictionary: any, target: ViewContainerRef, getDataFromAPIFunction: () => void, resourceForm: FormGroup, submitFormFunction : ()=>void, deleteFormFunction: ()=>void, currentFormAction: string) {
+  getDataToCreateForm(JSONPath: string, JSONDictionary: any, target: ViewContainerRef, getDataFromAPIFunction: () => void, resourceForm: FormGroup, submitFormFunction: () => void, deleteFormFunction: () => void, currentFormAction: string) {
 
     let formOption: string;
     let className: string;
@@ -45,14 +64,28 @@ export class GeneratedFormFactoryService {
     if (JSONDictionary.config.isFormStepper) {
       formOption = "stepperForm";
     }
-    if(JSONDictionary.config.hasOwnProperty('name')){
+    if (JSONDictionary.config.hasOwnProperty('name')) {
       className = JSONDictionary.config.name;
     }
 
     const attributes = this.formGeneratorService.getAttributesData(JSONDictionary);
     const formStepperStructure = this.formGeneratorService.getFormStepperStructure(JSONDictionary);
 
-    this.createForm(target, getDataFromAPIFunction, resourceForm, formOption, attributes, className, submitFormFunction, deleteFormFunction, currentFormAction, JSONPath, formStepperStructure)
+    const createFormParams : ICreateFormParams = {
+      target: target,
+      getDataFromAPIFunction: getDataFromAPIFunction,
+      resourceForm: resourceForm,
+      formOption: formOption,
+      attributes: attributes,
+      className: className,
+      submitFormFunction: submitFormFunction,
+      deleteFormFunction: deleteFormFunction,
+      currentFormAction: currentFormAction,
+      JSONPath: JSONPath,
+      formStepperStructure: formStepperStructure
+    } 
+
+    this.createForm(createFormParams);
   }
 
   /**
@@ -69,80 +102,74 @@ export class GeneratedFormFactoryService {
    * @param currentFormAction situação atual do formulário, sendo "create" para criação ou "edit" para edição de algum valor.
    * @returns 
    */
-  getDataToCreateFormWithoutJSON(JSONPath: string, JSONDictionary: any, className: string, target: ViewContainerRef, getDataFromAPIFunction: () => void, resourceForm: FormGroup, submitFormFunction : ()=>void, deleteFormFunction: ()=>void, currentFormAction: string) {
+  getDataToCreateFormWithoutJSON(JSONPath: string, JSONDictionary: any, className: string, target: ViewContainerRef, getDataFromAPIFunction: () => void, resourceForm: FormGroup, submitFormFunction: () => void, deleteFormFunction: () => void, currentFormAction: string) {
 
     //Entra no attributes e percorre até achar o className e de lá pega tudo que for necessário
 
-    if(!JSONDictionary.attributes){
+    if (!JSONDictionary.attributes) {
       return null;
     }
 
     let attributes = [];
 
     for (let attributeIndex = 0; attributeIndex < JSONDictionary.attributes.length; attributeIndex++) {
-      if(JSONDictionary.attributes[attributeIndex].name === className){
-        JSONDictionary.attributes[attributeIndex].properties.forEach(element => {  
+      if (JSONDictionary.attributes[attributeIndex].name === className) {
+        JSONDictionary.attributes[attributeIndex].properties.forEach(element => {
           attributes.push({ name: element.name, type: element.type });
         });
         break;
       }
-      
+
     }
-    
-    this.createForm(target, getDataFromAPIFunction, resourceForm, null, attributes, className, submitFormFunction, deleteFormFunction, currentFormAction, JSONPath, null);
+
+    const createFormParams : ICreateFormParams = {
+      target: target,
+      getDataFromAPIFunction: getDataFromAPIFunction,
+      resourceForm: resourceForm,
+      formOption: null,
+      attributes: attributes,
+      className: className,
+      submitFormFunction: submitFormFunction,
+      deleteFormFunction: deleteFormFunction,
+      currentFormAction: currentFormAction,
+      JSONPath: JSONPath,
+      formStepperStructure: null
+    } 
+
+    this.createForm(createFormParams);
   }
-  
+
 
   /**
    * Um factory que de acordo com a parâmetro "formOption" irá criar o formulário de modelo diferente de acordo com o valor passado.
-   * @param target referência da view para onde será criado e renderizado os componentes.
-   * @param getDataFromAPIFunction função que pegará os dados do backEnd dos dados pertencentes a classe do formulário.
-   * @param resourceForm formGroup do formulário que contém todos os campos do formulário.
-   * @param formOption opção do formulário que será utilizado para a pagina. Contendo formuário simples, por passos e outros.
-   * @param attributes informações relacionadas a todas as variáveis que irão gerar os campos do formulário.
-   * @param className nome da classe que o formulário pertence
-   * @param submitFormFunction função que realiza o envio dos dados do formuário para o backEnd.
-   * @param deleteFormFunction função que deleta a instância da classe do formulário.
-   * @param currentFormAction situação atual do formulário, sendo "create" para criação ou "edit" para edição de algum valor.
-   * @param JSONPath string que contém o caminho do arquivo JSON que orienta a criação das paginas
-   * @param formStepperStructure array contendo os nomes de cada passo do formuário de passos.
+   * @param createFormParams Parâmetros usados para criar o formulário
    */
   createForm(
-    target: ViewContainerRef, 
-    getDataFromAPIFunction: () => void, 
-    resourceForm: FormGroup, 
-    formOption: string | null, 
-    attributes,
-    className,
-    submitFormFunction : ()=>void, 
-    deleteFormFunction : ()=>void,
-    currentFormAction: string,
-    JSONPath: string,
-    formStepperStructure? : string[] | null,
-    ) {
+    createFormParams: ICreateFormParams
+  ) {
     let createdComponent;
 
-    switch (formOption) {
+    switch (createFormParams.formOption) {
       case 'stepperForm':
-        if(formStepperStructure != null){
-          createdComponent = target.createComponent(GeneratedStepperFormComponent).instance;
-          createdComponent.formStepperStructure = formStepperStructure;
+        if (createFormParams.formStepperStructure != null) {
+          createdComponent = createFormParams.target.createComponent(GeneratedStepperFormComponent).instance;
+          createdComponent.formStepperStructure = createFormParams.formStepperStructure;
         } else {
-          createdComponent = target.createComponent(GeneratedSimpleFormComponent).instance;  
+          createdComponent = createFormParams.target.createComponent(GeneratedSimpleFormComponent).instance;
         }
         break;
       default:
-        createdComponent = target.createComponent(GeneratedSimpleFormComponent).instance;
+        createdComponent = createFormParams.target.createComponent(GeneratedSimpleFormComponent).instance;
         break;
     }
 
-    createdComponent.resourceForm = resourceForm;
-    createdComponent.attributes = attributes;
-    createdComponent.submitFormFunction = submitFormFunction;
-    createdComponent.formIsReady.subscribe(() => { getDataFromAPIFunction() })
-    createdComponent.deleteFormFunction = deleteFormFunction;
-    createdComponent.currentFormAction = currentFormAction;
-    createdComponent.className = className;
-    createdComponent.JSONPath = JSONPath;
+    createdComponent.resourceForm = createFormParams.resourceForm;
+    createdComponent.attributes = createFormParams.attributes;
+    createdComponent.submitFormFunction = createFormParams.submitFormFunction;
+    createdComponent.formIsReady.subscribe(() => { createFormParams.getDataFromAPIFunction() })
+    createdComponent.deleteFormFunction = createFormParams.deleteFormFunction;
+    createdComponent.currentFormAction = createFormParams.currentFormAction;
+    createdComponent.className = createFormParams.className;
+    createdComponent.JSONPath = createFormParams.JSONPath;
   }
 }

@@ -23,6 +23,25 @@ export class ForeignKeyInputFieldComponent implements OnDestroy {
    */
   @Input() label: string;
   /**
+   * Quantidade máxima de letras.\
+   * Exemplo: 255.
+   */
+  @Input() charactersLimit : number;
+  /**
+   * Texto que é apresentado caso o campo esteja vazio.\
+   * Exemplo: "Insira o valor aqui".
+   */
+  @Input() placeholder: string = "";
+  /**
+   * Ícone svg para ser apresentado no campo.
+   */
+  @Input() svgIcon: string | null;
+  /**
+   * É preciso preencher o campo.\
+   * Exemplo: true.
+   */
+  @Input() isRequired: boolean = false;
+  /**
    * Define qual variável será usada para ser apresentado no campo de inserção.
    * @example "name"
    */

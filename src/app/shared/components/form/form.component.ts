@@ -9,7 +9,7 @@ import { Subject } from 'rxjs';
 import { switchMap, takeUntil } from "rxjs/operators";
 
 @Directive()
-export abstract class BaseResourceFormComponent<T extends BaseResourceModel> implements OnInit, AfterContentChecked {
+export abstract class BaseResourceFormComponent<T extends BaseResourceModel> implements OnInit, AfterContentChecked, OnDestroy {
 
   /**
    * Ação atual que o formulário está fazendo, seja alterando algo ou criando.
@@ -126,9 +126,10 @@ export abstract class BaseResourceFormComponent<T extends BaseResourceModel> imp
             this.resource = resource;
             //TODO usar transloco nessas mensagens
             if (this.resourceForm == null) { console.error("ResourceForm não foi instanciado") }
-            this.resourceForm.patchValue(resource) // binds loaded resource data to resourceForm
+            this.resourceForm.addControl("updatedAt", this.formBuilder.control(null));
+            this.resourceForm.patchValue(resource); // binds loaded resource data to resourceForm
           },
-          error: (error) => alert(this.translocoService.translate("Alerts.readErrorMessage"))
+          error: (error) => alert(this.translocoService.translate("componentsBase.Alerts.readErrorMessage"))
         })
     }
   }
@@ -153,8 +154,6 @@ export abstract class BaseResourceFormComponent<T extends BaseResourceModel> imp
   protected createResource() {
     const resource: T = this.jsonDataToResourceFn(this.resourceForm.value);
 
-    if (resource.updatedAt == null) resource.updatedAt = new Date();
-
     this.resourceService.create(resource).subscribe({
       next: (response) => {
         this.actionsForSuccess(response);
@@ -167,8 +166,6 @@ export abstract class BaseResourceFormComponent<T extends BaseResourceModel> imp
 
   protected updateResource() {
     const resource: T = this.jsonDataToResourceFn(this.resourceForm.value);
-
-    if (resource.updatedAt == null) resource.updatedAt = new Date();
 
     this.resourceService.update(resource.id, resource).subscribe({
       next: (response) => this.actionsForSuccess(response),
@@ -188,7 +185,7 @@ export abstract class BaseResourceFormComponent<T extends BaseResourceModel> imp
   protected actionsForSuccess(resource: T) {
     const baseComponentPath: string = this.route.snapshot.parent.url[0].path;
 
-    alert(this.translocoService.translate("Alerts.defaultSuccessMessage"));
+    alert(this.translocoService.translate("componentsBase.Alerts.defaultSuccessMessage"));
 
     // redirect/reload component page
     this.router.navigateByUrl(baseComponentPath, { skipLocationChange: false }).then(
@@ -200,7 +197,7 @@ export abstract class BaseResourceFormComponent<T extends BaseResourceModel> imp
   protected actionsForError(error) {
 
     this.submittingForm = false;
-    alert(this.translocoService.translate("Alerts.defaultErrorMessage"));
+    alert(this.translocoService.translate("componentsBase.Alerts.defaultErrorMessage"));
 
     if (error.status === 422)
       this.serverErrorMessages = JSON.parse(error._body).errors;
@@ -224,7 +221,7 @@ export abstract class BaseResourceFormComponent<T extends BaseResourceModel> imp
   alertToReturn(){
     if(this.formSaved == true) return;
 
-    alert(this.translocoService.translate("Alerts.rememberToSave"));
+    alert(this.translocoService.translate("componentsBase.Alerts.rememberToSave"));
   }
 
   ngOnDestroy(): void {
