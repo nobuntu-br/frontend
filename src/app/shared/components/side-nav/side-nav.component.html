@@ -1,10 +1,9 @@
 <mat-sidenav-container class="shadow dark:shadow-none dark:border-b bg-card dark:bg-transparent print:hidden">
-    <mat-sidenav #drawer fixedInViewport [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
-        [mode]="(isHandset$ | async) ? 'over' : 'side'" [opened]="(isHandset$ | async) === false">
+    <mat-sidenav #drawer [mode]="(isHandset$ | async) ? 'over' : 'side'" [opened]="sideNavBarIsOpened">
         <mat-toolbar>{{menuTitle}}</mat-toolbar>
         <mat-nav-list>
             <a mat-list-item style="display: flex; flex-direction: column; align-content: center;" *ngFor="let option of navListOptions" [routerLink]="option.routeUrl"
-                (mouseup)="drawer.toggle()">
+                (mouseup)="closeSideNavBar()">
 
                 <mat-icon style="display: block; margin: auto;" svgIcon="feather:box"></mat-icon>
                 {{ option.optionName }}
@@ -14,15 +13,14 @@
     <mat-sidenav-content style="height: 100vh;">
 
         <mat-toolbar id="toolbar">
-            <button type="button" aria-label="Toggle sidenav" mat-icon-button (click)="drawer.toggle()"
-                *ngIf="isHandset$ | async">
+            <button type="button" aria-label="Toggle sidenav" mat-icon-button (click)="showSideNavBar()" *ngIf="canCloseNavBar">
                 <mat-icon aria-label="Side nav toggle icon" svgIcon="feather:menu"></mat-icon>
             </button>
             <span>{{applicationTitle}}</span>
 
             <languages></languages>
 
-            <!-- Botão de login -->
+            <!-- TODO login button -->
 
         </mat-toolbar>
 
@@ -32,6 +30,5 @@
             <router-outlet *ngIf="true"></router-outlet>
         </div>
 
-        <!-- <router-outlet class="container"></router-outlet> -->
     </mat-sidenav-content>
 </mat-sidenav-container>
