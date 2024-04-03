@@ -47,7 +47,7 @@ export class SideNavComponent {
 
   constructor(private breakpointObserver: BreakpointObserver, private httpClient: HttpClient) {
 
-    this.getDataToMenu("/assets/dicionario/menu.json").then(data => {
+    this.getDataToMenu(environment.menuPath).then(data => {
       this.navListOptions = data;
 
       this.isHandset$ = this.breakpointObserver.observe(Breakpoints.Handset)
