@@ -10,7 +10,6 @@ import { DefaultListComponent } from '../components/default-list/default-list.co
 import { CalculatorComponent } from '../components/calculator/calculator.component';
 import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { SelectedItemsListComponent } from '../components/selected-items-list/selected-items-list.component';
 
 interface dialogConfiguration {
   width?: string,
@@ -21,12 +20,45 @@ interface dialogConfiguration {
   data?: any,
 }
 
-export interface IAttributes {
+/**
+ * Atributos principais das variáveis da classe do JSON que informa como criar as telas
+ * @param JSONDictionary JSON que informa como criar as telas
+ * @param name - nome da variável.
+ * @param type - tipo da variável. 
+ * @param formTab - informação de para qual aba do formTab essa variável pertence.
+ * @param apiUrl link para chamar a classe dessa variável.
+ * @param propertiesAttributes Se a variável for uma classe, retorná um vetor com variavel com nome e tipo das variáveis que contém na classe).
+ */
+export interface IAttributesToCreateScreens {
   name: string,
   type: string,
   formTab: string,
   apiUrl?: string,
   propertiesAttributes?: any[]
+}
+
+/**
+  * Dados que irão criar um campo que irá compor o formulário
+  * @param target referência da view para onde será criado e renderizado os componentes
+  * @param resourceForm formGroup do formulário que contém todos os campos do formulário
+  * @param className Nome da classe no qual pertence esse formuário
+  * @param fieldName Nome da variável na qual o campo é. @example "phone"
+  * @param fieldType Tipo da variável do campo. @examples "number", "foreignKey"
+  * @param value Contém vários valores dentro @example "apiUrl"; "fieldName" e "fieldsType" caso tem chave estrangeira; 
+  * @param labelTittle Título que aparecerá no topo do campo @example "Telefone"
+  * @param JSONPath localização de onde se encontra o JSON que orienta na criação das paginas. @example "'../../../../assets/dicionario/categories.json'"
+  * @param valuesList 
+  */
+export interface ICreateComponentParams {
+  target: ViewContainerRef,
+  resourceForm: FormGroup,
+  className: string,
+  fieldName: string,
+  fieldType: string,
+  value,
+  labelTittle: string,
+  JSONPath: string,
+  valuesList: any[]
 }
 
 /**
@@ -39,10 +71,12 @@ export class FormGeneratorService {
 
   protected httpClient: HttpClient;
   protected formBuilder: FormBuilder;
+  protected matDialog: MatDialog;
 
   constructor(protected injector: Injector) {
     this.httpClient = injector.get(HttpClient);
     this.formBuilder = injector.get(FormBuilder);
+    this.matDialog = injector.get(MatDialog);
   }
 
   buildResourceForm(formBuilder: FormBuilder): FormGroup {
@@ -51,56 +85,39 @@ export class FormGeneratorService {
     });
   }
 
-  // createComponentsOnView(target: ViewContainerRef, formBuilder: FormBuilder, resourceForm: FormGroup, matDialog: MatDialog, className: string, fieldsName: string[], fieldsType: string[]) {
-  //   console.log(fieldsName)
-  //   fieldsName.forEach((fieldName: string, index) => {
-  //     // console.log(fieldName + "-" + fieldsType[index]);
-  //     this.createComponent(target, resourceForm, matDialog, className, fieldName, fieldsType[index], null, fieldName, null);
-  //   });
-  // }
-
   //TODO remover código repetitivo
   createComponent(
-    target: ViewContainerRef,
-    resourceForm: FormGroup,
-    matDialog: MatDialog,
-    className: string,
-    fieldName: string,
-    fieldType: string,
-    value,
-    labelTittle: string,
-    JSONPath: string,
-    valuesList: any[] = null
+    createComponentData: ICreateComponentParams
   ) {
 
-    if (target == null) {
+    if (createComponentData.target == null) {
       console.error("Target vazia, não é possível criar a pagina");
       return null;
     }
 
     let createdComponent;
-    switch (fieldType) {
+    switch (createComponentData.fieldType) {
       case 'date': {
-        createdComponent = target.createComponent(InputDateFieldComponent);
-        createdComponent.instance.label = labelTittle;
-        
+        createdComponent = createComponentData.target.createComponent(InputDateFieldComponent);
+        createdComponent.instance.label = createComponentData.labelTittle;
+
         break;
       }
       case 'string': {
-        createdComponent = target.createComponent(InputFieldComponent);
-        createdComponent.instance.label = labelTittle;
+        createdComponent = createComponentData.target.createComponent(InputFieldComponent);
+        createdComponent.instance.label = createComponentData.labelTittle;
         createdComponent.instance.isRequired = true;
-        
+
         // createdComponent.instance.svgIcon = "heroicons_solid:user";
         //createdComponent.instance.actionOnClickInIcon = ()=>{console.log("Você apertou no icone")}
 
         break;
       }
       case 'object': {
-        createdComponent = target.createComponent(SelectorInputFieldComponent);
+        createdComponent = createComponentData.target.createComponent(SelectorInputFieldComponent);
         const component = createdComponent.instance;
 
-        component.label = labelTittle;
+        component.label = createComponentData.labelTittle;
         component.valuesList = [{ productId: "65b812adaff84eff40be3924", variationCode: "13022" }, { productId: "AAABBB", variationCode: "0002" }];
         // component.valuesList = valuesList;
         component.displayedSelectedVariableOnInputField = "variationCode";
@@ -112,65 +129,18 @@ export class FormGeneratorService {
         break;
       }
       case 'foreignKey': {
-        // createdComponent = target.createComponent(ForeignKeyInputFieldComponent);
-        // createdComponent.instance.label = labelTittle;
-        // createdComponent.instance.apiUrl = "http://localhost:8080/api/employees";
-        // createdComponent.instance.fieldsDisplayed = ['firstName', "lastName", "company", 'city', "businessPhone", "createdAt"];
-        // createdComponent.instance.fieldsType = ['string', 'string', 'string', 'string', 'string', 'date'];
-        // createdComponent.instance.columnsQuantity = 3;
-        // createdComponent.instance.fieldDisplayedInLabel = "firstName";
-
-        // createdComponent.instance.searchableFields = ["firstName", "company"];
-
-        /*
-        createdComponent = target.createComponent(InputFieldComponent);
-        createdComponent.instance.label = labelTittle;
-        createdComponent.instance.svgIcon = "feather:search";
-        createdComponent.instance.isRequired = false;
-
-        createdComponent.instance.actionOnClickInIcon = () => {
-          const dialogRef= this.openDialog(matDialog, SelectedItemsListComponent, {
-            width: '100%',
-            height: '100%',
-            maxWidth: '100vw',
-            maxHeight: '100vh',
-            panelClass: 'full-screen-dialog',
-            data: {
-              itemsDisplayed: [],
-              columnsQuantity: 2,
-              displayedfieldsName: value.propertiesAttributes.map(attribute => attribute.name),
-              fieldsType: value.propertiesAttributes.map(attribute => attribute.type),
-              userConfig: null,
-              selectedItemsLimit: null,
-              apiUrl: value.apiUrl,
-              JSONPath: JSONPath,
-              searchableFields: null,
-              isSelectable: true,
-              className: className,
-              fieldName: fieldName,
-            }
-          });
-
-          dialogRef.afterClosed().subscribe(result => {
-            console.log(`Dialog result: ${result}`);
-            if (result == null) return;
-            createdComponent.instance.inputValue = result;
-          });
-          
-        }
-        */
-        createdComponent = target.createComponent(ForeignKeyInputFieldComponent);
-        createdComponent.instance.label = labelTittle;
-        createdComponent.instance.fieldName = fieldName;
-        createdComponent.instance.value = value;
-        createdComponent.instance.JSONPath = JSONPath;
+        createdComponent = createComponentData.target.createComponent(ForeignKeyInputFieldComponent);
+        createdComponent.instance.label = createComponentData.labelTittle;
+        createdComponent.instance.fieldName = createComponentData.fieldName;
+        createdComponent.instance.value = createComponentData.value;
+        createdComponent.instance.JSONPath = createComponentData.JSONPath;
         createdComponent.instance.fieldDisplayedInLabel = "firstName";
 
         break;
       }
       case 'array': {
-        createdComponent = target.createComponent(ForeignKeyInputFieldComponent);
-        createdComponent.instance.label = labelTittle;
+        createdComponent = createComponentData.target.createComponent(ForeignKeyInputFieldComponent);
+        createdComponent.instance.label = createComponentData.labelTittle;
         createdComponent.instance.apiUrl = "http://localhost:8080/api/employees";//get address from .env and concat
         createdComponent.instance.fieldsDisplayed = ['firstName', "lastName", "company", 'city', "businessPhone", "createdAt"];
         createdComponent.instance.fieldsType = ['string', 'string', 'string', 'string', 'string', 'date'];
@@ -181,18 +151,18 @@ export class FormGeneratorService {
         break;
       }
       case 'number': {
-        createdComponent = target.createComponent(InputFieldComponent);
-        createdComponent.instance.label = labelTittle;
+        createdComponent = createComponentData.target.createComponent(InputFieldComponent);
+        createdComponent.instance.label = createComponentData.labelTittle;
         createdComponent.instance.svgIcon = "heroicons_solid:calculator";
         createdComponent.instance.isRequired = true;
         createdComponent.instance.iconPosition = "start";
         createdComponent.instance.mask = "0*,0*";
-        createdComponent.instance.actionOnClickInIcon = () => { this.openDialog(matDialog, CalculatorComponent, null) }
+        createdComponent.instance.actionOnClickInIcon = () => { this.openDialog(CalculatorComponent, null) }
 
         break;
       }
       case 'list': {
-        createdComponent = target.createComponent(DefaultListComponent);
+        createdComponent = createComponentData.target.createComponent(DefaultListComponent);
         // createdComponent.instance.label = labelTittle;
         createdComponent.instance.columnsQuantity = 3;
         createdComponent.instance.fieldsDisplayed = ['firstName', "lastName", "company", 'city', "businessPhone", "createdAt"];
@@ -212,14 +182,13 @@ export class FormGeneratorService {
       }
     }
 
-    createdComponent.instance.className = className;
-    resourceForm.addControl(fieldName, createdComponent.instance.inputValue);
+    createdComponent.instance.className = createComponentData.className;
+    createComponentData.resourceForm.addControl(createComponentData.fieldName, createdComponent.instance.inputValue);
 
   }
 
-  //TODO verificar se essa responsabilidade de abrir dialog deve ficar aqui ou dentro do componente responsável
-  openDialog(matDialog: MatDialog, component: ComponentType<any>, dialogConfiguration: dialogConfiguration) {
-    return matDialog.open(component, dialogConfiguration);
+  openDialog(component: ComponentType<any>, dialogConfiguration: dialogConfiguration) {
+    return this.matDialog.open(component, dialogConfiguration);
   }
 
   printForm(resourceForm: FormGroup) {
@@ -227,35 +196,34 @@ export class FormGeneratorService {
   }
 
   /**
-   * Obtem os atributos principais das variáveis da classe do JSON que informa como criar as telas
-   * @param JSONDictionary JSON que informa como criar as telas
-   * @returns Informações para criação dinâmica dos componentes. \
-   * Sendo um vetor com os seguintes campos: \
-   * @name - nome da variável.
-   * @type - tipo da variável. 
-   * @formTab - informação de para qual aba do formTab essa variável pertence.
-   * @apiUrl link para chamar a classe dessa variável.
-   * @propertiesAttributes Se a variável for uma classe, retorná um vetor com variavel com nome e tipo das variáveis que contém na classe).
-   */
-  getAttributesData(JSONDictionary): IAttributes[] {
+  * Obtem os atributos principais das variáveis da classe do JSON que informa como criar as telas.
+  * @param JSONDictionary Dados do JSON que irá orientar a criação das telas.
+  * @returns Array com os atributos que irão orientar na criação das telas.
+  */
+  getAttributesData(JSONDictionary): IAttributesToCreateScreens[] {
     if (JSONDictionary == null) return;
 
-    let attributes: IAttributes[] = [];
+    let attributes: IAttributesToCreateScreens[] = [];
 
     JSONDictionary.attributes.forEach(element => {
       let propertiesAttributes = [];
       let apiUrl = null;
       let className = null;
+      let fieldDisplayedInLabel: string | null = null;
 
-      if(element.hasOwnProperty('apiUrl') == true){
+      if (element.hasOwnProperty('apiUrl') == true) {
         apiUrl = element.apiUrl;
       }
 
-      if(element.hasOwnProperty('properties') == true){
-        
-        element.properties.forEach(attribute =>{
-          if(attribute.hasOwnProperty('name') && attribute.hasOwnProperty('type')){
-            propertiesAttributes.push({name: attribute.name, type: attribute.type});
+      if(element.hasOwnProperty('type') && element.type === "foreignKey" && element.hasOwnProperty('fieldDisplayedInLabel')){
+        fieldDisplayedInLabel = element.fieldDisplayedInLabel;
+      }
+
+      if (element.hasOwnProperty('properties') == true) {
+
+        element.properties.forEach(attribute => {
+          if (attribute.hasOwnProperty('name') && attribute.hasOwnProperty('type')) {
+            propertiesAttributes.push({ name: attribute.name, type: attribute.type });
           }
         });
       }
@@ -270,52 +238,6 @@ export class FormGeneratorService {
     if (JSONDictionary == null) return;
 
     return JSONDictionary.config;
-  }
-
-  /**
-   * @deprecated Obtem nome das variáveis da classe do JSON que informa como criar as telas
-   * @param JSONDictionary JSON que informa como criar as telas
-   * @returns Array com nome das variáveis
-   */
-  getAttributesName(JSONDictionary) {
-    if (JSONDictionary == null) return;
-    let attributesName = [];
-
-    JSONDictionary.attributes.forEach(element => {
-      attributesName.push(element.name);
-    });
-
-    return attributesName;
-  }
-
-  /**
-   * @deprecated Obtem a tipagem das variáveis da classe do JSON que informa como criar as telas
-   * @param JSONDictionary JSON que informa como criar as telas
-   * @returns Array os tipos das variáveis
-   */
-  getAttributesType(JSONDictionary): string[] {
-    if (JSONDictionary == null) return;
-    let attributesType = [];
-
-    JSONDictionary.attributes.forEach(element => {
-      attributesType.push(element.type);
-    });
-
-    return attributesType;
-  }
-
-  //TODO remover
-  getAttributesFormTab(JSONDictionary): string[] {
-    if (JSONDictionary == null) return;
-    let attributesType = [];
-
-    if (!JSONDictionary.attributes.hasOwnProperty('formTabs')) return;
-
-    JSONDictionary.attributes.formTabs.forEach(element => {
-      attributesType.push(element.type);
-    });
-
-    return attributesType;
   }
 
   getFormStepperStructure(JSONDictionary): string[] {

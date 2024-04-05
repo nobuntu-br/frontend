@@ -1,11 +1,34 @@
 import { AfterViewInit, Component, EventEmitter, Inject, Injector, Input, OnDestroy, Optional, Output, ViewChild, ViewContainerRef } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { Observable, Subject, take, takeUntil } from 'rxjs';
 import { SelectableCardComponent } from '../selectable-card/selectable-card.component';
 import { HttpClient } from '@angular/common/http';
 import { DefaultCardComponent } from '../default-card/default-card.component';
 import { TranslocoService } from '@ngneat/transloco';
+import { ConfirmationDialogComponent, IConfirmationDialog } from '../confirmation-dialog/confirmation-dialog.component';
+import { DinamicBaseResourceFormComponent, IDinamicBaseResourceFormComponent } from '../dinamic-base-resource-form/dinamic-base-resource-form.component';
+
+export interface IDefaultListComponentDialogConfig {
+  /**
+   * Campo com os dados dos itens que serÃo apresenados na lista.
+   * @example ['nome':'Maria', 'idade':'44'].
+   */
+  itemsDisplayed: any[],
+  columnsQuantity: number,
+  displayedfieldsName: string[],
+  fieldsType: string[],
+  userConfig: any,
+  selectedItemsLimit: number,
+  apiUrl: string,
+  searchableFields: string[] | null,
+  isSelectable: boolean,
+  className: string,
+  isAbleToCreate: boolean,
+  isAbleToEdit: boolean,
+  isAbleToDelete: boolean,
+  JSONPath: string
+}
 
 @Component({
   selector: 'default-list',
@@ -14,8 +37,8 @@ import { TranslocoService } from '@ngneat/transloco';
 })
 export class DefaultListComponent implements AfterViewInit, OnDestroy {
   /**
-   * Campo com nome de itens que serão apresentados na lista.
-   * @example ['nome', 'idade'].
+   * Campo com os dados dos itens que serÃo apresenados na lista.
+   * @example ['nome':'Maria', 'idade':'44'].
    */
   @Input() itemsDisplayed: any[] = [];
   /**
@@ -23,7 +46,7 @@ export class DefaultListComponent implements AfterViewInit, OnDestroy {
    * @example "3"
    * Por padrão quando se está em dispositivos móveis a quantidade de colunas será 1.
    */
-  @Input() columnsQuantity: number;
+  @Input() columnsQuantity: number = 1;
   /**
    * Nomes dos campos que serão apresentados.
    * @example ['nome', 'idade'].
@@ -52,9 +75,9 @@ export class DefaultListComponent implements AfterViewInit, OnDestroy {
   @Output() eventSelectedValues = new EventEmitter<any[]>();
   /**
    * Link completo no qual é capaz de obter as instâncias dessa classe no banco de dados.\
-   * @example https://siteDoProgramador.com/api/carros
+   * @example "https://siteDoProgramador.com/api/carros"
    */
-  @Input() apiUrl: string;
+  @Input() apiUrl!: string;
   /**
    * Campos pelo qual será realizada a busca no campo de buscas.\
    * @example ['name','phone'].
@@ -68,7 +91,7 @@ export class DefaultListComponent implements AfterViewInit, OnDestroy {
   /**
    * Nome da classe na qual o formulário pertence
    */
-  @Input() className: string;
+  @Input() className!: string;
   /**
    * Indica se a lista terá botão que direcionará para criação de novos itens.
    * @example "true" ou "false"
@@ -107,42 +130,34 @@ export class DefaultListComponent implements AfterViewInit, OnDestroy {
    * @example "true" ou "false"
    */
   isOpenedOnDialog: boolean = false;
-
-  columnsQuantityStyle;
+  /**
+   * JSONPath localização de onde se encontra o JSON que orienta na criação das paginas.
+   */
+  @Input() JSONPath: string;
 
   @ViewChild('placeToRender', { read: ViewContainerRef }) target!: ViewContainerRef;
 
   protected router: Router;
   private http: HttpClient;
   private translocoService: TranslocoService;
+  private matDialog: MatDialog;
 
   constructor(
     protected injector: Injector,
-    @Optional() @Inject(MAT_DIALOG_DATA) public dialogInjectorData:
-      {
-        itemsDisplayed: any[],
-        columnsQuantity: number,
-        displayedfieldsName: string[],
-        fieldsType: string[],
-        userConfig: any,
-        selectedItemsLimit: number,
-        apiUrl: string,
-        searchableFields: string[] | null,
-        isSelectable: boolean,
-        className: string,
-        isAbleToCreate: boolean,
-        isAbleToEdit: boolean
-      },
+    @Optional() @Inject(MAT_DIALOG_DATA) public dialogInjectorData: IDefaultListComponentDialogConfig,
     @Optional() private matDialogComponentRef: MatDialogRef<DefaultListComponent>,
+
   ) {
 
     this.router = this.injector.get(Router);
     this.http = this.injector.get(HttpClient);
     this.translocoService = this.injector.get(TranslocoService);
+    this.matDialog = this.injector.get(MatDialog);
 
-    if(matDialogComponentRef != null){
+    if (matDialogComponentRef != null) {
       this.isOpenedOnDialog = true;
     }
+
     if (dialogInjectorData != null) {
 
       this.itemsDisplayed = dialogInjectorData.itemsDisplayed;
@@ -151,25 +166,31 @@ export class DefaultListComponent implements AfterViewInit, OnDestroy {
       this.fieldsType = dialogInjectorData.fieldsType;
       this.userConfig = dialogInjectorData.userConfig;
       this.searchableFields = dialogInjectorData.searchableFields;
-
       if (dialogInjectorData.selectedItemsLimit >= 0) {
         this.selectedItemsLimit = dialogInjectorData.selectedItemsLimit;
       }
-
       this.apiUrl = dialogInjectorData.apiUrl;
       this.isSelectable = dialogInjectorData.isSelectable;
       this.className = dialogInjectorData.className;
       this.isAbleToCreate = dialogInjectorData.isAbleToCreate;
       this.isAbleToEdit = dialogInjectorData.isAbleToEdit;
+      this.JSONPath = dialogInjectorData.JSONPath;
     }
 
   }
 
   ngAfterViewInit(): void {
-    this.getData(this.apiUrl);
+    setTimeout(() => {
+      this.getData(this.apiUrl);
+    }, 0);
   }
 
+  /**
+   * Realiza a requisição na API para obter os dados e popular a lista.
+   * @param apiURL Campos pelo qual será realizada a busca no campo de buscas. @example "https://siteDoProgramador.com/api/carros"
+   */
   getData(apiURL: string) {
+
     this.requestAllValuesFromAPI(apiURL).pipe(take(1)).subscribe((itemsDisplayed) => {
       this.itemsDisplayed = itemsDisplayed;
 
@@ -183,23 +204,10 @@ export class DefaultListComponent implements AfterViewInit, OnDestroy {
     });
   }
 
-  select() {
-    this.eventSelectedValues.emit(this.selectedItems);
-    this.closeMatDialog(this.selectedItems);
-  }
-
-  cancel() {
-    this.eventSelectedValues.emit(null);
-    this.closeMatDialog(null);
-  }
-
-  closeMatDialog(selectedItems: any[]) {
-    if (this.matDialogComponentRef != null) {
-      this.matDialogComponentRef.close(selectedItems);
-    }
-
-  }
-
+  /**
+   * Função que irá instanciar os components Card na tela, com os dados dos itens.
+   * @param itemsDisplayed Array com os itens que serão apresentados. @example [{"name":"Marie", "age":22}, {"name":"Josef", "age":32}]
+   */
   createItemsOnList(itemsDisplayed: any[]) {
     this.componentsCreatedList = [];
     this.removeAllComponentsOnView();
@@ -226,68 +234,56 @@ export class DefaultListComponent implements AfterViewInit, OnDestroy {
       if (this.isSelectable == true) {
         this.selectableFieldController(componentCreated);
         componentCreated.isEditable = this.isAbleToEdit;
-        componentCreated.eventClickToEdit.pipe(takeUntil(this.ngUnsubscribe)).subscribe((data) => { this.goToEditPage(data) });
+        componentCreated.eventClickToEdit.pipe(takeUntil(this.ngUnsubscribe)).subscribe((data) => { this.editItem(data) });
       } else {
-        componentCreated.eventClick.pipe(takeUntil(this.ngUnsubscribe)).subscribe((data) => { this.goToEditPage(data) });
+        componentCreated.eventClick.pipe(takeUntil(this.ngUnsubscribe)).subscribe((data) => { this.editItem(data) });
       }
     }
 
   }
 
+  /**
+   * Encaminha para pagina de edição.
+   * @param item Dados do item que será alterado. @example [{"name":"Marie", "age":22}.
+   */
   editItem(item) {
-    this.goToEditPage(item);
+    if (this.matDialogComponentRef == null) {
+      this.goToEditPage(item);
+    } else {
+      this.openFormDialogToEdit(item);
+    }
   }
 
-  // selectItem(item, isSelected){
+  openFormDialogToEdit(item: any){
+    const config : IDinamicBaseResourceFormComponent = {
+      JSONPath: this.JSONPath,
+      className: this.className,
+      currentAction: "edit",
+      itemId: item.id,
+    }
 
-  //   const dataIsSelected: boolean = this.selectedItems.some(_item => _item === item);
+    const dialogRef = this.matDialog.open(DinamicBaseResourceFormComponent, {
+      width: '100%',
+      height: '100%',
+      maxWidth: '100vw',
+      maxHeight: '100vh',
+      panelClass: 'full-screen-dialog',
+      data: config
+    });
 
-  //   if (this.selectedItems.length == this.itemsDisplayed.length - 1) {
-  //     this.selectAllCheckBox = true;
-  //   }
+    dialogRef.afterClosed().pipe(take(1)).subscribe(item => {
+      if (item == null) return;
 
-  //   if (dataIsSelected == false) {
+      if ('action' in item) {
+        return;
+      }
 
-  //     if (this.selectedItemsLimit != null) {
-  //       if (this.selectedItems.length < this.selectedItemsLimit) {
-  //         this.selectedItems.push(item);
-  //         // componentCreated.isSelected = true;
-  //       }
-  //     } else {
-  //       this.selectedItems.push(item);
-  //       // componentCreated.isSelected = true;
-  //     }
-
-  //   } else {
-  //     if (this.selectAllCheckBox == true) {
-  //       this.selectAllCheckBox = false;
-  //     }
-  //     this.selectedItems = this.selectedItems.filter(_item => _item !== item);
-  //     // componentCreated.isSelected = false;
-  //   }
-
-  // }
-
-  // getSelected(item){
-  //   console.log(item);
-  //   const dataIsSelected: boolean = this.selectedItems.some(_item => _item === item);
-  //   if(dataIsSelected){
-  //     return true;
-  //   } else {
-  //     return false;
-  //   }
-  // }
-
+    });
+  }
 
   selectableFieldController(componentCreated: SelectableCardComponent) {
     if (this.selectedItemsLimit == null) {
       this.selectedItemsLimit = this.itemsDisplayed.length;
-    }
-
-    if (this.selectedItemsLimit == 1) {
-      componentCreated.isCheckBox = false;
-    } else {
-      componentCreated.isCheckBox = true;
     }
 
     componentCreated.eventOnSelect.pipe(takeUntil(this.ngUnsubscribe)).subscribe((data) => {
@@ -302,11 +298,13 @@ export class DefaultListComponent implements AfterViewInit, OnDestroy {
       this.selectAllCheckBox = true;
     }
 
+    //Se o componente não foi selencionado
     if (dataIsSelected == false) {
-
+      
       if (selectedItemsLimit != null) {
+        //Se o limite de itens selecionados não foi ultrapassado
         if (this.selectedItems.length < selectedItemsLimit) {
-          this.selectedItems.push(data);
+          this.selectedItems.push(data);//Seleciona o item
           componentCreated.isSelected = true;
         }
       } else {
@@ -393,6 +391,11 @@ export class DefaultListComponent implements AfterViewInit, OnDestroy {
     })
   }
 
+  /**
+   * Realiza uma requisição GET para API a partir do caminho passado.
+   * @param apiUrl Caminho da API para realizar a requisição @example https://siteDoProgramador.com/api/carros
+   * @returns Retorna um observador que irá observar os dados que serão retornados da API.
+   */
   requestAllValuesFromAPI(apiUrl: string): Observable<any> {
     return this.http.get(apiUrl);
   }
@@ -403,35 +406,65 @@ export class DefaultListComponent implements AfterViewInit, OnDestroy {
   }
 
   /**
-   * Função que removerá os itens selecionados da lista e atualizará os itens da lista com os itens da API.
-   * @returns retorna os itens que foram removidos.
+   * Função que removerá os itens selecionados na API e atualizará os itens da lista com os itens da API.
    */
   deleteSelectedItens(): any[] {
 
-    //Eu tenho que fazer alguma forma de ele pegar a apiUrl e os IDs dos itens que estão na lista e foram selecionados para remover todos
-
-    if(this.selectedItems.length <= 0){
+    if (this.selectedItems.length <= 0) {
       return;
     }
 
-    this.selectedItems.forEach((item)=>{
-      this.http.delete(this.apiUrl+'/'+item.id).subscribe({
-        error: (error) => alert(this.translocoService.translate("Alerts.deleteErrorMessage")),
-      }).unsubscribe();
+    let dialogMessage: string = this.translocoService.translate("componentsBase.confirmation-dialog.messageToConfirmDelete");
+
+    //Irá abrir o dialog para perguntar para o usuário se ele tem certeza se quer remover os itens e depois dará continuidade com base na resposta selecionada pelo usuário.
+    this.openConfirmationDialog(dialogMessage).afterClosed().pipe(take(1)).subscribe((result: boolean) => {
+      if (result == true) {
+
+        this.selectedItems.forEach((item) => {
+          this.http.delete(this.apiUrl + '/' + item.id).subscribe({
+            error: (error) => alert(this.translocoService.translate("componentsBase.Alerts.deleteErrorMessage")),
+          }).unsubscribe();
+        });
+
+        this.selectedItems = [];
+
+        alert(this.translocoService.translate("componentsBase.Alerts.deleteSuccessMessage"));
+
+        this.getData(this.apiUrl);
+      }
+
     });
 
-    this.selectedItems = [];
-
-    alert(this.translocoService.translate("Alerts.deleteSuccessMessage"));
-
-    this.getData(this.apiUrl);
-
-    return this.selectedItems;
   }
 
-  return(){
-    if(this.matDialogComponentRef == null) return;
+  /**
+   * Fechará e esse componte que foi como dialog.
+   */
+  return() {
+    if (this.matDialogComponentRef == null) return;
 
-    this.matDialogComponentRef.close();
+    this.matDialogComponentRef.close(null);
+  }
+
+  /**
+   * Fechará e esse componte e retornará os itens que foram selecionados para o componente pai que abriu esse componente como dialog.
+   */
+  returnWithSelectedItems() {
+    if (this.matDialogComponentRef == null) return;
+
+    this.matDialogComponentRef.close(this.selectedItems);
+  }
+
+  /**
+   * Abrirá um dialog com o conponente de confirmação, que permite o usuário.
+   * @param message Mensagem que será apresentada no componente de confirmação.
+   * @returns Retorna uma referência do componente de confirmação que foi aberto na página atual.
+   */
+  openConfirmationDialog(message: string): MatDialogRef<ConfirmationDialogComponent> {
+    const confirmationDialog : IConfirmationDialog = {
+      message: message
+    }
+    console.log(message);
+    return this.matDialog.open(ConfirmationDialogComponent, {data: confirmationDialog});
   }
 }

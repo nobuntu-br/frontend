@@ -11,11 +11,13 @@ $breakpoint-extra-large: 1200px; // Exemplo: monitores grandes
     right: 50px;
 }
 
+#fixedButtons > * {
+    margin-left: 10px;
+}
+
 // Estilos para dispositivos pequenos (exemplo: smartphones)
 @media screen and (max-width: $breakpoint-small) {
     #fixedButtons {
-        position: fixed;
-        z-index: 99;
         bottom: 30px;
         right: 30px;
     }

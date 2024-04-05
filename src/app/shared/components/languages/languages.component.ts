@@ -1,9 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AvailableLangs, TranslocoService } from '@ngneat/transloco';
-import { take } from 'rxjs';
 
 @Component({
-  selector: 'app-languages',
+  selector: 'languages',
   templateUrl: './languages.component.html',
   styleUrls: ['./languages.component.scss']
 })

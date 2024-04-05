@@ -9,6 +9,13 @@ import { DinamicBaseResourceService } from 'app/shared/services/shared.dinamicSe
 import { SelectedItemsListComponent } from '../selected-items-list/selected-items-list.component';
 import { TranslocoService } from '@ngneat/transloco';
 
+export interface IDinamicBaseResourceFormComponent {
+  JSONPath: string,
+  className: string,
+  itemId: string,
+  currentAction: string
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -23,17 +30,34 @@ export class DinamicBaseResourceFormComponent implements AfterViewInit {
    * @example "edit" ou "new".
    */
   @Input() currentAction: string;
-
+  /**
+   * formuário que armazenará os dados.
+   */
   resourceForm: FormGroup;
+  /**
+   * Título da pagina.
+   * @example "Caixas"
+   */
   pageTitle: string;
   serverErrorMessages: string[] | null = null;
   submittingForm: boolean = false;
+  /**
+   * O localStorage será usado para armazenar dados do formulário enquanto estiver sendo preenchido.
+   * @example "true" ou "false"
+   */
   localStorageIsEnabled: boolean = false;
+  /**
+   * Indica se os dados do formulário foram alterados
+   * @example "true" ou "false"
+   */
+  formSaved: boolean = false;
 
   protected route: ActivatedRoute;
   protected router: Router;
   protected formBuilder: FormBuilder;
-
+  /**
+   * Service que opera as funções de armazenamento de dados do formuário no local storage
+   */
   protected localStorageFormService: LocalStorageFormService;
   private translocoService: TranslocoService;
   //Valores necessários
@@ -60,12 +84,7 @@ export class DinamicBaseResourceFormComponent implements AfterViewInit {
     // protected jsonDataToResourceFn: (jsonData) => T,
 
     //passar aqui o nome da classe e da variável, assim percorre o JSON e pega o necessário
-    @Optional() @Inject(MAT_DIALOG_DATA) public dialogInjectorData: {
-      JSONPath: string,
-      className: string,
-      itemId: string,
-      currentAction: string
-    },
+    @Optional() @Inject(MAT_DIALOG_DATA) public dialogInjectorData: IDinamicBaseResourceFormComponent,
     @Optional() private matDialogComponentRef: MatDialogRef<SelectedItemsListComponent>,
 
   ) {
@@ -157,7 +176,6 @@ export class DinamicBaseResourceFormComponent implements AfterViewInit {
       this.updateResource();
   }
 
-
   private loadResorceWithLocalStorage() {
     const resourceId = this.route.snapshot.params['id'];
     const className = this.className;
@@ -183,7 +201,7 @@ export class DinamicBaseResourceFormComponent implements AfterViewInit {
       id = this.dialogInjectorData.itemId;
     } else {
       this.route.paramMap.subscribe({
-        next: (params) => {id = params.get("id")}
+        next: (params) => { id = params.get("id") }
       }).unsubscribe();
     }
 
@@ -194,7 +212,7 @@ export class DinamicBaseResourceFormComponent implements AfterViewInit {
         if (this.resourceForm == null) { console.error("ResourceForm não foi instanciado") }
         this.resourceForm.patchValue(resource) // binds loaded resource data to resourceForm
       },
-      error: (error) => alert(this.translocoService.translate("Alerts.readErrorMessage"))
+      error: (error) => alert(this.translocoService.translate("componentsBase.Alerts.readErrorMessage"))
     });
 
   }
@@ -229,7 +247,7 @@ export class DinamicBaseResourceFormComponent implements AfterViewInit {
         if (this.matDialogComponentRef == null) {
           this.actionsForSuccess(response);
         } else {
-          alert(this.translocoService.translate("Alerts.defaultSuccessMessage"));
+          alert(this.translocoService.translate("componentsBase.Alerts.defaultSuccessMessage"));
           this.matDialogComponentRef.close(response);
         }
       },
@@ -263,8 +281,8 @@ export class DinamicBaseResourceFormComponent implements AfterViewInit {
         if (this.dialogInjectorData == null) {
           this.actionsForSuccess(response);
         } else {
-          alert(this.translocoService.translate("Alerts.deleteSuccessMessage"));
-          this.matDialogComponentRef.close({data: resource, action:"removed"});
+          alert(this.translocoService.translate("componentsBase.Alerts.deleteSuccessMessage"));
+          this.matDialogComponentRef.close({ data: resource, action: "removed" });
         }
       },
       error: (error) => this.actionsForError(error)
@@ -272,8 +290,7 @@ export class DinamicBaseResourceFormComponent implements AfterViewInit {
   }
 
   protected actionsForSuccess(resource: any) {
-
-    alert(this.translocoService.translate("Alerts.defaultSuccessMessage"));
+    alert(this.translocoService.translate("componentsBase.Alerts.defaultSuccessMessage"));
     //Verifica se o componente foi aberto por um dialog
     if (this.matDialogComponentRef != null) {
       this.matDialogComponentRef.close();
@@ -284,15 +301,13 @@ export class DinamicBaseResourceFormComponent implements AfterViewInit {
         () => this.router.navigate([baseComponentPath])
       )
     }
-
-
   }
 
   protected actionsForError(error) {
 
     this.submittingForm = false;
 
-    alert(this.translocoService.translate("Alerts.defaultErrorMessage"));
+    alert(this.translocoService.translate("componentsBase.Alerts.defaultErrorMessage"));
 
     if (error.status === 422)
       this.serverErrorMessages = JSON.parse(error._body).errors;

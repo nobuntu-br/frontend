@@ -4,10 +4,13 @@ $breakpoint-medium: 768px; // Exemplo: tablets
 $breakpoint-large: 992px; // Exemplo: laptops/desktops
 $breakpoint-extra-large: 1200px; // Exemplo: monitores grandes
 
+#cardData {
+    display: grid; width: 100%; overflow: auto; align-content: space-evenly; margin: auto;
+}
 
 // Estilos para dispositivos pequenos (exemplo: smartphones)
 @media screen and (max-width: $breakpoint-small) {
-    #cardBase {
+    #cardData {
         grid-template-columns: repeat(1, 1fr) !important;
     }
 }

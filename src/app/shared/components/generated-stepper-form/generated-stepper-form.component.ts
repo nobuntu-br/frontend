@@ -1,8 +1,12 @@
 import { AfterViewInit, Component, EventEmitter, Input, Optional, Output, QueryList, ViewChildren, ViewContainerRef } from '@angular/core';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { FormGeneratorService, IAttributes } from 'app/shared/services/form-generator.service';
+import { MatDialogRef } from '@angular/material/dialog';
+import { FormGeneratorService, IAttributesToCreateScreens, ICreateComponentParams } from 'app/shared/services/form-generator.service';
 import { FormGroup } from '@angular/forms';
+import { Router, ActivatedRoute } from '@angular/router';
 
+/**
+ * Componente que fará a geração do formulário. Sendo esse formulário com estrutura separada por passos.
+ */
 @Component({
   selector: 'generated-stepper-form',
   templateUrl: './generated-stepper-form.component.html',
@@ -54,7 +58,7 @@ export class GeneratedStepperFormComponent implements AfterViewInit{
   /**
    * No JSON que orienta a criação de paginas, cada um JSON é uma classe, nessa classe se tem cada variável com suas informações.
    */
-  @Input() attributes: IAttributes[];
+  @Input() attributes: IAttributesToCreateScreens[];
   /**
    * Nome da classe na qual o formulário pertence.
    * @example "Produtos"
@@ -74,7 +78,8 @@ export class GeneratedStepperFormComponent implements AfterViewInit{
 
   constructor(
     public formGenerator: FormGeneratorService,
-    private matDialog: MatDialog,
+    private router: Router,
+    private activatedRoute: ActivatedRoute,
     @Optional() private matDialogComponentRef: MatDialogRef<GeneratedStepperFormComponent>
   ) {}
 
@@ -91,20 +96,19 @@ export class GeneratedStepperFormComponent implements AfterViewInit{
       this.formStepperStructure.forEach((stepName, index) => {
         this.attributes.forEach((attribute) => {
           
+          const createComponentData : ICreateComponentParams = {
+            target:this.targets.toArray()[index],
+            resourceForm: this.resourceForm,
+            className: this.className,
+            fieldName: attribute.name,
+            fieldType: attribute.type,
+            value: {propertiesAttributes: attribute.propertiesAttributes, apiUrl: attribute.apiUrl},
+            labelTittle: attribute.name,
+            JSONPath: this.JSONPath,
+            valuesList: null
+          }
           if (attribute.formTab == stepName) {
-
-            this.formGenerator.createComponent(
-              this.targets.toArray()[index],
-              this.resourceForm,
-              this.matDialog,
-              this.className,
-              attribute.name,
-              attribute.type,
-              {propertiesAttributes: attribute.propertiesAttributes, apiUrl: attribute.apiUrl},
-              attribute.name,
-              this.JSONPath,
-              null
-            );
+            this.formGenerator.createComponent(createComponentData);
           }
         });
       });
@@ -118,11 +122,20 @@ export class GeneratedStepperFormComponent implements AfterViewInit{
     console.log(this.resourceForm.value)
   }
 
+  /**
+   * Caso esse formuário for aberto como dialog, ele fechará. Se não ele irá para pagina anterior.
+   */
   return() {
     if (this.matDialogComponentRef) {
+      
       this.matDialogComponentRef.close();
+
     } else {
-      // this.router.navigateByUrl('');
+      if(this.currentFormAction === "edit"){
+        this.router.navigate(['../../'], {relativeTo: this.activatedRoute});
+      } else if(this.currentFormAction === "new"){
+        this.router.navigate(['../'], {relativeTo: this.activatedRoute});
+      }
     }
   }
 

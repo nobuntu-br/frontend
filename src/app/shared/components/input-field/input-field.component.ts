@@ -4,7 +4,7 @@ import { BaseFieldComponent } from '../base-field/base-field.component';
 import { Subject, takeUntil } from 'rxjs';
 
 @Component({
-  selector: 'app-input-field',
+  selector: 'input-field',
   templateUrl: './input-field.component.html',
   styleUrls: ['./input-field.component.scss']
 })

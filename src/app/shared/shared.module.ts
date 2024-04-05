@@ -1,7 +1,8 @@
-import { NgModule } from '@angular/core';
+//Modules
+import { Injectable, NgModule } from '@angular/core';
 import { CommonModule, NgSwitch, NgSwitchCase, NgSwitchDefault } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
+import { MatIconModule } from '@angular/material/icon';
 import { RouterModule } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -10,16 +11,28 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatListModule } from '@angular/material/list';
 import { MatRadioModule } from '@angular/material/radio';
-import { MatMenuModule } from '@angular/material/menu';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
-import { TranslocoModule } from '@ngneat/transloco';
+import { TRANSLOCO_LOADER, TRANSLOCO_SCOPE, Translation, TranslocoLoader, TranslocoModule } from '@ngneat/transloco';
 import { BaseResourceFilterComponent } from './components/filter/base-resource-filter/base-resource-filter.component';
 import { NgxMaskModule } from 'ngx-mask';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDialogModule } from '@angular/material/dialog';
+import { LayoutModule } from '@angular/cdk/layout';
+import { MatCardModule } from '@angular/material/card';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatTabsModule } from '@angular/material/tabs';
+import { SideNavComponent } from './components/side-nav/side-nav.component';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatMenuModule } from '@angular/material/menu';
+import { HttpClient } from '@angular/common/http';
+
+//Components
+import { ConfirmationDialogComponent } from './components/confirmation-dialog/confirmation-dialog.component';
 import { FilterPeriodComponent } from './components/filter/filter-period/filter-period.component';
 import { CalculatorComponent } from './components/calculator/calculator.component';
 import { FilterTextComponent } from './components/filter/filter-text/filter-text.component';
@@ -41,73 +54,58 @@ import { SelectedItemsListComponent } from './components/selected-items-list/sel
 import { SearchInputFieldComponent } from './components/search-input-field/search-input-field.component';
 import { DefaultTableComponent } from './components/default-table/default-table.component';
 import { DinamicBaseResourceFormComponent } from './components/dinamic-base-resource-form/dinamic-base-resource-form.component';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { LayoutTestComponent } from './components/layout-test/layout-test.component';
 import { LanguagesComponent } from './components/languages/languages.component';
 
-
-// import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { LayoutModule } from '@angular/cdk/layout';
-import { MatCardModule } from '@angular/material/card';
-import { MatDividerModule } from '@angular/material/divider';
-import { MatTabsModule } from '@angular/material/tabs';
-import { SideNavComponent } from './components/side-nav/side-nav.component';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatSidenavModule } from '@angular/material/sidenav';
-import { DomSanitizer } from '@angular/platform-browser';
 
 @NgModule({
     imports: [
         CommonModule,
+        NgSwitch,
+        NgSwitchCase,
+        NgSwitchDefault,
         FormsModule,
         ReactiveFormsModule,
         MatIconModule,
         RouterModule,
         MatFormFieldModule,
         MatInputModule,
-        MatButtonModule,
         MatStepperModule,
+        MatButtonModule,
         MatCheckboxModule,
         MatListModule,
         MatRadioModule,
         MatMenuModule,
         MatTableModule,
         MatPaginatorModule,
-        NgSwitch,
-        NgSwitchCase,
-        NgSwitchDefault,
         TranslocoModule,
-
         NgxMaskModule.forRoot(),
         MatSelectModule,
         MatDatepickerModule,
         MatNativeDateModule,
         MatDialogModule,
-
-        //adicionados
         MatSnackBarModule,
-        // BrowserAnimationsModule,
         LayoutModule,
         MatCardModule,
         MatDividerModule,
         MatTabsModule,
+        MatToolbarModule,
         MatSidenavModule,
-        MatToolbarModule
+    ],
+    providers: [
+        { provide: TRANSLOCO_SCOPE, useValue: {scope: "components", alias:"componentsBase"} }
     ],
     exports: [
         CommonModule,
         FormsModule,
         ReactiveFormsModule,
         MatStepperModule,
-        MatToolbarModule,
-        MatSidenavModule,
-        MatListModule,
-
-
         MatFormFieldModule,
         MatDatepickerModule,
         MatInputModule,
         BaseResourceFilterComponent,
         MatDialogModule,
+        MatMenuModule,
         CalculatorComponent,
         InputFieldComponent,
         MatButtonModule,
@@ -116,7 +114,8 @@ import { DomSanitizer } from '@angular/platform-browser';
         GeneratedStepperFormComponent,
         TranslocoModule,
         DinamicBaseResourceFormComponent,
-        LanguagesComponent
+        LanguagesComponent,
+
     ],
     declarations: [
         BaseResourceFilterComponent,
@@ -142,22 +141,10 @@ import { DomSanitizer } from '@angular/platform-browser';
         DefaultTableComponent,
         DinamicBaseResourceFormComponent,
         SideNavComponent,
+        ConfirmationDialogComponent,
+        LayoutTestComponent,
         LanguagesComponent
-    ]
+    ],
 })
-export class SharedModule {
+export class SharedModule { }
 
-    // constructor(
-    //     private _domSanitizer: DomSanitizer,
-    //     private _matIconRegistry: MatIconRegistry
-    // )
-    // {
-    //     // Register icon sets
-    //     this._matIconRegistry.addSvgIconSet('mat_outline', this._domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/icons_outline.svg'));
-    //     this._matIconRegistry.addSvgIconSetInNamespace('mat_outline', this._domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/material-outline.svg'));
-    //     this._matIconRegistry.addSvgIconSetInNamespace('mat_solid', this._domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/material-solid.svg'));
-    //     this._matIconRegistry.addSvgIconSetInNamespace('feather', this._domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/feather.svg'));
-    //     this._matIconRegistry.addSvgIconSetInNamespace('heroicons_outline', this._domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/heroicons-outline.svg'));
-    //     this._matIconRegistry.addSvgIconSetInNamespace('heroicons_solid', this._domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/heroicons-solid.svg'));
-    // }
-}
