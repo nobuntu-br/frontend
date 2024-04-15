@@ -352,8 +352,9 @@ export class DefaultListComponent implements AfterViewInit, OnDestroy {
   }
 
   goToEditPage(data) {
-    const apiUrlSegments = this.apiUrl.split("/");
-    this.router.navigate([apiUrlSegments[apiUrlSegments.length - 1] + "/" + data.id + "/edit"]);
+    const urlSegment = this.router.url.split('/');
+    const url = urlSegment[1] + '/' + data.id + '/edit';
+    this.router.navigate([url]);
   }
 
   onSelectedItemsCheckBoxChange(event) {
