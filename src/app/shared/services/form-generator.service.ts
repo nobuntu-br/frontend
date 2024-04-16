@@ -10,6 +10,7 @@ import { DefaultListComponent } from '../components/default-list/default-list.co
 import { CalculatorComponent } from '../components/calculator/calculator.component';
 import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { CheckboxFieldComponent } from '../checkbox-field/checkbox-field.component';
 
 interface dialogConfiguration {
   width?: string,
@@ -170,6 +171,15 @@ export class FormGeneratorService {
         createdComponent.instance.apiUrl = "http://localhost:8080/api/employees";
         createdComponent.instance.selectedItemsLimit = 4;
         createdComponent.instance.searchableFields = ["firstName", "company"];
+
+        break;
+      }
+      case 'boolean': {
+        createdComponent = createComponentData.target.createComponent(CheckboxFieldComponent);
+        createdComponent.instance.label = createComponentData.labelTittle;
+        createdComponent.instance.isRequired = true;
+        createdComponent.instance.className = createComponentData.className;
+        createdComponent.instance.charactersLimit = 40;
 
         break;
       }
