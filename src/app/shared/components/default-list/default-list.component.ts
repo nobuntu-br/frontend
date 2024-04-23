@@ -14,7 +14,7 @@ export interface IDefaultListComponentDialogConfig {
    * Campo com os dados dos itens que serÃo apresenados na lista.
    * @example ['nome':'Maria', 'idade':'44'].
    */
-  itemsDisplayed: any[],
+  itemsDisplayed: any[] | any,
   columnsQuantity: number,
   displayedfieldsName: string[],
   fieldsType: string[],
@@ -27,7 +27,7 @@ export interface IDefaultListComponentDialogConfig {
   isAbleToCreate: boolean,
   isAbleToEdit: boolean,
   isAbleToDelete: boolean,
-  JSONPath: string
+  JSONPath: string,
 }
 
 @Component({

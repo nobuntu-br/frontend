@@ -154,17 +154,31 @@ export abstract class BaseResourceFormComponent<T extends BaseResourceModel> imp
   protected createResource() {
     const resource: T = this.jsonDataToResourceFn(this.resourceForm.value);
 
-    this.resourceService.create(resource).subscribe({
-      next: (response) => {
-        this.actionsForSuccess(response);
-        const className = (this.resource.constructor as any).name;
-        this.localStorageFormService.remove("new"+className);
-      },
-      error: (error) => this.actionsForError(error)
-    });
-  }
+      console.log(resource);
+      for (let value in resource) {
+        if(typeof resource[value] === "object" && resource[value] !== null){
+          resource[value] = resource[value]["id"];
+          break;
+        }
+        if(Array.isArray(resource[value])){
+          resource[value] = resource[value][0]["id"];
+          break;
+        }
+      }
 
-  protected updateResource() {
+      console.log(resource);
+
+      this.resourceService.create(resource).subscribe({
+        next: (response) => {
+          this.actionsForSuccess(response);
+          const className = (this.resource.constructor as any).name;
+          this.localStorageFormService.remove("new"+className);
+        },
+        error: (error) => this.actionsForError(error)
+      });
+    }
+
+    protected updateResource() {
     const resource: T = this.jsonDataToResourceFn(this.resourceForm.value);
 
     this.resourceService.update(resource.id, resource).subscribe({
@@ -212,6 +226,8 @@ export abstract class BaseResourceFormComponent<T extends BaseResourceModel> imp
       next:(data) => this.formSaved = false, 
     });
   }
+
+  // private getObjectFromArrayId()
 
   returnFormFunction(){
     this.alertToReturn();

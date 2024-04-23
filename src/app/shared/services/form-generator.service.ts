@@ -60,6 +60,7 @@ export interface ICreateComponentParams {
   labelTittle: string,
   JSONPath: string,
   valuesList: any[]
+  fieldDisplayedInLabel?: string,
 }
 
 /**
@@ -135,7 +136,7 @@ export class FormGeneratorService {
         createdComponent.instance.fieldName = createComponentData.fieldName;
         createdComponent.instance.value = createComponentData.value;
         createdComponent.instance.JSONPath = createComponentData.JSONPath;
-        createdComponent.instance.fieldDisplayedInLabel = "firstName";
+        createdComponent.instance.fieldsDisplayed = 'nome';
 
         break;
       }
