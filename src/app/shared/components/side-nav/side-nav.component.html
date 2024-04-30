@@ -1,3 +1,4 @@
+
 <mat-sidenav-container class="shadow dark:shadow-none dark:border-b bg-card dark:bg-transparent print:hidden">
     <mat-sidenav #drawer [mode]="(isHandset$ | async) ? 'over' : 'side'" [opened]="sideNavBarIsOpened">
         <mat-toolbar>{{menuTitle}}</mat-toolbar>
@@ -9,6 +10,7 @@
                 {{ option.optionName }}
             </a>
         </mat-nav-list>
+        
     </mat-sidenav>
     <mat-sidenav-content style="height: 100vh;">
 
@@ -18,9 +20,10 @@
             </button>
             <span>{{applicationTitle}}</span>
 
-            <languages></languages>
-
-            <!-- TODO login button -->
+            <div>
+                <languages></languages>
+                <button *ngIf="!authService.check()" mat-button (click)="login()">Login</button>
+            </div>
 
         </mat-toolbar>
 

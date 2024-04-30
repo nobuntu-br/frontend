@@ -3,7 +3,7 @@ import { BaseResourceService } from './shared.service';
 import { UserConfig } from '../models/user-config.model';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'enviroment/environment';
-import { Invoices } from 'app/modules/invoices/shared/invoices.model';
+// import { Invoices } from 'app/modules/invoices/shared/invoices.model';
 
 @Injectable({
   providedIn: 'root'

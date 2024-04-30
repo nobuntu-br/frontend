@@ -29,10 +29,9 @@ export class GeneratedSimpleFormComponent implements AfterViewInit {
    */
   @Input() storeInLocalStorage: boolean = true;
   /**
-   * Localizade onde o JSON que orienta a criação das paginas se encontra.
-   * @example "../../../../assets/dicionario/classe.json"
+   * Dados contidos no JSON que orienta a criação da página
    */
-  @Input() JSONPath: string;
+  @Input() dataToCreatePage: object;
   /**
    * Função que informa e envia para API os dados para criação ou edição do item.
    */
@@ -93,7 +92,8 @@ export class GeneratedSimpleFormComponent implements AfterViewInit {
           fieldType: attribute.type,
           value: {propertiesAttributes: attribute.propertiesAttributes, apiUrl: attribute.apiUrl},
           labelTittle: attribute.name,
-          JSONPath: this.JSONPath,
+          dataToCreatePage: this.dataToCreatePage,
+          fieldDisplayedInLabel: attribute.fieldDisplayedInLabel,
           valuesList: null
         }
 

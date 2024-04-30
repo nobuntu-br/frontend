@@ -29,10 +29,9 @@ export class GeneratedStepperFormComponent implements AfterViewInit{
    */
   @Input() localStorageIsEnabled: boolean = true;
   /**
-   * Localizade onde o JSON que orienta a criação das paginas se encontra.
-   * @example "../../../../assets/dicionario/classe.json"
+   * Data que oreinta na criação do JSON
    */
-  @Input() JSONPath: string;
+  @Input() dataToCreatePage: object;
   /**
    * Função que informa e envia para API os dados para criação ou edição do item.
    */
@@ -104,7 +103,8 @@ export class GeneratedStepperFormComponent implements AfterViewInit{
             fieldType: attribute.type,
             value: {propertiesAttributes: attribute.propertiesAttributes, apiUrl: attribute.apiUrl},
             labelTittle: attribute.name,
-            JSONPath: this.JSONPath,
+            dataToCreatePage: this.dataToCreatePage,
+            fieldDisplayedInLabel: attribute.fieldDisplayedInLabel,
             valuesList: null
           }
           if (attribute.formTab == stepName) {

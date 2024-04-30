@@ -38,16 +38,17 @@ export class NoAuthGuard implements CanMatch
     // -----------------------------------------------------------------------------------------------------
 
     /**
-     * Check the authenticated status
+     * Verifica o status de autenticação
      *
      * @private
      */
     private _check(): Observable<boolean>
     {
-        // Check the authentication status and return an observable of
-        // "true" or "false" to allow or prevent the access
+        // Verifica o status de autenticação e retorna um  observable of
+        // "true" ou "false" para permitir ou previnir o acesso
         return this._authService.check().pipe(
             switchMap((authenticated) => of(!authenticated))
         );
+        
     }
 }

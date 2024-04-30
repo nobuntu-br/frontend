@@ -10,7 +10,7 @@ import { SelectedItemsListComponent } from '../selected-items-list/selected-item
 import { TranslocoService } from '@ngneat/transloco';
 
 export interface IDinamicBaseResourceFormComponent {
-  JSONPath: string,
+  dataToCreatePage: object,
   className: string,
   itemId: string,
   currentAction: string
@@ -73,7 +73,7 @@ export class DinamicBaseResourceFormComponent implements AfterViewInit {
 
   private generatedFormFactoryService: GeneratedFormFactoryService;
   private formGeneratorService: FormGeneratorService;
-  @Input() JSONPath: string;
+  @Input() dataToCreatePage: object;
 
   @ViewChild('placeToRender', { read: ViewContainerRef }) target!: ViewContainerRef;
 
@@ -90,7 +90,7 @@ export class DinamicBaseResourceFormComponent implements AfterViewInit {
   ) {
 
     if (dialogInjectorData != null) {
-      this.JSONPath = dialogInjectorData.JSONPath;
+      this.dataToCreatePage = dialogInjectorData.dataToCreatePage;
       this.className = this.dialogInjectorData.className;
     }
 
@@ -110,8 +110,8 @@ export class DinamicBaseResourceFormComponent implements AfterViewInit {
 
     setTimeout(() => {
 
-      if (this.JSONPath == null) {
-        console.warn("JSONPath don't exist");
+      if (this.dataToCreatePage == null) {
+        console.warn("dataToCreatePage don't exist");
         return;
       }
       //Verifica se é o componente foi aberto em um dialog ou não
@@ -123,21 +123,18 @@ export class DinamicBaseResourceFormComponent implements AfterViewInit {
           this.currentAction = "new";
         }
 
-        this.formGeneratorService.getJSONFromDicionario(this.JSONPath).subscribe((JSONDictionary: any) => {
-          this.localStorageIsEnabled = true;
-          this.resourceService.apiPath = JSONDictionary.attributes.find(attribute => attribute.name === this.className).apiUrl;
+        // this.localStorageIsEnabled = true;
+        this.resourceService.apiPath = this.dataToCreatePage["attributes"].find(attribute => attribute.name === this.className).apiUrl;
 
-          this.generatedFormFactoryService.getDataToCreateFormWithoutJSON(this.JSONPath, JSONDictionary, this.className, this.target, () => { this.loadForm() }, this.resourceForm, () => { this.submitForm() }, () => { this.deleteResource() }, this.currentAction);
-        });
-
+        this.generatedFormFactoryService.getDataToCreateFrom(this.dataToCreatePage, this.target, () => { this.loadForm() }, this.resourceForm, () => { this.submitForm() }, () => { this.deleteResource() }, this.currentAction, this.className);
       } else {
 
-        this.formGeneratorService.getJSONFromDicionario(this.JSONPath).subscribe((JSONDictionary: any) => {
-          this.localStorageIsEnabled = JSONDictionary.config.localStorage;
-          this.className = JSONDictionary.config.class;
-          this.resourceService.apiPath = JSONDictionary.config.apiUrl;
-          this.generatedFormFactoryService.getDataToCreateForm(this.JSONPath, JSONDictionary, this.target, () => { this.loadForm() }, this.resourceForm, () => { this.submitForm() }, () => { this.deleteResource() }, this.currentAction);
-        });
+        // this.formGeneratorService.getJSONFromDicionario(this.JSONPath).subscribe((JSONDictionary: any) => {
+        //   this.localStorageIsEnabled = JSONDictionary.config.localStorage;
+        //   this.className = JSONDictionary.config.class;
+        //   this.resourceService.apiPath = JSONDictionary.config.apiUrl;
+        //   this.generatedFormFactoryService.getDataToCreateForm(this.JSONPath, JSONDictionary, this.target, () => { this.loadForm() }, this.resourceForm, () => { this.submitForm() }, () => { this.deleteResource() }, this.currentAction);
+        // });
 
       }
     }, 0);
@@ -209,6 +206,7 @@ export class DinamicBaseResourceFormComponent implements AfterViewInit {
       next: (resource) => {
         this.resource = resource;
         //TODO usar transloco nessas mensagens
+        console.log("Dados estão sendo obtidos da api para popular o formulário: ", resource);
         if (this.resourceForm == null) { console.error("ResourceForm não foi instanciado") }
         this.resourceForm.patchValue(resource) // binds loaded resource data to resourceForm
       },

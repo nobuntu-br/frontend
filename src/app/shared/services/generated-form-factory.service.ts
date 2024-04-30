@@ -3,33 +3,31 @@ import { GeneratedSimpleFormComponent } from '../components/generated-simple-for
 import { GeneratedStepperFormComponent } from '../components/generated-stepper-form/generated-stepper-form.component';
 import { FormGeneratorService } from './form-generator.service';
 import { FormGroup } from '@angular/forms';
+import { take } from 'rxjs';
 
 /**
-   * Parâmetros usados para criação do formulário
-   * @param target referência da view para onde será criado e renderizado os componentes.
-   * @param getDataFromAPIFunction função que pegará os dados do backEnd dos dados pertencentes a classe do formulário.
-   * @param resourceForm formGroup do formulário que contém todos os campos do formulário.
-   * @param formOption opção do formulário que será utilizado para a pagina. Contendo formuário simples, por passos e outros.
-   * @param attributes informações relacionadas a todas as variáveis que irão gerar os campos do formulário.
-   * @param className nome da classe que o formulário pertence
-   * @param submitFormFunction função que realiza o envio dos dados do formuário para o backEnd.
-   * @param deleteFormFunction função que deleta a instância da classe do formulário.
-   * @param currentFormAction situação atual do formulário, sendo "create" para criação ou "edit" para edição de algum valor.
-   * @param JSONPath string que contém o caminho do arquivo JSON que orienta a criação das paginas
-   * @param formStepperStructure array contendo os nomes de cada passo do formuário de passos.
-   */
+ * Interface com variáveis para criação dos formulários
+ * @param target Referência ao local no html onde será criado o formulário
+ * @param getDataFromAPIFunction Função para obter dados pela API
+ * @param resourceForm FormGroup que armazenará dados do formulário
+ * @param formOption Tipo de formulário, sendo ele por passo-a-passo ou comum
+ * @param submitFormFunction Função para enviar dados do formulário para API
+ * @param deleteFormFunction Função para enviar uma requisição de remoção dos dados para API
+ * @param currentAction Situação atual do formulário, sendo de criação de um novo item ou alteração de um já existente
+ * @param dataToCreatePage Dados que orientam na criação das paginas
+ * @param secondaryFormClassName Em cada JSON que orienta a criação da página, se tem atributos da classe. Nesses atributos, se tem a propriedades, que são as variáveis de cada atributo. 
+ * Esse campo é o no nome do atributo. [Exemplo]: A classe "Carro" tem o atributo "Fabricante" e fabricante tem as propriedades "nome", "país de operação". Nesse caso o "Fabricante" que será o valor dessa variável.
+ */
 interface ICreateFormParams {
   target: ViewContainerRef,
   getDataFromAPIFunction: () => void,
   resourceForm: FormGroup,
   formOption: string | null,
-  attributes,
-  className,
   submitFormFunction: () => void,
   deleteFormFunction: () => void,
   currentFormAction: string,
-  JSONPath: string,
-  formStepperStructure?: string[] | null,
+  dataToCreatePage: object,
+  secondaryFormClassName?: string
 }
 
 /**
@@ -42,134 +40,97 @@ export class GeneratedFormFactoryService {
 
   constructor(
     private formGeneratorService: FormGeneratorService,
-  ) {
-
-  }
+  ) {}
 
   /**
-   * Obtem dados para posteriormente criar o formulário requisitado.
-   * @param JSONDictionary Dados do arquivo JSON usado para gerar os componentes.
-   * @param target referência da view para onde será criado e renderizado os componentes.
-   * @param getDataFromAPIFunction função que pegará os dados do backEnd dos dados pertencentes a classe do formulário.
-   * @param resourceForm formGroup do formulário que contém todos os campos do formulário.
-   * @param submitFormFunction função que realiza o envio dos dados do formuário para o backEnd.
-   * @param deleteFormFunction função que deleta a instância da classe do formulário.
-   * @param currentFormAction situação atual do formulário, sendo "create" para criação ou "edit" para edição de algum valor.
+   * Obtem dados base pra decidir qual tipo de formulário será criado
+   * @param JSONDictionary 
+   * @param target 
+   * @param getDataFromAPIFunction 
+   * @param resourceForm 
+   * @param submitFormFunction 
+   * @param deleteFormFunction 
+   * @param currentFormAction 
    */
-  getDataToCreateForm(JSONPath: string, JSONDictionary: any, target: ViewContainerRef, getDataFromAPIFunction: () => void, resourceForm: FormGroup, submitFormFunction: () => void, deleteFormFunction: () => void, currentFormAction: string) {
+  getDataToCreateFrom(JSONDictionary: any, target: ViewContainerRef, getDataFromAPIFunction: () => void, resourceForm: FormGroup, submitFormFunction: () => void, deleteFormFunction: () => void, currentFormAction: string, secondaryFormClassName?: string) {
 
-    let formOption: string;
-    let className: string;
-
-    if (JSONDictionary.config.isFormStepper) {
-      formOption = "stepperForm";
-    }
-    if (JSONDictionary.config.hasOwnProperty('name')) {
-      className = JSONDictionary.config.name;
-    }
-
-    const attributes = this.formGeneratorService.getAttributesData(JSONDictionary);
-    const formStepperStructure = this.formGeneratorService.getFormStepperStructure(JSONDictionary);
-
-    const createFormParams : ICreateFormParams = {
+    const createFormParams: ICreateFormParams = {
       target: target,
       getDataFromAPIFunction: getDataFromAPIFunction,
       resourceForm: resourceForm,
-      formOption: formOption,
-      attributes: attributes,
-      className: className,
+      formOption: JSONDictionary.config.isFormStepper ? "stepperForm" : null,
       submitFormFunction: submitFormFunction,
       deleteFormFunction: deleteFormFunction,
       currentFormAction: currentFormAction,
-      JSONPath: JSONPath,
-      formStepperStructure: formStepperStructure
-    } 
+      dataToCreatePage: JSONDictionary,
+    }
 
     this.createForm(createFormParams);
   }
 
   /**
    * 
-   * @param JSONPath localização de onde se encontra o JSON que orienta na criação das paginas.
-   * @param className Nome da classe no qual pertence esse formuário.
-   * @example "Products"
-   * @param JSONDictionary Dados do arquivo JSON usado para gerar os componentes.
-   * @param target referência da view para onde será criado e renderizado os componentes.
-   * @param getDataFromAPIFunction função que pegará os dados do backEnd dos dados pertencentes a classe do formulário.
-   * @param resourceForm formGroup do formulário que contém todos os campos do formulário.
-   * @param submitFormFunction função que realiza o envio dos dados do formuário para o backEnd.
-   * @param deleteFormFunction função que deleta a instância da classe do formulário.
-   * @param currentFormAction situação atual do formulário, sendo "create" para criação ou "edit" para edição de algum valor.
-   * @returns 
+   * @param createFormParams Dados para criação dos formulários
+   * @param secondaryFormClassName Formulário primário sé é o primeiro nível, dentro do JSON. Quando são as variáveis dentro de um atributo, é segundo nível de formulário, essa variável é o nome de qual atributo vai ser pego os dados
    */
-  getDataToCreateFormWithoutJSON(JSONPath: string, JSONDictionary: any, className: string, target: ViewContainerRef, getDataFromAPIFunction: () => void, resourceForm: FormGroup, submitFormFunction: () => void, deleteFormFunction: () => void, currentFormAction: string) {
+  createForm(createFormParams: ICreateFormParams) {
+    let createdComponent;
+    const formStepperStructure = this.formGeneratorService.getFormStepperStructure(createFormParams.dataToCreatePage);
 
-    //Entra no attributes e percorre até achar o className e de lá pega tudo que for necessário
+    if (createFormParams.formOption != null && formStepperStructure != null) {
+      createdComponent = createFormParams.target.createComponent(GeneratedStepperFormComponent).instance;
+      createdComponent.formStepperStructure = formStepperStructure;
+    } else {
+      createdComponent = createFormParams.target.createComponent(GeneratedSimpleFormComponent).instance;
+    }
 
-    if (!JSONDictionary.attributes) {
+
+    let className;
+    if (createFormParams.dataToCreatePage["config"].hasOwnProperty('name')) {
+      className = createFormParams.dataToCreatePage["config"].name;
+    }
+
+    let attributes;
+    //Obtem dados dos atributos que farão parte dos formulários
+    if (createFormParams.secondaryFormClassName != null) {
+      attributes = this.getSecondaryFormAttributesData(createFormParams.dataToCreatePage, createFormParams.secondaryFormClassName);
+      className = createFormParams.secondaryFormClassName;
+    } else {
+      attributes = this.formGeneratorService.getAttributesData(createFormParams.dataToCreatePage);
+    }
+
+    createdComponent.resourceForm = createFormParams.resourceForm;
+    createdComponent.submitFormFunction = createFormParams.submitFormFunction;
+    createdComponent.deleteFormFunction = createFormParams.deleteFormFunction;
+    createdComponent.formIsReady.pipe(take(1)).subscribe(() => { createFormParams.getDataFromAPIFunction() })//Quando o formulário é terminado de ser construido ele chama a função para obter os dados
+    createdComponent.currentFormAction = createFormParams.currentFormAction;
+    createdComponent.attributes = attributes;
+    createdComponent.className = className;
+    createdComponent.dataToCreatePage = createFormParams.dataToCreatePage;
+
+  }
+
+  getSecondaryFormAttributesData(JSONDictionary: object, className: string): any[] {
+    if (!JSONDictionary["attributes"]) {
       return null;
     }
 
     let attributes = [];
 
-    for (let attributeIndex = 0; attributeIndex < JSONDictionary.attributes.length; attributeIndex++) {
-      if (JSONDictionary.attributes[attributeIndex].name === className) {
-        JSONDictionary.attributes[attributeIndex].properties.forEach(element => {
-          attributes.push({ name: element.name, type: element.type });
+    //Percorre todos os atributos da classe
+    for (let attributeIndex = 0; attributeIndex < JSONDictionary["attributes"].length; attributeIndex++) {
+      //Encontra o atributo que tem o mesmo nome da classe na qual o formulario pertence
+      if (JSONDictionary["attributes"][attributeIndex]["name"] === className) {
+        //Obtem todas as propriedades do atributo
+        JSONDictionary["attributes"][attributeIndex]["properties"].forEach(element => {
+          attributes.push({ name: element["name"], type: element["type"] });
         });
-        break;
+
+        return attributes;
       }
 
     }
+    return attributes;
 
-    const createFormParams : ICreateFormParams = {
-      target: target,
-      getDataFromAPIFunction: getDataFromAPIFunction,
-      resourceForm: resourceForm,
-      formOption: null,
-      attributes: attributes,
-      className: className,
-      submitFormFunction: submitFormFunction,
-      deleteFormFunction: deleteFormFunction,
-      currentFormAction: currentFormAction,
-      JSONPath: JSONPath,
-      formStepperStructure: null
-    } 
-
-    this.createForm(createFormParams);
-  }
-
-
-  /**
-   * Um factory que de acordo com a parâmetro "formOption" irá criar o formulário de modelo diferente de acordo com o valor passado.
-   * @param createFormParams Parâmetros usados para criar o formulário
-   */
-  createForm(
-    createFormParams: ICreateFormParams
-  ) {
-    let createdComponent;
-
-    switch (createFormParams.formOption) {
-      case 'stepperForm':
-        if (createFormParams.formStepperStructure != null) {
-          createdComponent = createFormParams.target.createComponent(GeneratedStepperFormComponent).instance;
-          createdComponent.formStepperStructure = createFormParams.formStepperStructure;
-        } else {
-          createdComponent = createFormParams.target.createComponent(GeneratedSimpleFormComponent).instance;
-        }
-        break;
-      default:
-        createdComponent = createFormParams.target.createComponent(GeneratedSimpleFormComponent).instance;
-        break;
-    }
-
-    createdComponent.resourceForm = createFormParams.resourceForm;
-    createdComponent.attributes = createFormParams.attributes;
-    createdComponent.submitFormFunction = createFormParams.submitFormFunction;
-    createdComponent.formIsReady.subscribe(() => { createFormParams.getDataFromAPIFunction() })
-    createdComponent.deleteFormFunction = createFormParams.deleteFormFunction;
-    createdComponent.currentFormAction = createFormParams.currentFormAction;
-    createdComponent.className = createFormParams.className;
-    createdComponent.JSONPath = createFormParams.JSONPath;
   }
 }

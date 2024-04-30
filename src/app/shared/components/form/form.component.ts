@@ -69,11 +69,12 @@ export abstract class BaseResourceFormComponent<T extends BaseResourceModel> imp
   ngOnInit() {
     this.setCurrentAction();
 
-    if (this.localStorageIsEnabled) {
-      this.loadResorceWithLocalStorage();
-    } else {
-      this.loadResource();
-    }
+    // TODO a funcionalidade de carregar dados do localstorage precisa ser atualizado
+    // if (this.localStorageIsEnabled) {
+    //   this.loadResorceWithLocalStorage();
+    // } else {
+    //   this.loadResource();
+    // }
 
     this.verifyFormValueChanges();
 
@@ -116,6 +117,10 @@ export abstract class BaseResourceFormComponent<T extends BaseResourceModel> imp
     this.localStorageFormService.saveInLocalStorageOnEachChange(resourceId, className, this.resourceForm, this.currentAction);
   }
 
+  /**
+   * Realiza a requisição para obter o objeto da API.
+   * Em caso no qual a pagina irá editar (currentAction == "edit"), será obtido o objeto da API para o formulário  
+   */
   protected loadResource(): any {
     if (this.currentAction == "edit") {
       this.route.paramMap.pipe(
@@ -127,13 +132,13 @@ export abstract class BaseResourceFormComponent<T extends BaseResourceModel> imp
             //TODO usar transloco nessas mensagens
             if (this.resourceForm == null) { console.error("ResourceForm não foi instanciado") }
             this.resourceForm.addControl("updatedAt", this.formBuilder.control(null));
+            console.log("Dados do recurso obtidos da API: ", resource);
             this.resourceForm.patchValue(resource); // binds loaded resource data to resourceForm
           },
           error: (error) => alert(this.translocoService.translate("componentsBase.Alerts.readErrorMessage"))
         })
     }
   }
-
 
   protected setPageTitle() {
     if (this.currentAction == 'new')
@@ -152,39 +157,51 @@ export abstract class BaseResourceFormComponent<T extends BaseResourceModel> imp
   }
 
   protected createResource() {
+    this.objectTratament(this.resourceForm.value);
+    
     const resource: T = this.jsonDataToResourceFn(this.resourceForm.value);
 
-      console.log(resource);
-      for (let value in resource) {
-        if(typeof resource[value] === "object" && resource[value] !== null){
-          resource[value] = resource[value]["id"];
-          break;
-        }
-        if(Array.isArray(resource[value])){
-          resource[value] = resource[value][0]["id"];
-          break;
-        }
-      }
+    console.log("Dados enviados para a API na criação do item: ", resource);
 
-      console.log(resource);
+    this.resourceService.create(resource).subscribe({
+      next: (response) => {
+        this.actionsForSuccess(response);
+        const className = (this.resource.constructor as any).name;
+        this.localStorageFormService.remove("new"+className);
+      },
+      error: (error) => this.actionsForError(error)
+    });
+  }
 
-      this.resourceService.create(resource).subscribe({
-        next: (response) => {
-          this.actionsForSuccess(response);
-          const className = (this.resource.constructor as any).name;
-          this.localStorageFormService.remove("new"+className);
-        },
-        error: (error) => this.actionsForError(error)
-      });
-    }
+  protected updateResource() {
 
-    protected updateResource() {
+    this.objectTratament(this.resourceForm.value);
+    
     const resource: T = this.jsonDataToResourceFn(this.resourceForm.value);
+    console.log("Dados que estão sendo enviados para APi para atualização do item: ",resource);
 
     this.resourceService.update(resource.id, resource).subscribe({
       next: (response) => this.actionsForSuccess(response),
       error: (error) => this.actionsForError(error)
     });
+  }
+
+  /**
+   * Realizar uma alteração nos dados do formulário, removendo objetos e substituindo somente pelos IDs
+   * @param resourceForm Formulário
+   */
+  objectTratament(resourceForm){
+    for(let field in resourceForm){
+      if(resourceForm[field] instanceof Object){
+        // console.log("é um objeto o campo: ", resourceForm[field]);
+        if(resourceForm[field] instanceof Array){
+          // console.log("é um array também");
+          resourceForm[field] = resourceForm[field].map(value => value.id);
+        } else {
+          resourceForm[field] = resourceForm[field].id;
+        }
+      }
+    }
   }
 
   protected deleteResource() {
@@ -226,8 +243,6 @@ export abstract class BaseResourceFormComponent<T extends BaseResourceModel> imp
       next:(data) => this.formSaved = false, 
     });
   }
-
-  // private getObjectFromArrayId()
 
   returnFormFunction(){
     this.alertToReturn();

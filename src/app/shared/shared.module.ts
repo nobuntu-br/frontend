@@ -56,7 +56,7 @@ import { DefaultTableComponent } from './components/default-table/default-table.
 import { DinamicBaseResourceFormComponent } from './components/dinamic-base-resource-form/dinamic-base-resource-form.component';
 import { LayoutTestComponent } from './components/layout-test/layout-test.component';
 import { LanguagesComponent } from './components/languages/languages.component';
-import { CheckboxFieldComponent } from './checkbox-field/checkbox-field.component';
+import { SubformComponent } from './components/subform/subform.component';
 
 
 @NgModule({
@@ -116,7 +116,7 @@ import { CheckboxFieldComponent } from './checkbox-field/checkbox-field.componen
         TranslocoModule,
         DinamicBaseResourceFormComponent,
         LanguagesComponent,
-        CheckboxFieldComponent
+
     ],
     declarations: [
         BaseResourceFilterComponent,
@@ -145,7 +145,7 @@ import { CheckboxFieldComponent } from './checkbox-field/checkbox-field.componen
         ConfirmationDialogComponent,
         LayoutTestComponent,
         LanguagesComponent,
-        CheckboxFieldComponent
+        SubformComponent
     ],
 })
 export class SharedModule { }

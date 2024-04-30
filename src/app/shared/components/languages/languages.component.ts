@@ -33,7 +33,7 @@ export class LanguagesComponent implements OnInit, OnDestroy
     {
         // Get the available languages from transloco
         this.availableLangs = this._translocoService.getAvailableLangs();
-        console.log(this.availableLangs);
+        // console.log("Linguagens disponíveis para seleção: ", this.availableLangs);
 
         // Subscribe to language changes
         this._translocoService.langChanges$.subscribe((activeLang) => {

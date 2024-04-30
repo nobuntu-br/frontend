@@ -14,10 +14,11 @@ export interface IDefaultListComponentDialogConfig {
    * Campo com os dados dos itens que serÃo apresenados na lista.
    * @example ['nome':'Maria', 'idade':'44'].
    */
-  itemsDisplayed: any[] | any,
+  itemsDisplayed: any[],
   columnsQuantity: number,
   displayedfieldsName: string[],
   fieldsType: string[],
+  objectDisplayedValue: string[]
   userConfig: any,
   selectedItemsLimit: number,
   apiUrl: string,
@@ -27,7 +28,9 @@ export interface IDefaultListComponentDialogConfig {
   isAbleToCreate: boolean,
   isAbleToEdit: boolean,
   isAbleToDelete: boolean,
-  JSONPath: string,
+  dataToCreatePage: object,
+  useFormOnDialog: boolean,
+  isEnabledToGetDataFromAPI: boolean
 }
 
 @Component({
@@ -57,6 +60,14 @@ export class DefaultListComponent implements AfterViewInit, OnDestroy {
    * @example ['string', 'number'].
    */
   @Input() fieldsType: string[];
+  
+  /**
+   * Caso o conter um campo do tipo objeto, será o nome do campo que está dentro do que será exibido. 
+   * [Exemplo]: O campo tem um objeto, esse objeto tem "id", "name" e "age". O campo apresentado poderá ser o "name", assim aparecerá o valor do campo "name" no componente.
+   * @example ['', '', 'id']
+   */
+  @Input() objectDisplayedValue: string[]
+
   @Input() userConfig: any;
   /**
    * Essa lista será uma lista que tu seleciona os itens?
@@ -68,7 +79,7 @@ export class DefaultListComponent implements AfterViewInit, OnDestroy {
    * @example 2.\
    * Exemplo permitir selecionar tudo: null.
    */
-  @Input() selectedItemsLimit: number = null;
+  @Input() selectedItemsLimit: number | null = null;
   /**
    * Campo que saída para os valores que foram selecionados.
    */
@@ -131,9 +142,25 @@ export class DefaultListComponent implements AfterViewInit, OnDestroy {
    */
   isOpenedOnDialog: boolean = false;
   /**
-   * JSONPath localização de onde se encontra o JSON que orienta na criação das paginas.
+   * Dados que orienta na criação das paginas.
    */
-  @Input() JSONPath: string;
+  @Input() dataToCreatePage: object;
+  /**
+   * Rota que levará para pagina da classe
+   */
+  @Input() route: string;
+  /**
+   * Define se a lista irá obter os dados da API para apresentar para o usuário.
+   */
+  @Input() isEnabledToGetDataFromAPI: boolean = true;
+  /**
+   * Define se o menu é fixado na tela
+   */
+  @Input() menuIsFixedOnScreen : boolean = true;
+  /**
+   * Define se o formulários que serão abertos a partir dessa lista serão abertos por dialog ou indo na página
+   */
+  @Input() useFormOnDialog : boolean = false;
 
   @ViewChild('placeToRender', { read: ViewContainerRef }) target!: ViewContainerRef;
 
@@ -164,6 +191,7 @@ export class DefaultListComponent implements AfterViewInit, OnDestroy {
       this.columnsQuantity = dialogInjectorData.columnsQuantity;
       this.displayedfieldsName = dialogInjectorData.displayedfieldsName;
       this.fieldsType = dialogInjectorData.fieldsType;
+      this.objectDisplayedValue = dialogInjectorData.objectDisplayedValue;
       this.userConfig = dialogInjectorData.userConfig;
       this.searchableFields = dialogInjectorData.searchableFields;
       if (dialogInjectorData.selectedItemsLimit >= 0) {
@@ -174,14 +202,18 @@ export class DefaultListComponent implements AfterViewInit, OnDestroy {
       this.className = dialogInjectorData.className;
       this.isAbleToCreate = dialogInjectorData.isAbleToCreate;
       this.isAbleToEdit = dialogInjectorData.isAbleToEdit;
-      this.JSONPath = dialogInjectorData.JSONPath;
+      this.dataToCreatePage = dialogInjectorData.dataToCreatePage;
+      this.useFormOnDialog = dialogInjectorData.useFormOnDialog;
+      this.isEnabledToGetDataFromAPI = dialogInjectorData.isEnabledToGetDataFromAPI;
     }
 
   }
 
   ngAfterViewInit(): void {
     setTimeout(() => {
-      this.getData(this.apiUrl);
+      if(this.isEnabledToGetDataFromAPI == true){
+        this.getData(this.apiUrl);
+      }
     }, 0);
   }
 
@@ -228,7 +260,10 @@ export class DefaultListComponent implements AfterViewInit, OnDestroy {
       componentCreated.itemDisplayed = itemsDisplayed[index];
 
       componentCreated.displayedfieldsName = this.displayedfieldsName;
+
       componentCreated.fieldsType = this.fieldsType;
+      componentCreated.objectDisplayedValue = this.objectDisplayedValue;
+      
       componentCreated.className = this.className;
 
       if (this.isSelectable == true) {
@@ -247,19 +282,42 @@ export class DefaultListComponent implements AfterViewInit, OnDestroy {
    * @param item Dados do item que será alterado. @example [{"name":"Marie", "age":22}.
    */
   editItem(item) {
-    if (this.matDialogComponentRef == null) {
-      this.goToEditPage(item);
+    if (this.useFormOnDialog == true) {
+      this.openFormOnDialog("edit", item.id);
     } else {
-      this.openFormDialogToEdit(item);
+      this.goToEditPage(item.id);
     }
   }
 
-  openFormDialogToEdit(item: any){
+  /**
+   * Redirecina para pagina de alteração do item
+   * @param itemId ID do item que será alterado. 
+   * @returns 
+   */
+  goToEditPage(itemId: string) {
+    if(this.route == undefined || this.route == null){
+      console.warn("O valor de 'route' não foi passado corretamente");
+      return;
+    }
+    this.router.navigate([this.route+"/" + itemId + "/edit"]);
+  }
+
+  /**
+   * Abre o formulário em popUp/dialog tanto para edição ou criação.
+   * @param action Qual ação será feita, sendo criação "new" ou edição "edit"
+   * @param _itemId Id do item que será editado. Se for criado então pode ser "null" o valor preenchido no campo
+   */
+  openFormOnDialog(action: string, _itemId : string | null){
+    if(action !== "edit" && action !== "new") return;
+    if(this.useFormOnDialog == false) return; 
+
+    console.log("Dados para criação do form através da lista: ", this.dataToCreatePage)
+
     const config : IDinamicBaseResourceFormComponent = {
-      JSONPath: this.JSONPath,
+      dataToCreatePage: this.dataToCreatePage,
       className: this.className,
-      currentAction: "edit",
-      itemId: item.id,
+      currentAction: action,
+      itemId: action === "edit" && _itemId ? _itemId : null
     }
 
     const dialogRef = this.matDialog.open(DinamicBaseResourceFormComponent, {
@@ -279,6 +337,31 @@ export class DefaultListComponent implements AfterViewInit, OnDestroy {
       }
 
     });
+  }
+
+  /**
+   * Encaminha para pagina de criação
+   */
+  createItem(){
+    if(this.isAbleToCreate == false) return;
+
+    if (this.useFormOnDialog == true) {
+      this.openFormOnDialog("new", null);
+    } else {
+      this.gotToCreationPage();
+    }
+  }
+
+  /**
+   * Redirecina para pagina de criação do item 
+   */
+  gotToCreationPage(){
+    if(this.route == undefined || this.route == null){
+      console.warn("O valor de 'route' não foi passado corretamente");
+      return;
+    }
+
+    this.router.navigate([this.route+"/new"]);
   }
 
   selectableFieldController(componentCreated: SelectableCardComponent) {
@@ -351,12 +434,7 @@ export class DefaultListComponent implements AfterViewInit, OnDestroy {
     return instance[variableName]
   }
 
-  goToEditPage(data) {
-    const urlSegment = this.router.url.split('/');
-    const url = urlSegment[1] + '/' + data.id + '/edit';
-    this.router.navigate([url]);
-  }
-
+  
   onSelectedItemsCheckBoxChange(event) {
     this.selectAllCheckBox = event.checked;
     if (event.checked == true) {

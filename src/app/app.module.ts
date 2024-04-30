@@ -5,13 +5,12 @@ import { AppComponent } from './app.component';
 import { MAT_DATE_LOCALE } from '@angular/material/core'; 
 import { ExtraOptions, PreloadAllModules, RouterModule } from '@angular/router'; 
 import { CoreModule } from 'app/core/core.module'; 
-import { appRoutes } from './app-routing.module';
+import { appRoutes } from './app-routing.module'; 
 import { NgxMaskModule, IConfig } from 'ngx-mask'; 
-
-import { FormsModule } from '@angular/forms';
-import { HttpClientModule, HttpClient } from '@angular/common/http';
-import { SharedModule } from './shared/shared.module';
 import { TranslocoRootModule } from './transloco-root.module';
+
+import { HttpClientModule } from '@angular/common/http';
+import { SharedModule } from './shared/shared.module';
 
 
 export const options: Partial<null|IConfig> | (() => Partial<IConfig>) = null; 
@@ -31,15 +30,13 @@ const routerConfig: ExtraOptions = {
         RouterModule.forRoot(appRoutes, routerConfig), 
         NgxMaskModule.forRoot(), 
         CoreModule, 
-        TranslocoRootModule,
         HttpClientModule, 
+    TranslocoRootModule,
     SharedModule
   ], 
-    bootstrap   : [ 
-        AppComponent 
-    ], 
   providers: [ 
     { provide: MAT_DATE_LOCALE, useValue: 'en-GB' }, 
   ], 
+  bootstrap: [AppComponent] 
 }) 
 export class AppModule { } 

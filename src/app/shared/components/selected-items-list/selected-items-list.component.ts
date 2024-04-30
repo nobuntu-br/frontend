@@ -112,7 +112,7 @@ export class SelectedItemsListComponent implements AfterViewInit, OnDestroy {
   /**
    * JSONPath localização de onde se encontra o JSON que orienta na criação das paginas.
    */
-  @Input() JSONPath: string;
+  @Input() dataToCreatePage: object;
 
   @ViewChild('placeToRender', { read: ViewContainerRef }) target!: ViewContainerRef;
 
@@ -152,7 +152,7 @@ export class SelectedItemsListComponent implements AfterViewInit, OnDestroy {
       this.className = dialogInjectorData.className;
       this.isAbleToCreate = dialogInjectorData.isAbleToCreate;
       this.isAbleToEdit = dialogInjectorData.isAbleToEdit;
-      this.JSONPath = dialogInjectorData.JSONPath;
+      this.dataToCreatePage = dialogInjectorData.dataToCreatePage;
     }
 
   }
@@ -399,7 +399,7 @@ export class SelectedItemsListComponent implements AfterViewInit, OnDestroy {
    */
   openFormDialogToEditItem(data?) {
     const config : IDinamicBaseResourceFormComponent = {
-      JSONPath: this.JSONPath,
+      dataToCreatePage: this.dataToCreatePage,
       className: this.className,
       currentAction: "edit",
       itemId: data.id,

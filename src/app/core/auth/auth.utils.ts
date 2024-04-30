@@ -29,6 +29,7 @@ export class AuthUtils
         // Return if there is no token
         if ( !token || token === '' )
         {
+            console.log("Sem token para verificar");
             return true;
         }
 
@@ -39,6 +40,7 @@ export class AuthUtils
 
         if ( date === null )
         {
+            console.log("Date é null");
             return true;
         }
 

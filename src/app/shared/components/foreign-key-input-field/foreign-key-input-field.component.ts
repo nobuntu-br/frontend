@@ -1,12 +1,10 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { DefaultListComponent, IDefaultListComponentDialogConfig } from '../default-list/default-list.component';
-import { Subject, retry, take, takeUntil } from 'rxjs';
+import { Subject, take, takeUntil } from 'rxjs';
 import { SelectedItemsListComponent } from '../selected-items-list/selected-items-list.component';
 import { DinamicBaseResourceFormComponent, IDinamicBaseResourceFormComponent } from '../dinamic-base-resource-form/dinamic-base-resource-form.component';
-import { distinctUntilChanged } from 'rxjs/operators';
-
 
 enum ISelectionOption {
   add,
@@ -19,7 +17,7 @@ enum ISelectionOption {
   styleUrls: ['./foreign-key-input-field.component.scss']
 })
 
-export class ForeignKeyInputFieldComponent implements OnDestroy, OnInit {
+export class ForeignKeyInputFieldComponent implements OnDestroy, AfterViewInit {
   /**
    * Titulo apresentado em cima do campo de inserção de dados
    */
@@ -47,7 +45,7 @@ export class ForeignKeyInputFieldComponent implements OnDestroy, OnInit {
    * Define qual variável será usada para ser apresentado no campo de inserção.
    * @example "name"
    */
-  @Input() fieldDisplayedInLabel: string = "nome";
+  @Input() fieldDisplayedInLabel: string;
   /**
    * Nome da classe na qual a variável desse componente pertence.
    * @example "Produtos"
@@ -59,32 +57,30 @@ export class ForeignKeyInputFieldComponent implements OnDestroy, OnInit {
    */
   @Input() fieldName: string | null;
   /**
-   * Localidade onde o JSON que orienta a criação das paginas se encontra.
-   * @example "../../../../assets/dicionario/classe.json"
+   * Dados que orientam a criação da pagina
    */
-  @Input() JSONPath: string | null;
+  @Input() dataToCreatePage: object | null;
   @Input() value: any;
   /**
-   * Define se é possivel enviar mais de um valor para o campo.
-   * @example "true" ou "false"
-  */
-  @Input() multiple: boolean = false;
-   /**
    * Campo no formulário que receberá os dados dos valores selecionados.
    */
-  public inputValue: FormControl<string[] | string> = new FormControl<string[] | string>([]);
+  public inputValue: FormControl<object[]> = new FormControl<object[]>([]);
   /**
    * Valor que será apresentado no campo de preenchimento.
    * Como é uma chave estrangeira, apresentar o ID do item não é algo apresentável para o usuário.
    * @var fieldDisplayedInLabel Variável que definirá qual atributo da classe será apresentado.
    */
-  displayedValue: string[];
+  displayedValue: string[] = [""];
   /**
    * Quantitade máxima de valores que podem ser selecionados.
    * @example "1"
    * Por padrão é 1
    */
-  selectedItemsLimit: number = 3;
+  selectedItemsLimit: number = 1;
+  /**
+   * Define se os itens serão armazenados em array ou é um objeto.
+   */
+  isObjectStoredInArray: boolean = false;
   /**
    * É obrigatório preencher esse campo.
    * @example "true" ou "false"
@@ -99,18 +95,41 @@ export class ForeignKeyInputFieldComponent implements OnDestroy, OnInit {
     private matDialog: MatDialog,
   ) { }
 
-  async ngOnInit(): Promise<void> {
-    await this.refreshDisplayedValue();
-    if(!this.multiple) await this.verifyIfArrayIsUnique(this.inputValue.value);
-
+  ngAfterViewInit(): void {
     this.inputValue.valueChanges.pipe(takeUntil(this.ngUnsubscribe)).subscribe({
       next: (data) => {
-        if(!this.multiple){
-          this.verifyIfArrayIsUnique(this.inputValue.value);
-        } 
-        this.refreshDisplayedValue();
-      },
-    });
+        this.setDisplayedValue(this.inputValue, this.fieldDisplayedInLabel);
+      }
+    })
+  }
+
+  /**
+   * Função responsável por definir as informações que serão apresentadas no campo de inserção do componente atual
+   * @param inputValue FormControl que armazena os valores do formulário
+   * @param valueDisplayed Valores que são apresentados no campo de inserção do componente atual
+   */
+  setDisplayedValue(inputValue: FormControl, valueDisplayed: string) {
+    //Se não tiver nada ele só define vazio no campo apresentável
+    if (inputValue.value == null || inputValue.value.length == 0) {
+      this.displayedValue = [""];
+      return;
+    };
+
+    //Verifica se o item contido na FormControl é um array
+    if (inputValue.value instanceof Array) {
+      if (inputValue.value[0].hasOwnProperty(valueDisplayed) == false) {
+        valueDisplayed = "id";
+      }
+
+      this.displayedValue = inputValue.value.map(value => value[valueDisplayed]);
+
+    } else {
+      //Caso não for array
+      if (inputValue.value[valueDisplayed] == undefined) {
+        valueDisplayed = "id";
+      }
+      this.displayedValue = inputValue.value[valueDisplayed];
+    }
   }
 
   openDefaultListToSelectItems() {
@@ -120,6 +139,7 @@ export class ForeignKeyInputFieldComponent implements OnDestroy, OnInit {
       columnsQuantity: 3,
       displayedfieldsName: this.value.propertiesAttributes.map(attribute => attribute.name),
       fieldsType: this.value.propertiesAttributes.map(attribute => attribute.type),
+      objectDisplayedValue: this.value.propertiesAttributes.map(attribute => attribute.displayedfieldsName),//TODO ver se funciona
       userConfig: null,
       selectedItemsLimit: this.selectedItemsLimit,
       apiUrl: this.value.apiUrl,
@@ -127,9 +147,11 @@ export class ForeignKeyInputFieldComponent implements OnDestroy, OnInit {
       isSelectable: true,
       className: this.fieldName,//É fieldName pois aqui será editado a campo que está na classe do ClasNa
       isAbleToCreate: false,
-      isAbleToEdit: true,
+      isAbleToEdit: false,
       isAbleToDelete: true,
-      JSONPath: this.JSONPath,
+      dataToCreatePage: this.dataToCreatePage,
+      useFormOnDialog: true,
+      isEnabledToGetDataFromAPI: true
     }
 
     const dialogRef = this.matDialog.open(DefaultListComponent, {
@@ -158,6 +180,7 @@ export class ForeignKeyInputFieldComponent implements OnDestroy, OnInit {
       columnsQuantity: 2,
       displayedfieldsName: this.value.propertiesAttributes.map(attribute => attribute.name),
       fieldsType: this.value.propertiesAttributes.map(attribute => attribute.type),
+      objectDisplayedValue: this.value.propertiesAttributes.map(attribute => attribute.displayedfieldsName),//TODO ver se funciona
       userConfig: null,
       selectedItemsLimit: this.selectedItemsLimit,
       apiUrl: this.value.apiUrl,
@@ -167,10 +190,13 @@ export class ForeignKeyInputFieldComponent implements OnDestroy, OnInit {
       isAbleToCreate: false,
       isAbleToEdit: true,
       isAbleToDelete: true,
-      JSONPath: this.JSONPath,
+      dataToCreatePage: this.dataToCreatePage,
+      useFormOnDialog: true,
+      isEnabledToGetDataFromAPI: false
     }
 
-    const dialogRef = this.matDialog.open(SelectedItemsListComponent, {
+    // const dialogRef = this.matDialog.open(SelectedItemsListComponent, {
+    const dialogRef = this.matDialog.open(DefaultListComponent, {
       width: '100%',
       height: '100%',
       maxWidth: '100vw',
@@ -180,7 +206,7 @@ export class ForeignKeyInputFieldComponent implements OnDestroy, OnInit {
     });
 
     dialogRef.afterClosed().pipe(take(1)).subscribe(result => {
-      console.log("O retorno do edit foi:", result);
+      // console.log("O retorno do edit foi:", result);
       if (result == null) return;
       this.selectItems(result, ISelectionOption.set);
     });
@@ -202,11 +228,13 @@ export class ForeignKeyInputFieldComponent implements OnDestroy, OnInit {
   openFormDialogToCreateItem(currentAction: string, data?) {
 
     const config: IDinamicBaseResourceFormComponent = {
-      JSONPath: this.JSONPath,
+      dataToCreatePage: this.dataToCreatePage,
       className: this.fieldName,
       itemId: data?.id,
       currentAction: currentAction,
     }
+
+    console.log("Dados para abertura do formulário de criação: ", config);
 
     const dialogRef = this.matDialog.open(DinamicBaseResourceFormComponent, {
       width: '100%',
@@ -250,6 +278,7 @@ export class ForeignKeyInputFieldComponent implements OnDestroy, OnInit {
     if (selectionOption == ISelectionOption.add) {
 
       if (currentSelectedItensQuantity + newItems.length > this.selectedItemsLimit) return;
+
       //Se já tiver item selecionado ele 
       if (currentSelectedItensQuantity > 0) {
         //Remove os itens duplicados
@@ -260,7 +289,8 @@ export class ForeignKeyInputFieldComponent implements OnDestroy, OnInit {
       if (newItems.length > this.selectedItemsLimit) return;
     }
 
-    this.inputValue.setValue(newItems);
+    // this.inputValue.setValue(newItems);
+    this.setNewValueToInput(newItems);
   }
 
   ngOnDestroy(): void {
@@ -268,68 +298,25 @@ export class ForeignKeyInputFieldComponent implements OnDestroy, OnInit {
     this.ngUnsubscribe.complete();
   }
 
-  /**
-   * Essa função irá atualizar os itens que são apresentados no campo de inserção. 
-   * Como os valores selecionados por esse componente são objetos, é preciso definir qual variavel desses objetos será apresentada no campo se inserção.
-   * Caso o valor passado na variável @var fieldDisplayedInLabel não constar nos objetos selecionados, ele apresentará a primeira variável dos objetos no campo de inserção.
-   */
-  refreshDisplayedValue() {
-    if(this.verifyIfFieldIsEmpyt()) return;
-    
-    const items: any[] | any = this.inputValue.value;
-    var itemsDisplayedValue;
-    console.log("items: ",this.fieldDisplayedInLabel);
+  setNewValueToInput(newItems: object[]) {
+    var objectsID: string[] = [];//Armazenará os IDs dos objetos que foram selecinados/adicionados
+    var displayedValues: string[] = [];//Valores apresentáveis dos objetos
 
-
-    const firstItem = items[0];
-
-    if(Array.isArray(items)) {
-      if (this.fieldDisplayedInLabel in firstItem) {
-        itemsDisplayedValue = items.map(objeto => objeto[this.fieldDisplayedInLabel]); //Obtem os valores com a chave do JSON
-      } else {
-        // Se a chave especificada não estiver presente, retorna os valores da primeira chave de todos os objetos
-        const firstKey = Object.keys(firstItem)[0];
-        itemsDisplayedValue = items.map(objeto => objeto[firstKey]);
+    for (const obj of newItems) {
+      if (obj.hasOwnProperty('id')) {
+        objectsID.push(obj["id"]);
       }
-  
-      this.displayedValue = itemsDisplayedValue;
-    } 
 
-    if(!Array.isArray(items)) {
-      if (this.fieldDisplayedInLabel in items) {
-        itemsDisplayedValue = items[this.fieldDisplayedInLabel];
-      } else {
-        // Se a chave especificada não estiver presente, retorna os valores da primeira chave de todos os objetos
-        const firstKey = Object.keys(firstItem)[0];
-        itemsDisplayedValue = items[firstKey];
+      if (obj.hasOwnProperty(this.fieldDisplayedInLabel)) {
+        displayedValues.push(obj[this.fieldDisplayedInLabel]);
       }
-  
-      this.displayedValue = [itemsDisplayedValue];
     }
 
-  }
+    this.inputValue.setValue(newItems);
+    // console.log("InputValue contém: ",this.inputValue.value);
 
-  /**
-   * Verifica se o campo está vazio, se estiver ele irá setar o campo para um array vazio.
-   * @returns true se o campo estiver vazio, false se não estiver.
-   * @example "true" ou "false"
-  */
-  private verifyIfFieldIsEmpyt(): boolean {
-    if (this.inputValue.value.length == 0) {
-      this.displayedValue = [''];
-      return true;
-    }
-    return false;
-  }
-
-/**
-  * Verifica se o array é unico, se for igual a 1 ele irá setar o valor do campo para o primeiro item do array.
-  * @param data Array de strings
-  */
-  private verifyIfArrayIsUnique(data: string[] | string) {
-    if (data.length == 1) {
-      this.inputValue.setValue(data[0]);
-    }
+    this.displayedValue = displayedValues;
+    // console.log("displayedValue contém: ",this.displayedValue);
   }
 
 }

@@ -10,7 +10,7 @@ import { DefaultListComponent } from '../components/default-list/default-list.co
 import { CalculatorComponent } from '../components/calculator/calculator.component';
 import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { CheckboxFieldComponent } from '../checkbox-field/checkbox-field.component';
+import { SubformComponent } from '../components/subform/subform.component';
 
 interface dialogConfiguration {
   width?: string,
@@ -22,20 +22,22 @@ interface dialogConfiguration {
 }
 
 /**
- * Atributos principais das variáveis da classe do JSON que informa como criar as telas
+ * Atributos principais de variável da classe do JSON que informa como criar as telas
  * @param JSONDictionary JSON que informa como criar as telas
  * @param name - nome da variável.
- * @param type - tipo da variável. 
+ * @param type - tipo da variável.
  * @param formTab - informação de para qual aba do formTab essa variável pertence.
  * @param apiUrl link para chamar a classe dessa variável.
  * @param propertiesAttributes Se a variável for uma classe, retorná um vetor com variavel com nome e tipo das variáveis que contém na classe).
+ * @param fieldDisplayedInLabel Nome da variável que será apresentado na label
  */
 export interface IAttributesToCreateScreens {
   name: string,
   type: string,
   formTab: string,
   apiUrl?: string,
-  propertiesAttributes?: any[]
+  propertiesAttributes?: any[],
+  fieldDisplayedInLabel: string
 }
 
 /**
@@ -45,10 +47,11 @@ export interface IAttributesToCreateScreens {
   * @param className Nome da classe no qual pertence esse formuário
   * @param fieldName Nome da variável na qual o campo é. @example "phone"
   * @param fieldType Tipo da variável do campo. @examples "number", "foreignKey"
-  * @param value Contém vários valores dentro @example "apiUrl"; "fieldName" e "fieldsType" caso tem chave estrangeira; 
+  * @param value Contém vários valores dentro @example "apiUrl"; "fieldName" e "fieldsType" caso tem chave estrangeira;
   * @param labelTittle Título que aparecerá no topo do campo @example "Telefone"
-  * @param JSONPath localização de onde se encontra o JSON que orienta na criação das paginas. @example "'../../../../assets/dicionario/categories.json'"
-  * @param valuesList 
+  * @param dataToCreatePage Dados sobre como deve ser a criação das telas
+  * @param fieldDisplayedInLabel Campo que será apresentado na label (titulo) do componente
+  * @param valuesList
   */
 export interface ICreateComponentParams {
   target: ViewContainerRef,
@@ -58,9 +61,9 @@ export interface ICreateComponentParams {
   fieldType: string,
   value,
   labelTittle: string,
-  JSONPath: string,
+  dataToCreatePage: object,
+  fieldDisplayedInLabel: string,
   valuesList: any[]
-  fieldDisplayedInLabel?: string,
 }
 
 /**
@@ -120,12 +123,12 @@ export class FormGeneratorService {
         const component = createdComponent.instance;
 
         component.label = createComponentData.labelTittle;
-        component.valuesList = [{ productId: "65b812adaff84eff40be3924", variationCode: "13022" }, { productId: "AAABBB", variationCode: "0002" }];
-        // component.valuesList = valuesList;
-        component.displayedSelectedVariableOnInputField = "variationCode";
+        //TODO esses valore serão pegos pela API
+        // component.apiUrl = "http://localhost:8080/api/clientes";
+        component.apiURL = createComponentData.value.apiUrl;
         //TODO fazer um verificador para ver se value carrega as informações, se não tiver, pegar algum campo
-        // component.displayedSelectedVariableOnInputField = value.displayedSelectedVariableOnInputField;
-        component.returnedVariable = "productId";
+        component.displayedSelectedVariableOnInputField = "nome";
+        component.returnedVariable = "id";
         //TODO fazer um verificador para ver se value carrega as informações, se não tiver, pegar algum campo
         // component.returnedVariable = value.returnedVariable;
         break;
@@ -135,21 +138,15 @@ export class FormGeneratorService {
         createdComponent.instance.label = createComponentData.labelTittle;
         createdComponent.instance.fieldName = createComponentData.fieldName;
         createdComponent.instance.value = createComponentData.value;
-        createdComponent.instance.JSONPath = createComponentData.JSONPath;
-        createdComponent.instance.fieldsDisplayed = 'nome';
-
+        // console.log("Dados para criar o componente de chave estrangeira: ",createComponentData.dataToCreatePage)
+        createdComponent.instance.dataToCreatePage = createComponentData.dataToCreatePage;
+        createdComponent.instance.fieldDisplayedInLabel = createComponentData.fieldDisplayedInLabel;
         break;
       }
-      case 'array': {
-        createdComponent = createComponentData.target.createComponent(ForeignKeyInputFieldComponent);
-        createdComponent.instance.label = createComponentData.labelTittle;
-        createdComponent.instance.apiUrl = "http://localhost:8080/api/employees";//get address from .env and concat
-        createdComponent.instance.fieldsDisplayed = ['firstName', "lastName", "company", 'city', "businessPhone", "createdAt"];
-        createdComponent.instance.fieldsType = ['string', 'string', 'string', 'string', 'string', 'date'];
-        createdComponent.instance.columnsQuantity = 3;
-        createdComponent.instance.fieldDisplayedInLabel = "firstName";
-
-        createdComponent.instance.searchableFields = ["firstName", "company"];
+      case 'subform': {
+        createdComponent = createComponentData.target.createComponent(SubformComponent);
+        const component = createdComponent.instance;
+        component.JSONPath = createComponentData.dataToCreatePage;
         break;
       }
       case 'number': {
@@ -163,36 +160,16 @@ export class FormGeneratorService {
 
         break;
       }
-      case 'list': {
-        createdComponent = createComponentData.target.createComponent(DefaultListComponent);
-        // createdComponent.instance.label = labelTittle;
-        createdComponent.instance.columnsQuantity = 3;
-        createdComponent.instance.fieldsDisplayed = ['firstName', "lastName", "company", 'city', "businessPhone", "createdAt"];
-        createdComponent.instance.fieldsType = ['string', 'string', 'string', 'string', 'string', 'date'];
-        createdComponent.instance.apiUrl = "http://localhost:8080/api/employees";
-        createdComponent.instance.selectedItemsLimit = 4;
-        createdComponent.instance.searchableFields = ["firstName", "company"];
-
-        break;
-      }
-      case 'boolean': {
-        createdComponent = createComponentData.target.createComponent(CheckboxFieldComponent);
-        createdComponent.instance.label = createComponentData.labelTittle;
-        createdComponent.instance.isRequired = true;
-        createdComponent.instance.className = createComponentData.className;
-        createdComponent.instance.charactersLimit = 40;
-
-        break;
-      }
       //TODO fazer o componente da imagem
 
-      //TDO 
+      //TDO
       default: {
         return;
         break;
       }
     }
 
+    if(createdComponent == null){ console.error("Componente não foi criado!"); return;}
     createdComponent.instance.className = createComponentData.className;
     createComponentData.resourceForm.addControl(createComponentData.fieldName, createdComponent.instance.inputValue);
 
@@ -226,7 +203,7 @@ export class FormGeneratorService {
         apiUrl = element.apiUrl;
       }
 
-      if(element.hasOwnProperty('type') && element.type === "foreignKey" && element.hasOwnProperty('fieldDisplayedInLabel')){
+      if (element.hasOwnProperty('type') && element.type === "foreignKey" && element.hasOwnProperty('fieldDisplayedInLabel')) {
         fieldDisplayedInLabel = element.fieldDisplayedInLabel;
       }
 
@@ -239,7 +216,15 @@ export class FormGeneratorService {
         });
       }
 
-      attributes.push({ name: element.name, type: element.type, formTab: element.formTab, apiUrl: apiUrl, propertiesAttributes: propertiesAttributes });
+      attributes.push(
+        {
+          name: element.name,
+          type: element.type,
+          formTab: element.formTab,
+          apiUrl: apiUrl,
+          propertiesAttributes: propertiesAttributes,
+          fieldDisplayedInLabel: element.fieldDisplayedInLabel != null ? element.fieldDisplayedInLabel : null
+        });
     });
 
     return attributes;

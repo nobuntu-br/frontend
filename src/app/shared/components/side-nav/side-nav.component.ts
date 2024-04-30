@@ -1,6 +1,8 @@
 import { Breakpoints, BreakpointObserver } from '@angular/cdk/layout';
 import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
+import { AuthService } from 'app/core/auth/auth.service';
+// import { AuthServiceService } from 'app/core/services/auth-service.service';
 import { environment } from 'enviroment/environment';
 import { Observable, map, shareReplay, take, tap } from 'rxjs';
 
@@ -45,7 +47,7 @@ export class SideNavComponent {
    */
   canCloseNavBar: boolean = true;
 
-  constructor(private breakpointObserver: BreakpointObserver, private httpClient: HttpClient) {
+  constructor(private breakpointObserver: BreakpointObserver, private httpClient: HttpClient, public authService: AuthService) {
 
     this.getDataToMenu(environment.menuPath).then(data => {
       this.navListOptions = data;
@@ -111,6 +113,8 @@ export class SideNavComponent {
     });
 
   }
+
+  
 
 }
 

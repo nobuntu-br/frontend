@@ -108,7 +108,7 @@ export class InputFieldComponent extends BaseFieldComponent implements OnInit, O
         }
       },
       error: (error) => {
-        console.log("erro do transloco:"+error)
+        // console.log("erro do transloco:"+error)
         this.displayedLabel = this.setCharactersLimit(this.label, this.charactersLimit);
       },
     });
