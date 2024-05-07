@@ -5,7 +5,7 @@ import { AuthUtils } from 'app/core/auth/auth.utils';
 import { OAuthEvent, OAuthService } from 'angular-oauth2-oidc';
 import { ActivatedRoute, Router } from '@angular/router';
 import { authCodeFlowConfig } from './authconfig';
-import { environment } from 'environments/environment';
+import { environment } from 'enviroment/environment'
 
 // @Injectable()
 @Injectable({

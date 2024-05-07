@@ -3,8 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { TranslocoService } from '@ngneat/transloco';
 import { AuthService } from 'app/core/auth/auth.service';
-import { environment } from 'environments/environment';
 import { Observable, map, shareReplay, take, tap } from 'rxjs';
+import { environment } from 'enviroment/environment'
 
 /**
  * Interface que contém informações das opções de vavegação do sideNavBar
