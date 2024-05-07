@@ -8,6 +8,7 @@ import { DefaultCardComponent } from '../default-card/default-card.component';
 import { TranslocoService } from '@ngneat/transloco';
 import { ConfirmationDialogComponent, IConfirmationDialog } from '../confirmation-dialog/confirmation-dialog.component';
 import { DinamicBaseResourceFormComponent, IDinamicBaseResourceFormComponent } from '../dinamic-base-resource-form/dinamic-base-resource-form.component';
+import { environment } from 'environments/environment';
 
 export interface IDefaultListComponentDialogConfig {
   /**
@@ -85,8 +86,8 @@ export class DefaultListComponent implements AfterViewInit, OnDestroy {
    */
   @Output() eventSelectedValues = new EventEmitter<any[]>();
   /**
-   * Link completo no qual é capaz de obter as instâncias dessa classe no banco de dados.\
-   * @example "https://siteDoProgramador.com/api/carros"
+   * Link no qual é capaz de obter as instâncias dessa classe no banco de dados.\
+   * @example "api/carros"
    */
   @Input() apiUrl!: string;
   /**
@@ -219,7 +220,7 @@ export class DefaultListComponent implements AfterViewInit, OnDestroy {
 
   /**
    * Realiza a requisição na API para obter os dados e popular a lista.
-   * @param apiURL Campos pelo qual será realizada a busca no campo de buscas. @example "https://siteDoProgramador.com/api/carros"
+   * @param apiURL Campos pelo qual será realizada a busca no campo de buscas. @example "api/carros"
    */
   getData(apiURL: string) {
 
@@ -472,11 +473,11 @@ export class DefaultListComponent implements AfterViewInit, OnDestroy {
 
   /**
    * Realiza uma requisição GET para API a partir do caminho passado.
-   * @param apiUrl Caminho da API para realizar a requisição @example https://siteDoProgramador.com/api/carros
+   * @param apiUrl Caminho da API para realizar a requisição @example O trecho "api/carros" de "https://siteDoProgramador.com/api/carros"
    * @returns Retorna um observador que irá observar os dados que serão retornados da API.
    */
   requestAllValuesFromAPI(apiUrl: string): Observable<any> {
-    return this.http.get(apiUrl);
+    return this.http.get(environment.backendUrl+'/'+apiUrl);
   }
 
   ngOnDestroy(): void {
@@ -500,7 +501,7 @@ export class DefaultListComponent implements AfterViewInit, OnDestroy {
       if (result == true) {
 
         this.selectedItems.forEach((item) => {
-          this.http.delete(this.apiUrl + '/' + item.id).subscribe({
+          this.http.delete(environment.backendUrl+"/"+this.apiUrl + '/' + item.id).subscribe({
             error: (error) => alert(this.translocoService.translate("componentsBase.Alerts.deleteErrorMessage")),
           }).unsubscribe();
         });

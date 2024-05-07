@@ -5,7 +5,7 @@ import { AuthUtils } from 'app/core/auth/auth.utils';
 import { OAuthEvent, OAuthService } from 'angular-oauth2-oidc';
 import { ActivatedRoute, Router } from '@angular/router';
 import { authCodeFlowConfig } from './authconfig';
-import { environment } from 'enviroment/environment';
+import { environment } from 'environments/environment';
 
 // @Injectable()
 @Injectable({
@@ -44,7 +44,7 @@ export class AuthService {
     });
 
 
-    const url = environment.authConfig.issuer + '.well-known/openid-configuration?p=b2c_1_susi1';
+    // const url = authCodeFlowConfig.issuer + '.well-known/openid-configuration?p=b2c_1_susi1';
     // this.oauthService.setupAutomaticSilentRefresh(); //TODO ver sobre isso, pq tem os eventos lá que recebe os token
     // this.oauthService.loadDiscoveryDocumentAndLogin();
     //this.oauthService.loadDiscoveryDocument(url);//TODO error
@@ -76,17 +76,17 @@ export class AuthService {
   getAccessToken(authorizationCode: string): Observable<any> {
 
     const getAccessTokenParams = {
-      grant_type: environment.authConfig.grant_type,
-      client_id: environment.authConfig.client_id,
-      scope: environment.authConfig.scope,
-      redirect_uri: environment.authConfig.redirect_uri,
+      grant_type: environment.grantType,
+      client_id: environment.clientId,
+      scope: environment.providerMicrosoftUri+environment.scope,
+      redirect_uri: environment.redirectUri,
       code: authorizationCode,
       code_verifier: this.codeVerifier
     }
 
-    let tenantId: string = environment.authConfig.tenantId;
+    let tenantId: string = environment.tenantId;
 
-    let getAccessTokenUri: string = environment.authConfig.getAccessTokenUri;
+    let getAccessTokenUri: string = environment.providerUriB2C + "/" + environment.tenantId + "/B2C_1_susi1/oauth2/v2.0/token";
     // let getAccessTokenUri: string = "https://allystore.b2clogin.com/" + tenantId + "/B2C_1_susi1/oauth2/v2.0/token";
 
     /*
@@ -154,7 +154,7 @@ export class AuthService {
    *
    * @param credentials
    */
-  signIn(segments: any): Observable<any> {
+  signIn(): Observable<any> {
 
     if (this._authenticated) {
       return throwError('User is already logged in.');
@@ -273,5 +273,16 @@ export class AuthService {
     // If the access token exists and it didn't expire, sign in using it
     // return this.signInUsingToken();
   }
+
+  checkAccountOnApp(){
+    //TODO vai precisar decodificar o accessToken para obter o UID
+    
+    //Depois usar o UID na pesquisa pra ver se o usuário está cadastrado nessa aplicação
+    this._httpClient.get<object>(environment.backendUrl+"/api/users",);
+
+    //se o usuário está cadastrado nessa aplicação, permite o acesso no componente callback para retornar para página de interesse
+  }
+
+  
 
 }

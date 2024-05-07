@@ -1,9 +1,9 @@
 import { Breakpoints, BreakpointObserver } from '@angular/cdk/layout';
 import { HttpClient } from '@angular/common/http';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { TranslocoService } from '@ngneat/transloco';
 import { AuthService } from 'app/core/auth/auth.service';
-// import { AuthServiceService } from 'app/core/services/auth-service.service';
-import { environment } from 'enviroment/environment';
+import { environment } from 'environments/environment';
 import { Observable, map, shareReplay, take, tap } from 'rxjs';
 
 /**
@@ -15,7 +15,8 @@ import { Observable, map, shareReplay, take, tap } from 'rxjs';
 interface INavListOption {
   routeUrl: string,
   optionName: string,
-  svgIcon: string
+  svgIcon: string,
+  optionNameTranslated: string
 }
 
 @Component({
@@ -23,7 +24,7 @@ interface INavListOption {
   templateUrl: './side-nav.component.html',
   styleUrls: ['./side-nav.component.scss']
 })
-export class SideNavComponent {
+export class SideNavComponent implements OnInit {
   /**
    * Opções que são apresentadas na lista lateral para navegar para outras paginas da aplicação
    */
@@ -47,19 +48,29 @@ export class SideNavComponent {
    */
   canCloseNavBar: boolean = true;
 
-  constructor(private breakpointObserver: BreakpointObserver, private httpClient: HttpClient, public authService: AuthService) {
+  constructor(
+    private breakpointObserver: BreakpointObserver,
+    private httpClient: HttpClient,
+    public authService: AuthService,
+    private translocoService: TranslocoService
+  ) { }
 
+  ngOnInit(): void {
     this.getDataToMenu(environment.menuPath).then(data => {
       this.navListOptions = data;
-
+      
       this.isHandset$ = this.breakpointObserver.observe(Breakpoints.Handset)
         .pipe(
           map(result => result.matches),
           tap(result => {
             //Se o resultado for falso (for tela grande)
             if (result == false) {
-              this.canCloseNavBar = false;//Não poderá fechar o NavBar
-              this.sideNavBarIsOpened = true;//Deixará o NavBarAberto
+              //Isso foi adicionado pois devido ao uso do transloco, ele faz ficar sobreposto
+              setTimeout(() => {
+                this.canCloseNavBar = false;//Não poderá fechar o NavBar
+                this.sideNavBarIsOpened = true;//Deixará o NavBarAberto
+              }, 1000);
+             
             } else {
               this.canCloseNavBar = true;
               this.sideNavBarIsOpened = false;
@@ -67,8 +78,8 @@ export class SideNavComponent {
           }),
           shareReplay()
         );
-    });
 
+    });
   }
 
   showSideNavBar() {
@@ -97,7 +108,7 @@ export class SideNavComponent {
           if (('itens' in data) == false) return;
 
           data.itens.forEach(item => {
-            navListOptions.push({ optionName: item.name, svgIcon: item.icon, routeUrl: item.routeUrl })
+            navListOptions.push({ optionName: item.name, svgIcon: item.icon, routeUrl: item.routeUrl, optionNameTranslated: item.name })
           });
 
           resolve(navListOptions);
@@ -113,8 +124,6 @@ export class SideNavComponent {
     });
 
   }
-
-  
 
 }
 

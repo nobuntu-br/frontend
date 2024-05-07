@@ -27,8 +27,12 @@ export class CallbackComponent implements OnInit {
         code: params['code'],
         state: params['state'],
       };
-
-      if (authorizationResponse.code == null) return;
+      
+      
+      if (!params.hasOwnProperty("code")){
+        this.router.navigate(["404-not-found"]);
+        return;
+      };
 
       var access_data;
 
@@ -39,6 +43,11 @@ export class CallbackComponent implements OnInit {
           this.authService._authenticated = true;
           this.authService.setAccessToken(access_data["access_token"]);
           this.authService.refreshToken = access_data["refresh_token"];
+
+          
+
+          // TODO verificar se o usuário está cadastrado no banco de dados certo
+              //Se não tiver faz o logoff e impede de ir pra próxima pagina
           
           // TODO Cadastras a sessão
           // Store the user on the user service

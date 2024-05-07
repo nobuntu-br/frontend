@@ -1,21 +1,24 @@
-
-<mat-sidenav-container class="shadow dark:shadow-none dark:border-b bg-card dark:bg-transparent print:hidden">
+<mat-sidenav-container class="shadow dark:shadow-none dark:border-b bg-card dark:bg-transparent print:hidden"
+    style="height: 100%;">
     <mat-sidenav #drawer [mode]="(isHandset$ | async) ? 'over' : 'side'" [opened]="sideNavBarIsOpened">
         <mat-toolbar>{{menuTitle}}</mat-toolbar>
         <mat-nav-list>
-            <a mat-list-item style="display: flex; flex-direction: column; align-content: center;" *ngFor="let option of navListOptions" [routerLink]="option.routeUrl"
-                (mouseup)="closeSideNavBar()">
+            <a mat-list-item style="display: flex; flex-direction: column; align-content: center;"
+                *ngFor="let option of navListOptions" [routerLink]="option.routeUrl" (mouseup)="closeSideNavBar()">
 
                 <mat-icon style="display: block; margin: auto;" svgIcon="feather:box"></mat-icon>
-                {{ option.optionName }}
+                <ng-container *transloco="let t">
+                    <p>{{ t(option.optionName+"."+option.optionName) }}</p>
+                </ng-container>
             </a>
         </mat-nav-list>
-        
+
     </mat-sidenav>
-    <mat-sidenav-content style="height: 100vh;">
+    <mat-sidenav-content>
 
         <mat-toolbar id="toolbar">
-            <button type="button" aria-label="Toggle sidenav" mat-icon-button (click)="showSideNavBar()" *ngIf="canCloseNavBar">
+            <button type="button" aria-label="Toggle sidenav" mat-icon-button (click)="showSideNavBar()"
+                *ngIf="canCloseNavBar">
                 <mat-icon aria-label="Side nav toggle icon" svgIcon="feather:menu"></mat-icon>
             </button>
             <span>{{applicationTitle}}</span>
