@@ -25,7 +25,8 @@
 
             <div>
                 <languages></languages>
-                <button *ngIf="!authService.check()" mat-button (click)="login()">Login</button>
+                <!-- <button *ngIf="!authService.check()" mat-button (click)="authService.">Login</button> -->
+                <button *ngIf="authService.check()" mat-button (click)="authService.signOut()">SignOut</button>
             </div>
 
         </mat-toolbar>

@@ -5,7 +5,10 @@ import { AuthUtils } from 'app/core/auth/auth.utils';
 import { OAuthEvent, OAuthService } from 'angular-oauth2-oidc';
 import { ActivatedRoute, Router } from '@angular/router';
 import { authCodeFlowConfig } from './authconfig';
-import { environment } from 'enviroment/environment'
+import { environment } from 'environments/environment';
+import { SessionService } from './session.service';
+import { Session } from './session.model';
+import { UserService } from './user.service';
 
 // @Injectable()
 @Injectable({
@@ -24,7 +27,9 @@ export class AuthService {
     private _httpClient: HttpClient,
     private oauthService: OAuthService,
     private activatedRoute: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private sessionService: SessionService,
+    private userService: UserService
   ) {
     this.configureSSO();
   }
@@ -33,14 +38,14 @@ export class AuthService {
     this.oauthService.configure(authCodeFlowConfig);
 
     // this.oauthService.loadDiscoveryDocumentAndTryLogin();
-    this.oauthService.setupAutomaticSilentRefresh();
+    // this.oauthService.setupAutomaticSilentRefresh();
 
     this.oauthService.events.subscribe((event: OAuthEvent) => {
       console.log("O evento aconteceu: ", event);
 
-      // if (event.type === 'token_received') {
-      //   console.debug('logged in');
-      // }
+      if (event.type === 'token_received') {
+        console.debug('logged in');
+      }
     });
 
 
@@ -78,7 +83,7 @@ export class AuthService {
     const getAccessTokenParams = {
       grant_type: environment.grantType,
       client_id: environment.clientId,
-      scope: environment.providerMicrosoftUri+environment.scope,
+      scope: environment.providerMicrosoftUri + environment.scope,
       redirect_uri: environment.redirectUri,
       code: authorizationCode,
       code_verifier: this.codeVerifier
@@ -216,9 +221,11 @@ export class AuthService {
   /**
    * Sign out
    */
-  signOut(): Observable<any> {
+  public signOut(): Observable<any> {
+    console.log("Realizado a operação de signOut");
     // Remove the access token from the local storage
-    localStorage.removeItem('accessToken');
+    // localStorage.removeItem('accessToken');
+    localStorage.clear();
 
     // Set the authenticated flag to false
     this._authenticated = false;
@@ -254,14 +261,29 @@ export class AuthService {
   check(): Observable<boolean> {
 
     // Verificar se o usuário está logado
+    // console.log("Está sendo feito a verificação do guard");
     // console.log("authenticated :", this._authenticated);
     if (this._authenticated) {
       return of(true);
     }
-
     // Verificar se ele não tem o accessToken
     if (!this.accessToken) {
       return of(false)
+    } else {
+      // const decodedAccessToken: object = AuthUtils._decodeToken(this.accessToken);
+      // const userUID = decodedAccessToken["oid"];
+      // console.log("tem accessToken");
+      // if (this.checkAccountOnApp(this.accessToken)) {
+      //   this.registerNewSession(userUID).pipe(take(1)).subscribe({
+      //     next: (data) => {
+      //       console.log(data);
+      //       return of(true);
+      //     },
+      //     error: (error) => {
+      //       return of(false);
+      //     }
+      //   })
+      // }
     }
 
     // Verificação se o token expirou
@@ -274,15 +296,55 @@ export class AuthService {
     // return this.signInUsingToken();
   }
 
-  checkAccountOnApp(){
-    //TODO vai precisar decodificar o accessToken para obter o UID
-    
-    //Depois usar o UID na pesquisa pra ver se o usuário está cadastrado nessa aplicação
-    this._httpClient.get<object>(environment.backendUrl+"/api/users",);
-
-    //se o usuário está cadastrado nessa aplicação, permite o acesso no componente callback para retornar para página de interesse
+  /**
+   * Verifica se a conta registrada no server provider está registrada para a aplicaçào atual
+   * @param userUID
+   * @returns 
+   */
+  checkAccountIsRegisteredOnApp(userUID: string): Observable<object> {
+    return this._httpClient.get<object>(environment.backendUrl + "/api/user/uid/" + userUID);
   }
 
-  
+  checkExistAnyUserAccount(): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      this._httpClient.get<object[]>(environment.backendUrl + "/api/user/").pipe(take(1)).subscribe({
+        next: (data: object[]) => {
+
+          console.log("Contas de usuários existentes: ", data);
+          if (data == null || data.length == 0) {
+            resolve(false);
+          } else {
+            resolve(true);
+          }
+
+        },
+        error: (error) => {
+
+          console.warn(error);
+          reject(new Error('Erro ao verificar se existe algum usuário registrado na aplicação'));
+
+        }
+      })
+    });
+  }
+
+  registerNewSession(userUID: string, userID: string): Observable<Session> {
+    const newSession : Session = {
+      finishSessionDate: new Date(),
+      hashValidationLogin: "test",
+      hashValidationLogout: "test",
+      initialDate: new Date(),
+      stayConnected: false,
+      tenantUID: environment.providerMicrosoftUri,
+      accessToken: this.accessToken,
+      userUID: userUID,
+      accessTokenExpirationDate: new Date(),
+      user: userID,
+    }
+
+    console.log("Session que será registrada: ", newSession)
+
+    return this.sessionService.create(newSession);
+  }
 
 }

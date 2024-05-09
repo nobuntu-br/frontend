@@ -1,10 +1,9 @@
 import { Breakpoints, BreakpointObserver } from '@angular/cdk/layout';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { TranslocoService } from '@ngneat/transloco';
 import { AuthService } from 'app/core/auth/auth.service';
+import { environment } from 'environments/environment';
 import { Observable, map, shareReplay, take, tap } from 'rxjs';
-import { environment } from 'enviroment/environment'
 
 /**
  * Interface que contém informações das opções de vavegação do sideNavBar
@@ -51,8 +50,7 @@ export class SideNavComponent implements OnInit {
   constructor(
     private breakpointObserver: BreakpointObserver,
     private httpClient: HttpClient,
-    public authService: AuthService,
-    private translocoService: TranslocoService
+    public authService: AuthService
   ) { }
 
   ngOnInit(): void {

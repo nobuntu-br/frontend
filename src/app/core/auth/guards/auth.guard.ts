@@ -3,7 +3,7 @@ import { CanMatch, Route, Router, UrlSegment, UrlTree } from '@angular/router';
 import { Observable, of, switchMap, take } from 'rxjs';
 import { AuthService } from 'app/core/auth/auth.service';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { environment } from 'enviroment/environment'
+import { environment } from 'environments/environment';
 import { options } from 'app/app.module';
 
 @Injectable({

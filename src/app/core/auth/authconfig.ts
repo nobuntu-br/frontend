@@ -1,5 +1,5 @@
 import { AuthConfig } from 'angular-oauth2-oidc';
-import { environment } from 'enviroment/environment'
+import { environment } from 'environments/environment';
 
 export const authCodeFlowConfig: AuthConfig = {
   // issuer: environment.authConfig.issuer,
@@ -7,7 +7,7 @@ export const authCodeFlowConfig: AuthConfig = {
   // tokenEndpoint: environment.authConfig.tokenEndpoint,
   tokenEndpoint: environment.microsoftLoginUri+'/'+environment.tenantId+"/oauth2/v2.0/token",
   // redirectUri: environment.authConfig.redirect_uri,
-  redirectUri: environment.frontendUrl+"/"+environment.redirectUri,
+  redirectUri: environment.frontEndUrl+"/"+environment.redirectUri,
   clientId: environment.clientId,
   responseType: 'code',
   strictDiscoveryDocumentValidation: false,

@@ -176,6 +176,8 @@ export abstract class BaseResourceFormComponent<T extends BaseResourceModel> imp
   protected updateResource() {
 
     this.objectTratament(this.resourceForm.value);
+
+    console.log("Valor que será enviado para API: ", this.resourceForm.value)
     
     const resource: T = this.jsonDataToResourceFn(this.resourceForm.value);
     console.log("Dados que estão sendo enviados para APi para atualização do item: ",resource);

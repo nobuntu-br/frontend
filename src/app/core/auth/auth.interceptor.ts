@@ -53,7 +53,7 @@ export class AuthInterceptor implements HttpInterceptor {
           console.log("Tem que delogar");
 
           // Reload the app
-          location.reload();
+          // location.reload();
         }
 
         return throwError(error);
