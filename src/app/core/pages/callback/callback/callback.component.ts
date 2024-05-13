@@ -5,7 +5,7 @@ import { AuthUtils } from 'app/core/auth/auth.utils';
 import { User } from 'app/core/auth/user.model';
 import { UserService } from 'app/core/auth/user.service';
 import { LocalStorageService } from 'app/shared/services/local-storage.service';
-import { environment } from 'environments/environment';
+import { environment } from 'enviroment/environment';
 import { take } from 'rxjs';
 
 @Component({

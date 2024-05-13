@@ -2,7 +2,7 @@ import { Breakpoints, BreakpointObserver } from '@angular/cdk/layout';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from 'app/core/auth/auth.service';
-import { environment } from 'environments/environment';
+import { environment } from 'enviroment/environment';
 import { Observable, map, shareReplay, take, tap } from 'rxjs';
 
 /**
