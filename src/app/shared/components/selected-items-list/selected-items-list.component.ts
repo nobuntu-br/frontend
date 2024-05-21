@@ -8,6 +8,7 @@ import { TranslocoService } from '@ngneat/transloco';
 import { DefaultCardComponent } from '../default-card/default-card.component';
 import { DinamicBaseResourceFormComponent, IDinamicBaseResourceFormComponent } from '../dinamic-base-resource-form/dinamic-base-resource-form.component';
 import { HttpClient } from '@angular/common/http';
+import { ISearchableField } from '../search-input-field/search-input-field.component';
 
 @Component({
   selector: 'app-selected-items-list',
@@ -61,7 +62,7 @@ export class SelectedItemsListComponent implements AfterViewInit, OnDestroy {
    * Campos pelo qual será realizada a busca no campo de buscas.\
    * @example ['name','phone'].
    */
-  @Input() searchableFields: string[] | null = null;
+  @Input() searchableFields: ISearchableField[] | null = null;
   /**
   * Número máximo de itens que serão renderizados na lista.\
   * @example 3

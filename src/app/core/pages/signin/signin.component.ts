@@ -12,6 +12,6 @@ export class SigninComponent implements OnInit {
   }
   ngOnInit(): void {
     //Redireciona o usuário para pagina de singIn da Azure
-    this.authService.signIn();
+    this.authService.login();
   }
 }

@@ -3,10 +3,16 @@ import { AfterViewInit, Component, EventEmitter, Input, OnDestroy, Output } from
 import { FormControl } from '@angular/forms';
 import { ItemBase } from 'app/shared/models/item-base.module';
 import { Observable } from 'rxjs/internal/Observable';
-import { debounceTime, switchMap, takeUntil } from 'rxjs/operators';
+import { debounceTime, switchMap, take, takeUntil } from 'rxjs/operators';
 import { BaseResourceFilterComponent } from '../filter/base-resource-filter/base-resource-filter.component';
 import { MatDialog } from '@angular/material/dialog';
 import { Subject } from 'rxjs';
+import { environment } from 'environments/environment';
+
+export interface ISearchableField {
+  name: string,
+  type: string
+}
 
 @Component({
   selector: 'search-input-field',
@@ -38,10 +44,9 @@ export class SearchInputFieldComponent implements AfterViewInit, OnDestroy {
    */
   @Output() returnedItemsToCreate: EventEmitter<any> = new EventEmitter<any>();
   /**
-   * Campos pelo qual será realizada a busca no campo de buscas.\
-   * Exemplo: ['name','phone'].
+   * Campos pelo qual será realizada a busca no campo de buscas.
    */
-  @Input() searchableFields: string[] | null = null;
+  @Input() searchableFields: ISearchableField[] | null = null;
   /**
    * Subject responsável por remover os observadores que estão rodando na pagina no momento do componente ser deletado.
    */
@@ -58,7 +63,7 @@ export class SearchInputFieldComponent implements AfterViewInit, OnDestroy {
     this.searchOnAPIEachInputFieldValueChanges(this.searchInputValue, this.apiUrl, this.searchableFields);
   }
 
-  searchOnAPIEachInputFieldValueChanges(searchInput: FormControl<string | null>, apiURL: string, searchableFields: string[]) {
+  searchOnAPIEachInputFieldValueChanges(searchInput: FormControl<string | null>, apiURL: string, searchableFields: ISearchableField[]) {
     searchInput.valueChanges.pipe(
       debounceTime(1000),
       switchMap(async (value: string) => {
@@ -115,8 +120,14 @@ export class SearchInputFieldComponent implements AfterViewInit, OnDestroy {
 
   }
 
-  search(searchableFields: string[] | null, searchInputValue: string, apiUrl: string) {
-    searchableFields = ["variationCode"];
+  /**
+   * 
+   * @param searchableFields 
+   * @param searchInputValue 
+   * @param apiUrl 
+   * @returns 
+   */
+  search(searchableFields: ISearchableField[] | null, searchInputValue: string, apiUrl: string) {
     if (searchableFields == null) return;
     if (searchInputValue == null) return;
 
@@ -125,23 +136,31 @@ export class SearchInputFieldComponent implements AfterViewInit, OnDestroy {
     if (filterParameters == null) return null;
     if(filterParameters.filterValues.length == 0) return null;
 
-    this.requestValuesFromAPIWithSearchParametersFromFilter(apiUrl, filterParameters).pipe(takeUntil(this.ngUnsubscribe)).subscribe((itemsReturned: any[]) => {
-      if (itemsReturned.length == 0) return;
-
-      this.removeAllComponentsOnViewFunction.emit(true);
-      this.returnedItemsToCreate.emit(itemsReturned);
+    this.requestValuesFromAPIWithSearchParametersFromFilter(apiUrl, filterParameters).pipe(takeUntil(this.ngUnsubscribe)).subscribe({
+      next: (itemsReturned: object[]) => {
+        // console.log("Dados obtidos do filtro: ", itemsReturned);
+        if (itemsReturned.length == 0) return;
+  
+        this.removeAllComponentsOnViewFunction.emit(true);
+        this.returnedItemsToCreate.emit(itemsReturned);
+      },
+      error: (error) => {
+        console.log("Erro obtido do filtro: ",error);
+      }
     });
+    
   }
 
-  createSeachParameters(searchableFields: string[], searchInputValue: string) {
+  createSeachParameters(searchableFields: ISearchableField[], searchInputValue: string) {
     var filterValues = [];
     var conditions = [];
 
+    console.log(searchableFields);
     const sentences: string[] = this.splitStringIntoArray(searchInputValue);
 
     var index: number = 0;
 
-    searchableFields.forEach((field) => {
+    searchableFields.forEach((searchableField: ISearchableField) => {
       sentences.forEach((sentence) => {
         index++;
         filterValues.push({
@@ -150,8 +169,8 @@ export class SearchInputFieldComponent implements AfterViewInit, OnDestroy {
             "value": sentence
           },
           "variableInfo": {
-            "name": field,
-            "type": "string"
+            "name": searchableField.name,
+            "type": searchableField.type
           }
         },);
         if (index > 1) {
@@ -178,11 +197,12 @@ export class SearchInputFieldComponent implements AfterViewInit, OnDestroy {
   }
 
   requestValuesFromAPIWithSearchParametersFromFilter(apiUrl: string, filterParameters): Observable<any> {
-    return this.httpClient.post(apiUrl + "/custom", filterParameters);
+    console.log("Dados sendo enviados para a pesquisa no filtro: ", filterParameters)
+    return this.httpClient.post(environment.backendUrl + '/' + apiUrl + "/custom", filterParameters);
   }
 
   requestAllValuesFromAPI(apiUrl: string): Observable<any> {
-    return this.httpClient.get(apiUrl);
+    return this.httpClient.get(environment.backendUrl + '/' + apiUrl);
   }
 
   ngOnDestroy(): void {

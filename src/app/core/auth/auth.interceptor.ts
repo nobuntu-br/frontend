@@ -35,12 +35,13 @@ export class AuthInterceptor implements HttpInterceptor {
 
     if ( this._authService.accessToken && !AuthUtils.isTokenExpired(this._authService.accessToken) )
     {
+        // console.log("Token de accesso obtido para envio no interceptor: ", this._authService.accessToken);
         newReq = req.clone({
             // headers: req.headers.set('Authorization', 'Bearer ' + this._authService.accessToken)
+            // headers: req.headers.set('Authorization', this._authService.accessToken)
             headers: req.headers.set('Authorization', this._authService.accessToken)
-        });
+          });
     }
-
     // Response
     return next.handle(newReq).pipe(
       catchError((error) => {

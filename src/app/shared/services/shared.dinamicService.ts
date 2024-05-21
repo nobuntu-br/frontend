@@ -47,7 +47,7 @@ export abstract class DinamicBaseResourceService {
   update(id, resource: any): Observable<any> {
     const url = `${this.apiPath}/${id}`;
 
-    return this.http.put(url, resource).pipe(
+    return this.http.patch(url, resource).pipe(
       map(() => resource),
       catchError(this.handleError)
     )

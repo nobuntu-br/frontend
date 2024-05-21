@@ -30,6 +30,10 @@ interface ICreateFormParams {
   secondaryFormClassName?: string
 }
 
+interface IAttribute {
+  name: string,
+  type: string
+}
 /**
  * Classe responsável por direcionar para qual tipo de componente de formulário será gerado.
  */
@@ -110,12 +114,12 @@ export class GeneratedFormFactoryService {
 
   }
 
-  getSecondaryFormAttributesData(JSONDictionary: object, className: string): any[] {
+  getSecondaryFormAttributesData(JSONDictionary: object, className: string): IAttribute[] {
     if (!JSONDictionary["attributes"]) {
       return null;
     }
-
-    let attributes = [];
+    
+    let attributes : IAttribute[] = [];
 
     //Percorre todos os atributos da classe
     for (let attributeIndex = 0; attributeIndex < JSONDictionary["attributes"].length; attributeIndex++) {

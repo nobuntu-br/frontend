@@ -132,7 +132,7 @@ export abstract class BaseResourceFormComponent<T extends BaseResourceModel> imp
             //TODO usar transloco nessas mensagens
             if (this.resourceForm == null) { console.error("ResourceForm não foi instanciado") }
             this.resourceForm.addControl("updatedAt", this.formBuilder.control(null));
-            console.log("Dados do recurso obtidos da API: ", resource);
+            // console.log("Dados do recurso obtidos da API: ", resource);
             this.resourceForm.patchValue(resource); // binds loaded resource data to resourceForm
           },
           error: (error) => alert(this.translocoService.translate("componentsBase.Alerts.readErrorMessage"))

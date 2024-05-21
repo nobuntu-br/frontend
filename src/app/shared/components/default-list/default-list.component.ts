@@ -8,7 +8,8 @@ import { DefaultCardComponent } from '../default-card/default-card.component';
 import { TranslocoService } from '@ngneat/transloco';
 import { ConfirmationDialogComponent, IConfirmationDialog } from '../confirmation-dialog/confirmation-dialog.component';
 import { DinamicBaseResourceFormComponent, IDinamicBaseResourceFormComponent } from '../dinamic-base-resource-form/dinamic-base-resource-form.component';
-import { environment } from 'enviroment/environment';
+import { environment } from 'environments/environment';
+import { ISearchableField } from '../search-input-field/search-input-field.component';
 
 export interface IDefaultListComponentDialogConfig {
   /**
@@ -23,7 +24,7 @@ export interface IDefaultListComponentDialogConfig {
   userConfig: any,
   selectedItemsLimit: number,
   apiUrl: string,
-  searchableFields: string[] | null,
+  searchableFields: ISearchableField[] | null,
   isSelectable: boolean,
   className: string,
   isAbleToCreate: boolean,
@@ -94,7 +95,7 @@ export class DefaultListComponent implements AfterViewInit, OnDestroy {
    * Campos pelo qual será realizada a busca no campo de buscas.\
    * @example ['name','phone'].
    */
-  @Input() searchableFields: string[] | null = null;
+  @Input() searchableFields: ISearchableField[] | null = null;
   /**
   * Número máximo de itens que serão renderizados na lista.\
   * @example 3
@@ -477,7 +478,7 @@ export class DefaultListComponent implements AfterViewInit, OnDestroy {
    * @returns Retorna um observador que irá observar os dados que serão retornados da API.
    */
   requestAllValuesFromAPI(apiUrl: string): Observable<any> {
-    return this.http.get(environment.backendUrl+'/'+apiUrl);
+      return this.http.get(environment.backendUrl+'/'+apiUrl);
   }
 
   ngOnDestroy(): void {

@@ -1,16 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of, take, throwError } from 'rxjs';
-import { AuthUtils } from 'app/core/auth/auth.utils';
-import { OAuthEvent, OAuthService } from 'angular-oauth2-oidc';
-import { ActivatedRoute, Router } from '@angular/router';
-import { authCodeFlowConfig } from './authconfig';
-import { environment } from 'enviroment/environment';
+import { Observable, of, take } from 'rxjs';
+import { UserManager, UserManagerSettings, User } from 'oidc-client-ts';
+import { environment } from 'environments/environment';
 import { SessionService } from './session.service';
 import { Session } from './session.model';
-import { UserService } from './user.service';
 
-// @Injectable()
 @Injectable({
   providedIn: 'root',
 })
@@ -20,239 +15,81 @@ export class AuthService {
   claims: any;
   authorizationResponse;
 
+  private userManager: UserManager;
+  private user: User | null = null;
+
   /**
    * Constructor
    */
   constructor(
     private _httpClient: HttpClient,
-    private oauthService: OAuthService,
-    private activatedRoute: ActivatedRoute,
-    private router: Router,
     private sessionService: SessionService,
-    private userService: UserService
   ) {
-    this.configureSSO();
-  }
+    
+    const settings: UserManagerSettings = {
+      authority: environment.authority,
+      client_id: environment.client_id,
+      redirect_uri: environment.redirect_uri,
+      post_logout_redirect_uri: environment.post_logout_redirect_uri,
+      response_type: 'code',
+      scope: environment.scope,
+      
+      filterProtocolClaims: true,
+      loadUserInfo: false,
 
-  configureSSO() {
-    this.oauthService.configure(authCodeFlowConfig);
-
-    // this.oauthService.loadDiscoveryDocumentAndTryLogin();
-    // this.oauthService.setupAutomaticSilentRefresh();
-
-    this.oauthService.events.subscribe((event: OAuthEvent) => {
-      console.log("O evento aconteceu: ", event);
-
-      if (event.type === 'token_received') {
-        console.debug('logged in');
-      }
-    });
-
-
-    // const url = authCodeFlowConfig.issuer + '.well-known/openid-configuration?p=b2c_1_susi1';
-    // this.oauthService.setupAutomaticSilentRefresh(); //TODO ver sobre isso, pq tem os eventos lá que recebe os token
-    // this.oauthService.loadDiscoveryDocumentAndLogin();
-    //this.oauthService.loadDiscoveryDocument(url);//TODO error
+      extraQueryParams: {
+        p: environment.signInPolitical,
+      },
+    }
+    
+    this.userManager = new UserManager(settings);
   }
 
   get authenticated() {
     return this._authenticated;
   }
-  // -----------------------------------------------------------------------------------------------------
-  // @ Accessors
-  // -----------------------------------------------------------------------------------------------------
-
-  /**
-   * Setter & getter for access token
-   */
-  setAccessToken(token: string) {
-    this._authenticated = true;
-    localStorage.setItem('accessToken', token);
-  }
 
   get accessToken(): string {
-    return localStorage.getItem('accessToken') ?? '';
-  }
-
-  set refreshToken(refreshToken: string) {
-    localStorage.setItem('refreshToken', refreshToken);
-  }
-
-  getAccessToken(authorizationCode: string): Observable<any> {
-
-    const getAccessTokenParams = {
-      grant_type: environment.grantType,
-      client_id: environment.clientId,
-      scope: environment.providerMicrosoftUri + environment.scope,
-      redirect_uri: environment.redirectUri,
-      code: authorizationCode,
-      code_verifier: this.codeVerifier
+    var sessionData = sessionStorage.getItem('oidc.user:https://'+environment.provider+'/'+environment.tenant_id+'/'+environment.signInPolitical+'/v2.0/:'+environment.client_id) ?? '';
+    try {
+      const parsedData = JSON.parse(sessionData);
+      return parsedData?.access_token || '';
+    } catch (e) {
+      return '';
     }
-
-    let tenantId: string = environment.tenantId;
-
-    let getAccessTokenUri: string = environment.providerUriB2C + "/" + environment.tenantId + "/B2C_1_susi1/oauth2/v2.0/token";
-    // let getAccessTokenUri: string = "https://allystore.b2clogin.com/" + tenantId + "/B2C_1_susi1/oauth2/v2.0/token";
-
-    /*
-    this._httpClient.get<any>(getAccessTokenUri, { params: getAccessTokenParams }).pipe(take(1)).subscribe({
-      next: (data) => {
-        console.log("Dados retornados ao obter o access token: ", data);
-
-        // this.saveAccessToken(data.access_token);
-        this.accessToken = data.access_token;
-        return data;
-        // this.saveRefreshToken(data.refresh_token);
-      },
-      error: (error) => {
-        console.warn(error);
-        return null;
-      }
-    });
-    */
-
-    return this._httpClient.get<any>(getAccessTokenUri, { params: getAccessTokenParams });
+   
   }
 
-  getAuthenticationCode() {
-    this.activatedRoute.queryParams.pipe(take(1)).subscribe((params) => {
 
-      this.authorizationResponse = {
-        code: params['code'],
-        state: params['state'],
-      };
-
-    });
-  }
-
-  /**
-   * Adicionado
-   */
-  get codeVerifier(): string {
-    return sessionStorage.getItem('PKCE_verifier');
-  }
-
-  // -----------------------------------------------------------------------------------------------------
-  // @ Public methods
-  // -----------------------------------------------------------------------------------------------------
-
-  /**
-   * Forgot password
-   *
-   * @param email
-   */
-  forgotPassword(email: string): Observable<any> {
-    return this._httpClient.post('api/auth/forgot-password', email);
-  }
-
-  /**
-   * Reset password
-   *
-   * @param password
-   */
-  resetPassword(password: string): Observable<any> {
-    return this._httpClient.post('api/auth/reset-password', password);
-  }
-
-  /**
-   * Sign in
-   *
-   * @param credentials
-   */
-  signIn(): Observable<any> {
-
-    if (this._authenticated) {
-      return throwError('User is already logged in.');
+  get userUID(): string {
+    var sessionData = sessionStorage.getItem('oidc.user:https://'+environment.provider+'/'+environment.tenant_id+'/'+environment.signInPolitical+'/v2.0/:'+environment.client_id);
+    try {
+      const parsedData = JSON.parse(sessionData);
+      return parsedData?.profile.sub || '';
+    } catch (e) {
+      return '';
     }
-
-    const url = authCodeFlowConfig.issuer + '.well-known/openid-configuration?p=b2c_1_susi1';
-
-    this.oauthService.loadDiscoveryDocument(url).then(() => {
-      if (!this.oauthService.hasValidAccessToken()) {
-        this.oauthService.setupAutomaticSilentRefresh();
-        this.oauthService.initCodeFlow();//Chama a pagina para realizar o logIn
-      }
-    })
-
   }
 
-
-
-  /**
-   * Sign in using the access token
-   */
-  /*
-  signInUsingToken(): Observable<any> {
-      // Sign in using the token
-      return this._httpClient.post('api/auth/sign-in-with-token', {
-          accessToken: this.accessToken
-      }).pipe(
-          catchError(() =>
-
-              // Return false
-              of(false)
-          ),
-          switchMap((response: any) => {
-
-              // Replace the access token with the new one if it's available on
-              // the response object.
-              //
-              // This is an added optional step for better security. Once you sign
-              // in using the token, you should generate a new one on the server
-              // side and attach it to the response object. Then the following
-              // piece of code can replace the token with the refreshed one.
-              if (response.accessToken) {
-                  this.accessToken = response.accessToken;
-              }
-
-              // Set the authenticated flag to true
-              this._authenticated = true;
-
-              // Store the user on the user service
-              // this._userService.user = response.user;
-
-              // Return true
-              return of(true);
-          })
-      );
-  }
-  */
-
-  /**
-   * Sign out
-   */
-  public signOut(): Observable<any> {
-    console.log("Realizado a operação de signOut");
-    // Remove the access token from the local storage
-    // localStorage.removeItem('accessToken');
-    localStorage.clear();
-
-    // Set the authenticated flag to false
-    this._authenticated = false;
-
-    this.oauthService.logOut();//Adicionado
-
-    // Return the observable
-    return of(true);
+  login(): void {
+    this.userManager.signinRedirect();
   }
 
-  /**
-   * Sign up
-   *
-   * @param user
-   */
-  signUp(): Observable<any> {
-    //TODO direcionar para pagina de criação de conta
-    return throwError("Método não implementado ainda");
+  async completeAuthentication(): Promise<void> {
+    this.user = await this.userManager.signinRedirectCallback();
+    await this.userManager.storeUser(this.user);
   }
 
-  /**
-   * Unlock session
-   * @param credentials
-   */
-  unlockSession(): Observable<any> {
-    //TODO implementar o método
-    return throwError("Método não implementado ainda");
+  isLoggedIn(): boolean {
+    return this.user != null && !this.user.expired;
+  }
+
+  getUser(): User | null {
+    return this.user;
+  }
+
+  public logout(): void {
+    this.userManager.signoutRedirect();
   }
 
   /**
@@ -263,31 +100,20 @@ export class AuthService {
     // Verificar se o usuário está logado
     // console.log("Está sendo feito a verificação do guard");
     // console.log("authenticated :", this._authenticated);
-    if (this._authenticated) {
-      return of(true);
-    }
-    // Verificar se ele não tem o accessToken
-    if (!this.accessToken) {
-      return of(false)
-    } else {
-      // const decodedAccessToken: object = AuthUtils._decodeToken(this.accessToken);
-      // const userUID = decodedAccessToken["oid"];
-      // console.log("tem accessToken");
-      // if (this.checkAccountOnApp(this.accessToken)) {
-      //   this.registerNewSession(userUID).pipe(take(1)).subscribe({
-      //     next: (data) => {
-      //       console.log(data);
-      //       return of(true);
-      //     },
-      //     error: (error) => {
-      //       return of(false);
-      //     }
-      //   })
-      // }
-    }
+    // if (this._authenticated) {
+    //   return of(true);
+    // }
+    // // Verificar se ele não tem o accessToken
+    // console.log("Access token: ", this.accessToken);
+    // if (!this.accessToken) {
+    //   return of(false)
+    // }
+    // // Verificação se o token expirou
+    // if (AuthUtils.isTokenExpired(this.accessToken) == false) {
+    //   return of(true);
+    // }
 
-    // Verificação se o token expirou
-    if (AuthUtils.isTokenExpired(this.accessToken) == false) {
+    if (this.isLoggedIn() == true) {
       return of(true);
     }
 
@@ -329,20 +155,18 @@ export class AuthService {
   }
 
   registerNewSession(userUID: string, userID: string): Observable<Session> {
-    const newSession : Session = {
+    const newSession: Session = {
       finishSessionDate: new Date(),
       hashValidationLogin: "test",
       hashValidationLogout: "test",
       initialDate: new Date(),
       stayConnected: false,
-      tenantUID: environment.providerMicrosoftUri,
+      tenantUID: environment.tenant_id,
       accessToken: this.accessToken,
       userUID: userUID,
       accessTokenExpirationDate: new Date(),
       user: userID,
     }
-
-    console.log("Session que será registrada: ", newSession)
 
     return this.sessionService.create(newSession);
   }

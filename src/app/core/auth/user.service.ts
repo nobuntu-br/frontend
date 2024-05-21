@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, Injector } from '@angular/core';
 import { BaseResourceService } from 'app/shared/services/shared.service';
-import { environment } from 'enviroment/environment';
+import { environment } from 'environments/environment';
 import { User } from './user.model';
 import { catchError, map, Observable } from 'rxjs';
 
