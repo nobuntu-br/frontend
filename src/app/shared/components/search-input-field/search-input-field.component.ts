@@ -7,7 +7,7 @@ import { debounceTime, switchMap, take, takeUntil } from 'rxjs/operators';
 import { BaseResourceFilterComponent } from '../filter/base-resource-filter/base-resource-filter.component';
 import { MatDialog } from '@angular/material/dialog';
 import { Subject } from 'rxjs';
-import { environment } from 'environments/environment';
+import { environment } from 'enviroment/environment';
 
 export interface ISearchableField {
   name: string,

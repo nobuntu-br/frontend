@@ -8,7 +8,7 @@ import { DefaultCardComponent } from '../default-card/default-card.component';
 import { TranslocoService } from '@ngneat/transloco';
 import { ConfirmationDialogComponent, IConfirmationDialog } from '../confirmation-dialog/confirmation-dialog.component';
 import { DinamicBaseResourceFormComponent, IDinamicBaseResourceFormComponent } from '../dinamic-base-resource-form/dinamic-base-resource-form.component';
-import { environment } from 'environments/environment';
+import { environment } from 'enviroment/environment';
 import { ISearchableField } from '../search-input-field/search-input-field.component';
 
 export interface IDefaultListComponentDialogConfig {

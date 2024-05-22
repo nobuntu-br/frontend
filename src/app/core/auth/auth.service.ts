@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of, take } from 'rxjs';
 import { UserManager, UserManagerSettings, User } from 'oidc-client-ts';
-import { environment } from 'environments/environment';
+import { environment } from 'enviroment/environment';
 import { SessionService } from './session.service';
 import { Session } from './session.model';
 

@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { AuthService } from 'app/core/auth/auth.service';
 import { User } from 'app/core/auth/user.model';
 import { UserService } from 'app/core/auth/user.service';
-import { environment } from 'environments/environment';
+import { environment } from 'enviroment/environment';
 import { take } from 'rxjs';
 
 @Component({
