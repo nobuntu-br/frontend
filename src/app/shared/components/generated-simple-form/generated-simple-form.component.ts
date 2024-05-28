@@ -64,6 +64,8 @@ export class GeneratedSimpleFormComponent implements AfterViewInit {
    */
   @Input() config;
 
+  isLoading: boolean = true;
+
   @ViewChild('placeToRender', { read: ViewContainerRef }) target!: ViewContainerRef;
 
   constructor(
@@ -100,6 +102,7 @@ export class GeneratedSimpleFormComponent implements AfterViewInit {
         this.formGenerator.createComponent(createComponentData)
 
       });
+      this.isLoading = false;
       this.formIsReady.emit(true);
     }, 0);
   }

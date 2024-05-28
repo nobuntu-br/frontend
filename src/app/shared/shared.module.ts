@@ -1,5 +1,5 @@
 //Modules
-import { Injectable, NgModule } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { CommonModule, NgSwitch, NgSwitchCase, NgSwitchDefault } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
@@ -13,7 +13,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
-import { TRANSLOCO_LOADER, TRANSLOCO_SCOPE, Translation, TranslocoLoader, TranslocoModule } from '@ngneat/transloco';
+import { TRANSLOCO_SCOPE, TranslocoModule } from '@ngneat/transloco';
 import { BaseResourceFilterComponent } from './components/filter/base-resource-filter/base-resource-filter.component';
 import { NgxMaskModule } from 'ngx-mask';
 import { MatSelectModule } from '@angular/material/select';
@@ -29,7 +29,6 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatMenuModule } from '@angular/material/menu';
-import { HttpClient } from '@angular/common/http';
 
 //Components
 import { ConfirmationDialogComponent } from './components/confirmation-dialog/confirmation-dialog.component';
@@ -57,7 +56,7 @@ import { DinamicBaseResourceFormComponent } from './components/dinamic-base-reso
 import { LayoutTestComponent } from './components/layout-test/layout-test.component';
 import { LanguagesComponent } from './components/languages/languages.component';
 import { SubformComponent } from './components/subform/subform.component';
-
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @NgModule({
     imports: [
@@ -92,9 +91,10 @@ import { SubformComponent } from './components/subform/subform.component';
         MatTabsModule,
         MatToolbarModule,
         MatSidenavModule,
+        MatProgressSpinnerModule
     ],
     providers: [
-        { provide: TRANSLOCO_SCOPE, useValue: {scope: "components", alias:"componentsBase"} }
+        { provide: TRANSLOCO_SCOPE, useValue: { scope: "components", alias: "componentsBase" } }
     ],
     exports: [
         CommonModule,

@@ -3,15 +3,16 @@ import { CommonModule } from '@angular/common';
 
 import { SigninRoutingModule } from './signin-routing.module';
 import { SigninComponent } from './signin.component';
-
+import { TranslocoModule } from '@ngneat/transloco';
 
 @NgModule({
   declarations: [
-    SigninComponent
+    SigninComponent,
   ],
   imports: [
     CommonModule,
-    SigninRoutingModule
+    SigninRoutingModule,
+    TranslocoModule
   ]
 })
 export class SigninModule { }

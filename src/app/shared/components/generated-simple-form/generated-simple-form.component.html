@@ -1,12 +1,15 @@
 <div style="background-color: white;" class="mb-4 p-2 rounded-2xl shadow w-full inline-block">
     <form id="formBase" [formGroup]="resourceForm">
+
+        <div *ngIf="isLoading == true" style="margin: auto;">
+            <mat-spinner></mat-spinner>
+        </div>
+
         <ng-container style="display: flex; padding: 4px;" #placeToRender></ng-container>
 
         <ng-content></ng-content>
-        
+
     </form>
-    
-    <!-- <button mat-button (click)="SeeFormData()">Ver dados do Form</button> -->
 
     <div id="fixedButtons" class="flex justify-end items-center px-6 py-4 space-x-2">
         <button mat-fab class="px-6 ml-3" (click)="return()">
@@ -19,5 +22,5 @@
             <mat-icon svgIcon="mat_solid:save"></mat-icon>
         </button>
     </div>
-    
+
 </div>

@@ -1,4 +1,9 @@
 <div class="background">
-    <p style="color: white;">Loading..
-    </p>
+    <div *ngIf="pageState == 0">
+        <p style="color: white;">{{ 'componentsBase.auth-callback-page.redirect-to-callback' | transloco }}</p>
+    </div>
+    
+    <div *ngIf="pageState == 1">
+        <p style="color: white;">{{ 'componentsBase.auth-callback-page.authentication-error-clientId-missmatch' | transloco }}</p>
+    </div>
 </div>

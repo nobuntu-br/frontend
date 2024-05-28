@@ -6,23 +6,32 @@ import { UserService } from 'app/core/auth/user.service';
 import { environment } from 'environments/environment';
 import { take } from 'rxjs';
 
+enum CallbackPageState {
+  Redirecting,
+  Error,
+}
+
 @Component({
   selector: 'app-callback',
   templateUrl: './callback.component.html',
   styleUrls: ['./callback.component.scss']
 })
 export class CallbackComponent implements OnInit {
+  pageState : CallbackPageState;
 
   constructor(
     private authService: AuthService,
     private router: Router,
     private userService: UserService,
   ) {
-
+    this.pageState = CallbackPageState.Redirecting;
   }
 
   async ngOnInit(): Promise<void> {
-    await this.authService.completeAuthentication();
+    await this.authService.completeAuthentication().catch((returnedValue)=>{
+      this.pageState = CallbackPageState.Error;
+      console.log(returnedValue);
+    });
 
     const user: User = {
       firstName: this.authService.getUser.name,
@@ -39,21 +48,21 @@ export class CallbackComponent implements OnInit {
       //Verificar se usuário está registrado na aplicação
       this.userService.getByUID(this.authService.userUID).pipe(take(1)).subscribe({
         next: (returnedUser: User) => {
-          console.log("Usuário encontrado no banco de dados da aplicação: ", returnedUser);
           this.registerNewSession(returnedUser.id);
         },
+
         error: (_error) => {
-          console.log(_error);
 
           this.userService.create(user).pipe(take(1)).subscribe({
             next: (newUser: User) => {
-              console.log("Usuário criado com sucesso!");
               this.registerNewSession(newUser.id);
             },
             error: (error) => {
-              console.warn("Erro ao criar o usuário ", error);
+              // console.warn("Erro ao criar o usuário ", error);
+              this.redirectToErrorPage();
             }
-          })
+          });
+
         }
       });
 

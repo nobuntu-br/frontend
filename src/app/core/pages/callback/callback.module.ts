@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 
 import { CallbackRoutingModule } from './callback-routing.module';
 import { CallbackComponent } from './callback/callback.component';
-
+import { TranslocoModule } from '@ngneat/transloco';
 
 @NgModule({
   declarations: [
@@ -11,7 +11,8 @@ import { CallbackComponent } from './callback/callback.component';
   ],
   imports: [
     CommonModule,
-    CallbackRoutingModule
+    CallbackRoutingModule,
+    TranslocoModule
   ]
 })
 export class CallbackModule { }

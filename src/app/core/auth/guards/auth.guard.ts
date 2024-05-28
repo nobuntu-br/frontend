@@ -4,7 +4,6 @@ import { Observable, of, switchMap, take } from 'rxjs';
 import { AuthService } from 'app/core/auth/auth.service';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from 'environments/environment';
-import { options } from 'app/app.module';
 
 @Injectable({
   providedIn: 'root'
@@ -51,7 +50,7 @@ export class AuthGuard implements CanMatch {
 
       switchMap((authenticated) => {
 
-        console.log("Usuário com permisão para rota? ", authenticated);
+        // console.log("Usuário com permisão para rota? ", authenticated);
         // Se o usuário não estiver autenticado
         if (!authenticated) {
 
@@ -61,15 +60,11 @@ export class AuthGuard implements CanMatch {
 
           this.saveRedirectURL(redirectURL);
 
-          // //Redireciona o usuário para pagina de singIn da Azure
-          // this._authService.signIn(redirectURL);
-          // const urlTree = this._router.parseUrl(`sign-in`);
+          //Redireciona o usuário para página de signIn
           this._router.navigate(['signin']);
           
           return of(false);
-          // return of(urlTree);
         }
-        // this.verifyAcessToPage(segments);
         
         // Permite o acesso
         return of(true);

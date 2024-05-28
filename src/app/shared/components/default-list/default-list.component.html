@@ -21,8 +21,12 @@
     <ng-container #placeToRender></ng-container>
   </div>
 
+  <div *ngIf="isLoading == true" style="margin: auto;">
+    <mat-spinner></mat-spinner>
+  </div>
+
   <!-- Mensagem caso não tenha nada apresentado na lista -->
-  <div *ngIf="itemsDisplayed.length == 0" style="margin: auto;">
+  <div *ngIf="isLoading == false && itemsDisplayed.length == 0" style="margin: auto;">
     <p>{{ 'componentsBase.default-list.noData' | transloco }}</p>
   </div>
 

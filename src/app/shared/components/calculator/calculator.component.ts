@@ -36,7 +36,7 @@ export class CalculatorComponent implements OnInit, OnDestroy {
   
   constructor(
     private translocoService: TranslocoService,
-    // public dialogCalculatorRef: MatDialogRef<CalculatorComponent>,
+    public dialogCalculatorRef: MatDialogRef<CalculatorComponent>,
     ){}
 
   ngOnInit(): void {
@@ -44,7 +44,7 @@ export class CalculatorComponent implements OnInit, OnDestroy {
   }
   
   closeCalculator(): void {
-    // this.dialogCalculatorRef.close(parseFloat(this.display));
+    this.dialogCalculatorRef.close(parseFloat(this.display));
   }
 
   subscribeChangeLanguageEvent(translocoService: TranslocoService){

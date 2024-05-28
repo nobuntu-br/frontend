@@ -10,7 +10,6 @@ export class AuthInterceptor implements HttpInterceptor {
    * Constructor
    */
   constructor(private _authService: AuthService)
-  // constructor()
   {
   }
 
@@ -35,25 +34,22 @@ export class AuthInterceptor implements HttpInterceptor {
 
     if ( this._authService.accessToken && !AuthUtils.isTokenExpired(this._authService.accessToken) )
     {
-        // console.log("Token de accesso obtido para envio no interceptor: ", this._authService.accessToken);
         newReq = req.clone({
-            // headers: req.headers.set('Authorization', 'Bearer ' + this._authService.accessToken)
-            // headers: req.headers.set('Authorization', this._authService.accessToken)
-            headers: req.headers.set('Authorization', this._authService.accessToken)
-          });
+            headers: req.headers.set('Authorization', 'Bearer ' + this._authService.accessToken)
+        });
     }
-    // Response
+
+    // Resposta obtida após a requisição
     return next.handle(newReq).pipe(
+      // Caso ocorreu algum erro
       catchError((error) => {
 
-        // Caso obter "401 Unauthorized" como resposta
+        // Caso obter "401 Unauthorized" (status de não autorizado para fazer a requisição) como erro
         if (error instanceof HttpErrorResponse && error.status === 401) {
-          // Sign out
-          // this._authService.signOut();//Original
-          // this._authService.logout();//Adicionado
-          console.log("Tem que delogar");
+          // TODO Decidir como tratar casos que o usuário não tem autorização para fazer a requisição na API
+          // this._authService.logout();
 
-          // Reload the app
+          // Recarregar página
           // location.reload();
         }
 

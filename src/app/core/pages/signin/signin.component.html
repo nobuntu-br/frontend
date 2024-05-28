@@ -1,4 +1,9 @@
 <div class="background">
-    <p style="color: white;">Redirect to SignUp Page..
-    </p>
+    <div *ngIf="pageState == 0">
+        <p style="color: white;">{{ 'componentsBase.auth-signin-page.redirect-to-signin' | transloco }}</p>
+    </div>
+    
+    <div *ngIf="pageState == 1">
+        <!-- <p style="color: white;">{{ 'componentsBase.auth-signin-page.authentication-error-redirect-to-signin' | transloco }}</p> -->
+    </div>
 </div>

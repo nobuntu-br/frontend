@@ -19,5 +19,6 @@ export class CoreModule {
     if (parentModule) {
       throw new Error('CoreModule has already been loaded. Import this module in the AppModule only.');
     }
+
   }
 }

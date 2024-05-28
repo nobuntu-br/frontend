@@ -67,6 +67,7 @@ export class GeneratedFormFactoryService {
       deleteFormFunction: deleteFormFunction,
       currentFormAction: currentFormAction,
       dataToCreatePage: JSONDictionary,
+      secondaryFormClassName: secondaryFormClassName
     }
 
     this.createForm(createFormParams);
@@ -88,10 +89,13 @@ export class GeneratedFormFactoryService {
       createdComponent = createFormParams.target.createComponent(GeneratedSimpleFormComponent).instance;
     }
 
-
     let className;
-    if (createFormParams.dataToCreatePage["config"].hasOwnProperty('name')) {
-      className = createFormParams.dataToCreatePage["config"].name;
+    if(createFormParams.secondaryFormClassName){
+      className = createFormParams.secondaryFormClassName;
+    } else {
+      if (createFormParams.dataToCreatePage["config"].hasOwnProperty('name')) {
+        className = createFormParams.dataToCreatePage["config"].name;
+      }
     }
 
     let attributes;
@@ -102,11 +106,11 @@ export class GeneratedFormFactoryService {
     } else {
       attributes = this.formGeneratorService.getAttributesData(createFormParams.dataToCreatePage);
     }
-
+    
+    createdComponent.formIsReady.pipe(take(1)).subscribe(() => { createFormParams.getDataFromAPIFunction() })//Quando o formulário é terminado de ser construido ele chama a função para obter os dados
     createdComponent.resourceForm = createFormParams.resourceForm;
     createdComponent.submitFormFunction = createFormParams.submitFormFunction;
     createdComponent.deleteFormFunction = createFormParams.deleteFormFunction;
-    createdComponent.formIsReady.pipe(take(1)).subscribe(() => { createFormParams.getDataFromAPIFunction() })//Quando o formulário é terminado de ser construido ele chama a função para obter os dados
     createdComponent.currentFormAction = createFormParams.currentFormAction;
     createdComponent.attributes = attributes;
     createdComponent.className = className;

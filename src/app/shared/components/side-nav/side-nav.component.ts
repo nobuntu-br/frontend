@@ -1,9 +1,10 @@
 import { Breakpoints, BreakpointObserver } from '@angular/cdk/layout';
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { AuthService } from 'app/core/auth/auth.service';
 import { environment } from 'environments/environment';
-import { Observable, map, shareReplay, take, tap } from 'rxjs';
+import { Observable, Subject, map, shareReplay, take, takeUntil, tap } from 'rxjs';
 
 /**
  * Interface que contém informações das opções de vavegação do sideNavBar
@@ -23,7 +24,7 @@ interface INavListOption {
   templateUrl: './side-nav.component.html',
   styleUrls: ['./side-nav.component.scss']
 })
-export class SideNavComponent implements OnInit {
+export class SideNavComponent implements OnInit, OnDestroy {
   /**
    * Opções que são apresentadas na lista lateral para navegar para outras paginas da aplicação
    */
@@ -46,17 +47,24 @@ export class SideNavComponent implements OnInit {
    * Define se é permitido fechar a sideNavBar (navegador lateral).
    */
   canCloseNavBar: boolean = true;
+  /**
+   * Define se pose ser apresentado o botão do logOut (sair do acesso a conta)
+   */
+  canShowLogOutButton: boolean = false;
+
+  private ngUnsubscribe = new Subject<void>();
 
   constructor(
     private breakpointObserver: BreakpointObserver,
     private httpClient: HttpClient,
-    public authService: AuthService
+    public authService: AuthService,
+    private router: Router,
   ) { }
 
   ngOnInit(): void {
     this.getDataToMenu(environment.menuPath).then(data => {
       this.navListOptions = data;
-      
+
       this.isHandset$ = this.breakpointObserver.observe(Breakpoints.Handset)
         .pipe(
           map(result => result.matches),
@@ -68,7 +76,7 @@ export class SideNavComponent implements OnInit {
                 this.canCloseNavBar = false;//Não poderá fechar o NavBar
                 this.sideNavBarIsOpened = true;//Deixará o NavBarAberto
               }, 1000);
-             
+
             } else {
               this.canCloseNavBar = true;
               this.sideNavBarIsOpened = false;
@@ -78,6 +86,8 @@ export class SideNavComponent implements OnInit {
         );
 
     });
+
+    this.showLogOutButton();
   }
 
   showSideNavBar() {
@@ -123,5 +133,30 @@ export class SideNavComponent implements OnInit {
 
   }
 
+  showLogOutButton() {
+    this.authService.check().pipe(takeUntil(this.ngUnsubscribe)).subscribe({
+      next: (isAuthorized: boolean) => {
+        console.log("Resultado da checkagem: ", isAuthorized)
+        this.canShowLogOutButton = isAuthorized;
+      },
+      error: (error) => {
+        this.canShowLogOutButton = false;
+      }
+    });
+  }
+
+  redirectToSignInPage() {
+    this.saveRedirectURL(this.router.url);
+    this.router.navigate(['signin']);
+  }
+
+  private saveRedirectURL(redirectURL: string) {
+    localStorage.setItem("redirectURL", redirectURL);
+  }
+
+  ngOnDestroy() {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+  }
 }
 
