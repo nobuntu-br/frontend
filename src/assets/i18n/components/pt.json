@@ -93,5 +93,20 @@
         "messageToConfirmDelete":"Você tem certeza que deseja remover este item permanentemente?",
         "confirm":"Sim",
         "cancel":"Não"
+    },
+    "default-list":{
+        "noData":"Sem dados na lista"
+    },
+    "selector-input-field":{
+        "other": "outro",
+        "others": "outros"
+    },
+    "auth-callback-page":{
+        "authentication-error-clientId-missmatch":"Esta aplicação não tem permissão de acesso ao provedor de identidade do domínio. Consulte o administrador da aplicação.",
+        "redirect-to-callback":"Redirecionando para a última página.."
+    },
+    "auth-signin-page":{
+        "authentication-error-redirect-to-signin":"Esta aplicação não tem permissão de acesso ao provedor de identidade do domínio. Consulte o administrador da aplicação.",
+        "redirect-to-signin":"Redirecionar para a página de inscrição"
     }
 }

@@ -91,5 +91,20 @@
         "messageToConfirmDelete":"Are you sure you want to remove this item permanently?",
         "confirm":"Yes",
         "cancel":"No"
+    },
+    "default-list":{
+        "noData":"No data"
+    },
+    "selector-input-field":{
+        "other": "other",
+        "others": "others"
+    },
+    "auth-callback-page":{
+        "authentication-error-clientId-missmatch":"This application does not have permission to access the domain identity provider. Consult the application administrator.",
+        "redirect-to-callback":"Redirecting to last page.."
+    },
+    "auth-signin-page":{
+        "authentication-error-redirect-to-signin":"This application does not have permission to access the domain identity provider. Consult the application administrator.",
+        "redirect-to-signin":"Redirect to SignUp Page"
     }
 }

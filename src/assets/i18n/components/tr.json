@@ -41,7 +41,8 @@
         "startWith": "Start With",
         "endWith": "End With",
         "contains": "Contains",
-        "dontContains": "Don't Contains"
+        "dontContains": "Don't Contains",
+        "match":"Match"
     },
     "filter-number-component": {
         "operation": "Operation",
@@ -66,12 +67,6 @@
         "confirm": "Confirm",
         "cancel": "Cancel"
     },
-    "Variations": {
-        "variationCode": "Variation code",
-        "optionColumn": "Option Column",
-        "product": "Product",
-        "optionLine": "Option line"
-    },
     "Alerts": {
         "createErrorMessage": "Error while creating",
         "createSuccessMessage": "Create successful",
@@ -82,6 +77,34 @@
         "deleteSuccessMessage": "Delete successful",
         "defaultSuccessMessage": "Operation successful",
         "defaultErrorMessage": "Operation error",
-        "rememberToSave": "Tem certeza de que deseja sair? Suas alterações podem não ser salvas."
+        "rememberToSave": "Are you sure you want to exit? Your changes may not be saved",
+        "deselectMessage": "The items have been removed from the selection"
+    },
+    "foreign-key-input-field": {
+        "search": "Search",
+        "add": "Add",
+        "edit": "Edit",
+        "clean": "Clean"
+    },
+    "confirmation-dialog":{
+        "title":"Confirm",
+        "messageToConfirmDelete":"Are you sure you want to remove this item permanently?",
+        "confirm":"Yes",
+        "cancel":"No"
+    },
+    "default-list":{
+        "noData":"No data"
+    },
+    "selector-input-field":{
+        "other": "other",
+        "others": "others"
+    },
+    "auth-callback-page":{
+        "authentication-error-clientId-missmatch":"This application does not have permission to access the domain identity provider. Consult the application administrator.",
+        "redirect-to-callback":"Redirecting to last page.."
+    },
+    "auth-signin-page":{
+        "authentication-error-redirect-to-signin":"This application does not have permission to access the domain identity provider. Consult the application administrator.",
+        "redirect-to-signin":"Redirect to SignUp Page"
     }
 }
