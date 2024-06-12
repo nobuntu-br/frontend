@@ -32,7 +32,8 @@
         "initialNumber": "Initial Number",
         "finalNumber": "Final Number",
         "ok": "Ok",
-        "cancel": "Cancel"
+        "cancel": "Cancel",
+        "decimalOperator": "."
     },
     "filter-text-component": {
         "operation": "Operation",

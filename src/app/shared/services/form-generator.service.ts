@@ -1,16 +1,17 @@
 import { ComponentType } from '@angular/cdk/portal';
 import { Injectable, Injector, ViewContainerRef } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { InputDateFieldComponent } from '../components/input-date-field/input-date-field.component';
 import { InputFieldComponent } from '../components/input-field/input-field.component';
 import { SelectorInputFieldComponent } from '../components/selector-input-field/selector-input-field.component';
 import { ForeignKeyInputFieldComponent } from '../components/foreign-key-input-field/foreign-key-input-field.component';
 import { DefaultListComponent } from '../components/default-list/default-list.component';
 import { CalculatorComponent } from '../components/calculator/calculator.component';
-import { Observable } from 'rxjs';
+import { filter, Observable, take } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { SubformComponent } from '../components/subform/subform.component';
+import { TranslocoEvents, TranslocoService } from '@ngneat/transloco';
 
 interface dialogConfiguration {
   width?: string,
@@ -77,11 +78,14 @@ export class FormGeneratorService {
   protected httpClient: HttpClient;
   protected formBuilder: FormBuilder;
   protected matDialog: MatDialog;
+  protected translocoService: TranslocoService;
+  decimalOperator: any;
 
   constructor(protected injector: Injector) {
     this.httpClient = injector.get(HttpClient);
     this.formBuilder = injector.get(FormBuilder);
     this.matDialog = injector.get(MatDialog);
+    this.translocoService = injector.get(TranslocoService);
   }
 
   buildResourceForm(formBuilder: FormBuilder): FormGroup {
@@ -155,9 +159,21 @@ export class FormGeneratorService {
         createdComponent.instance.svgIcon = "heroicons_solid:calculator";
         createdComponent.instance.isRequired = true;
         createdComponent.instance.iconPosition = "start";
-        createdComponent.instance.mask = "0*,0*";
-        createdComponent.instance.actionOnClickInIcon = () => { this.openDialog(CalculatorComponent, null) }
+        createdComponent.instance.dataType = "number";
+        createdComponent.instance.language = this.translocoService.getActiveLang();
 
+        createdComponent.instance.actionOnClickInIcon = () => { this.openDialog(CalculatorComponent, null) }
+        var calculatorDialogRef: MatDialogRef<CalculatorComponent>;//Referência da calculadora que será aberta com o dialog
+        createdComponent.instance.actionOnClickInIcon = () => { 
+          console.log("Valor atual do campo numérico do formulário: ",createdComponent.instance.inputValue.value);
+          calculatorDialogRef = this.openDialog(CalculatorComponent, {data: {formData: createdComponent.instance.inputValue.value}});//Criar a calculadora
+
+          //Toda vez que a calculadora for criada, será criado um observador que informará quando a calculadora será fechada
+          calculatorDialogRef.afterClosed().pipe(take(1)).subscribe(result => {
+            var calculatorResult = result.toString();
+            createdComponent.instance.inputValue.setValue(calculatorResult);
+          });
+        };
         break;
       }
       //TODO fazer o componente da imagem
