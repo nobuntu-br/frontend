@@ -3,7 +3,9 @@ import { Router } from '@angular/router';
 import { AuthService } from 'app/core/auth/auth.service';
 import { User } from 'app/core/auth/user.model';
 import { UserService } from 'app/core/auth/user.service';
+import { TenantService } from 'app/core/tenant/tenant.service';
 import { environment } from 'environments/environment';
+import { UserManager } from 'oidc-client-ts';
 import { take } from 'rxjs';
 
 enum CallbackPageState {
@@ -18,11 +20,13 @@ enum CallbackPageState {
 })
 export class CallbackComponent implements OnInit {
   pageState : CallbackPageState;
+  private userManager: UserManager;
 
   constructor(
     private authService: AuthService,
     private router: Router,
     private userService: UserService,
+    private tenantService: TenantService,
   ) {
     this.pageState = CallbackPageState.Redirecting;
   }
@@ -30,7 +34,7 @@ export class CallbackComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     await this.authService.completeAuthentication().catch((returnedValue)=>{
       this.pageState = CallbackPageState.Error;
-      console.log(returnedValue);
+      // console.log(returnedValue);
     });
 
     const user: User = {
@@ -47,18 +51,21 @@ export class CallbackComponent implements OnInit {
     try {
       //Verificar se usuário está registrado na aplicação
       this.userService.getByUID(this.authService.userUID).pipe(take(1)).subscribe({
-        next: (returnedUser: User) => {
+        next: async (returnedUser: User) => {
+          this.saveUserSessionStorage(returnedUser);
           this.registerNewSession(returnedUser.id);
         },
 
         error: (_error) => {
-
+          //Se não estiver registrado, registrar
           this.userService.create(user).pipe(take(1)).subscribe({
             next: (newUser: User) => {
               this.registerNewSession(newUser.id);
             },
             error: (error) => {
-              // console.warn("Erro ao criar o usuário ", error);
+              //Se não conseguir registrar, deslogar e redirecionar para página de erro
+              console.log(error);
+              this.authService.logout();
               this.redirectToErrorPage();
             }
           });
@@ -76,7 +83,14 @@ export class CallbackComponent implements OnInit {
     const redirectURL = window.localStorage.getItem("redirectURL");
     window.localStorage.removeItem("redirectURL");
     if (redirectURL) {
-      this.router.navigate([redirectURL]);
+      if(redirectURL == '/signout' || redirectURL == '/signin' || redirectURL == '/callback' || redirectURL == '/404-not-found') {
+        this.router.navigate(["/"]);
+      } else {
+        this.router.navigate([redirectURL]);
+      }
+    } 
+    if (!redirectURL) {
+      this.router.navigate(["/"]);
     }
   }
 
@@ -90,9 +104,17 @@ export class CallbackComponent implements OnInit {
         this.redirectToPageBeforeSignIn();
       },
       error: (error) => {
+        console.log(error);
+        this.authService.logout();
         this.redirectToErrorPage();
       }
     })
   }
 
+  saveUserSessionStorage(user: User) {
+      sessionStorage.setItem('user', JSON.stringify(user));
+      if(user.tenants) {
+        sessionStorage.setItem('tenant', JSON.stringify(user.tenants[0]));
+      }
+  }
 }

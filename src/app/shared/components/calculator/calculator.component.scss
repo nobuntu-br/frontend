@@ -1,97 +1,72 @@
 .container {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  margin-top: 20px;
-  background-color: #f2f2f2; /* Escolha a cor acinzentada desejada */
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    margin-top: 20px;
+    background-color: #f2f2f2; /* Escolha a cor acinzentada desejada */
   padding: 20px; /* Adicione preenchimento para espaçamento interno */
-}
-
-.calculator {
-  display: grid;
-  justify-content: center;
-  align-items: center;
-}
-
-.calculator-display {
-  grid-column: span 4;
-  height: 60px;
-  width: 215px;
-  font-size: 2rem;
-  text-align: center;
-  margin-bottom: 10px;
-}
-
-.calculator-buttons {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
-}
-
-.calculator-buttons button {
-  border: 1px solid #ccc; /* Define uma borda sólida com cor cinza */
-  border-radius: 5px; /* Arredonda as bordas dos botões */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Adiciona uma sombra suave */
-  padding: 10px; /* Adiciona espaçamento interno para melhorar a aparência */
-  background-color: #fff; /* Define a cor de fundo como branco */
-  cursor: pointer; /* Muda o cursor para indicar que os botões são clicáveis */
-  transition: all 0.3s ease; /* Adiciona uma transição suave para efeitos de hover */
-}
-
-.calculator-buttons button:hover {
-  background-color: #f0f0f0; /* Muda a cor de fundo ao passar o mouse */
-}
-
-button {
-  padding: 20px;
-  font-size: 1.5rem;
-}
-
-.zero {
-  grid-column: span 2;
-}
-
-.history {
-  margin-left: 20px;
-  max-height: 400px;
-  overflow-y: auto;
-}
-
-.history h3 {
-  margin-bottom: 10px;
-}
-
-.history ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-.history li {
-  background-color: #f0f0f0;
-  border: 1px solid #ccc;
-  margin-bottom: 5px;
-  padding: 5px;
-  border-radius: 5px;
-}
-
-.action-buttons {
-  grid-column: span 4;
-  display: flex;
-  justify-content: space-between;
-  margin-top: 10px;
-}
-
-.action-buttons button {
-  padding: 10px 20px;
-  font-size: 1rem;
-}
-
-.toggle-history {
-  display: none;
-  margin-top: 10px;
-}
-
-@media (max-width: 768px) {
+  }
+  
+  .calculator {
+    display: grid;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .calculator-display {
+    grid-column: span 4;
+    height: 60px;
+    width: 215px;
+    font-size: 2rem;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  
+  .calculator-buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    
+  }
+  
+  .calculator-buttons button {
+    border: 1px solid #ccc; /* Define uma borda sólida com cor cinza */
+    border-radius: 5px; /* Arredonda as bordas dos botões */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Adiciona uma sombra suave */
+    padding: 10px; /* Adiciona espaçamento interno para melhorar a aparência */
+    background-color: #fff; /* Define a cor de fundo como branco */
+    cursor: pointer; /* Muda o cursor para indicar que os botões são clicáveis */
+    transition: all 0.3s ease; /* Adiciona uma transição suave para efeitos de hover */
+  }
+  
+  .calculator-buttons button:hover {
+    background-color: #f0f0f0; /* Muda a cor de fundo ao passar o mouse */
+  }
+  
+  button {
+    padding: 20px;
+    font-size: 1.5rem;
+  }
+  
+  .zero {
+    grid-column: span 2;
+  }
+  
+  .history {
+    margin-left: 20px;
+    max-height: 400px;
+    overflow-y: auto;
+  }
+  
+  .history h3 {
+    margin-bottom: 10px;
+  }
+  
+  .history ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
   .history li {
     background-color: #f0f0f0;
     border: 1px solid #ccc;
@@ -99,8 +74,17 @@ button {
     padding: 5px;
     border-radius: 5px;
   }
-
-  .toggle-history {
-    display: block;
+  
+  .action-buttons {
+    grid-column: span 4;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
   }
-}
+  
+  .action-buttons button {
+    padding: 10px 20px;
+    font-size: 1rem;
+  }
+  
+  

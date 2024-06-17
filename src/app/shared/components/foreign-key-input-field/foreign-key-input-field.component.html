@@ -1,4 +1,4 @@
-<mat-form-field class="w-full" appearance="outline">
+<mat-form-field style="width: 100%;" appearance="outline">
 
     <mat-label>{{ label }}</mat-label>
     <mat-icon matPrefix svgIcon="heroicons_solid:user"></mat-icon>
@@ -14,7 +14,7 @@
             <mat-icon svgIcon="feather:search"></mat-icon>
             <ng-container *transloco='let t, read: "componentsBase"'>{{ t('foreign-key-input-field.search') }}</ng-container>
         </button>
-        <button mat-menu-item (click)="openSelectableItemsListDialogToEditItems()">
+        <button mat-menu-item (click)="openSelectableItemsListDialogToEditItems()" *ngIf="enableToEdit == true">
             <mat-icon svgIcon="create"></mat-icon>
             <ng-container *transloco='let t; read:"componentsBase"'>{{ t('foreign-key-input-field.edit') }}</ng-container>
         </button>

@@ -161,8 +161,6 @@ export abstract class BaseResourceFormComponent<T extends BaseResourceModel> imp
     
     const resource: T = this.jsonDataToResourceFn(this.resourceForm.value);
 
-    console.log("Dados enviados para a API na criação do item: ", resource);
-
     this.resourceService.create(resource).subscribe({
       next: (response) => {
         this.actionsForSuccess(response);
@@ -177,10 +175,7 @@ export abstract class BaseResourceFormComponent<T extends BaseResourceModel> imp
 
     this.objectTratament(this.resourceForm.value);
 
-    console.log("Valor que será enviado para API: ", this.resourceForm.value)
-    
     const resource: T = this.jsonDataToResourceFn(this.resourceForm.value);
-    console.log("Dados que estão sendo enviados para APi para atualização do item: ",resource);
 
     this.resourceService.update(resource.id, resource).subscribe({
       next: (response) => this.actionsForSuccess(response),

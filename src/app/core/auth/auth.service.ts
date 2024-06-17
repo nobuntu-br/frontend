@@ -91,7 +91,15 @@ export class AuthService {
   }
 
   public logout(): void {
-    this.userManager.signoutRedirect();
+    this._authenticated = false;
+    this.user = null;
+    sessionStorage.clear();
+  }
+
+  public async logoutRedirect(): Promise<void> {
+    this.logout();
+    localStorage.setItem("redirectURL", window.location.pathname);
+    await this.userManager.signoutRedirect();
   }
 
   /**
