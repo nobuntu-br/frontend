@@ -9,9 +9,10 @@ import { DinamicBaseResourceService } from 'app/shared/services/shared.dinamicSe
 import { SelectedItemsListComponent } from '../selected-items-list/selected-items-list.component';
 import { TranslocoService } from '@ngneat/transloco';
 import { environment } from 'environments/environment';
+import { IPageStructure } from 'app/shared/models/pageStructure';
 
 export interface IDinamicBaseResourceFormComponent {
-  dataToCreatePage: object,
+  dataToCreatePage: IPageStructure,
   className: string,
   itemId: string,
   currentAction: string
@@ -74,7 +75,7 @@ export class DinamicBaseResourceFormComponent implements AfterViewInit {
 
   private generatedFormFactoryService: GeneratedFormFactoryService;
   private formGeneratorService: FormGeneratorService;
-  @Input() dataToCreatePage: object;
+  @Input() dataToCreatePage: IPageStructure;
 
   @ViewChild('placeToRender', { read: ViewContainerRef }) target!: ViewContainerRef;
 
@@ -124,11 +125,15 @@ export class DinamicBaseResourceFormComponent implements AfterViewInit {
           this.currentAction = "new";
         }
 
+        console.log("DataToCreatePage : ",this.dataToCreatePage);
+
         //TODO deverá ser feito uma maneira mais segura de obter o apiUrl da classe chave estrangeira
         var apiUrl = this.dataToCreatePage["attributes"].find((attribute)=> attribute["name"] == this.className)["apiUrl"];
         this.resourceService.apiPath = environment.backendUrl+'/'+apiUrl;
 
-        this.generatedFormFactoryService.getDataToCreateFrom(this.dataToCreatePage, this.target, () => { this.loadForm() }, this.resourceForm, () => { this.submitForm() }, () => { this.deleteResource() }, this.currentAction, this.className);
+        // this.generatedFormFactoryService.getDataToCreateFrom(, this.target, () => { this.loadForm() }, this.resourceForm, () => { this.submitForm() }, () => { this.deleteResource() }, this.currentAction, this.className);
+        this.generatedFormFactoryService.createForm({target: this.target, getDataFromAPIFunction: ()=>{this.loadResource()}, submitFormFunction: ()=>{this.submitForm()}, deleteFormFunction: ()=>{this.deleteResource()}, currentFormAction: this.currentAction, dataToCreatePage: this.dataToCreatePage, formOption: null, resourceForm: this.resourceForm, secondaryFormClassName: this.className })
+  
       } else {
 
         // this.formGeneratorService.getJSONFromDicionario(this.JSONPath).subscribe((JSONDictionary: any) => {

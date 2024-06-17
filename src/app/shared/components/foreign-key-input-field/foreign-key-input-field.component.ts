@@ -5,6 +5,7 @@ import { DefaultListComponent, IDefaultListComponentDialogConfig } from '../defa
 import { Subject, take, takeUntil } from 'rxjs';
 import { SelectedItemsListComponent } from '../selected-items-list/selected-items-list.component';
 import { DinamicBaseResourceFormComponent, IDinamicBaseResourceFormComponent } from '../dinamic-base-resource-form/dinamic-base-resource-form.component';
+import { IPageStructure } from 'app/shared/models/pageStructure';
 
 enum ISelectionOption {
   add,
@@ -59,7 +60,7 @@ export class ForeignKeyInputFieldComponent implements OnDestroy, AfterViewInit {
   /**
    * Dados que orientam a criação da pagina
    */
-  @Input() dataToCreatePage: object | null;
+  @Input() dataToCreatePage: IPageStructure | null;
   @Input() value: any;
   /**
    * Campo no formulário que receberá os dados dos valores selecionados.
@@ -91,6 +92,8 @@ export class ForeignKeyInputFieldComponent implements OnDestroy, AfterViewInit {
    */
   private ngUnsubscribe = new Subject();
 
+  enableToEdit: boolean = false;
+
   constructor(
     private matDialog: MatDialog,
   ) { }
@@ -115,8 +118,10 @@ export class ForeignKeyInputFieldComponent implements OnDestroy, AfterViewInit {
     //Se não tiver nada ele só define vazio no campo apresentável
     if (inputValue.value == null || inputValue.value.length == 0) {
       this.displayedValue = [""];
+      this.enableToEdit = false;
       return;
     };
+    this.enableToEdit = true;
 
     //Verifica se o item contido na FormControl é um array
     if (inputValue.value instanceof Array) {
@@ -164,7 +169,7 @@ export class ForeignKeyInputFieldComponent implements OnDestroy, AfterViewInit {
       userConfig: null,
       selectedItemsLimit: this.selectedItemsLimit,
       apiUrl: this.value.apiUrl,
-      searchableFields: null,
+      searchableFields: this.dataToCreatePage.config.searchableFields,
       isSelectable: true,
       className: this.fieldName,//É fieldName pois aqui será editado a campo que está na classe do ClasNa
       isAbleToCreate: false,
@@ -233,7 +238,7 @@ export class ForeignKeyInputFieldComponent implements OnDestroy, AfterViewInit {
     });
 
     dialogRef.afterClosed().pipe(take(1)).subscribe(result => {
-      // console.log("O retorno do edit foi:", result);
+      console.log("O retorno do edit foi:", result);
       if (result == null) return;
       this.selectItems(result, ISelectionOption.set);
     });

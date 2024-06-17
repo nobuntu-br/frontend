@@ -1,45 +1,12 @@
-import { ComponentType } from '@angular/cdk/portal';
 import { Injectable, Injector, ViewContainerRef } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { InputDateFieldComponent } from '../components/input-date-field/input-date-field.component';
-import { InputFieldComponent } from '../components/input-field/input-field.component';
-import { SelectorInputFieldComponent } from '../components/selector-input-field/selector-input-field.component';
-import { ForeignKeyInputFieldComponent } from '../components/foreign-key-input-field/foreign-key-input-field.component';
-import { DefaultListComponent } from '../components/default-list/default-list.component';
-import { CalculatorComponent } from '../components/calculator/calculator.component';
-import { filter, Observable, take } from 'rxjs';
+import { MatDialog } from '@angular/material/dialog';
+import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { SubformComponent } from '../components/subform/subform.component';
-import { TranslocoEvents, TranslocoService } from '@ngneat/transloco';
+import { FormField } from '../models/form-field';
+import { DynamicFormFieldFactory } from '../models/dinamic-form-factory';
+import { IPageStructure, PageStructure } from '../models/pageStructure';
 
-interface dialogConfiguration {
-  width?: string,
-  height?: string,
-  maxWidth?: string,
-  maxHeight?: string,
-  panelClass?: string,
-  data?: any,
-}
-
-/**
- * Atributos principais de variável da classe do JSON que informa como criar as telas
- * @param JSONDictionary JSON que informa como criar as telas
- * @param name - nome da variável.
- * @param type - tipo da variável.
- * @param formTab - informação de para qual aba do formTab essa variável pertence.
- * @param apiUrl link para chamar a classe dessa variável.
- * @param propertiesAttributes Se a variável for uma classe, retorná um vetor com variavel com nome e tipo das variáveis que contém na classe).
- * @param fieldDisplayedInLabel Nome da variável que será apresentado na label
- */
-export interface IAttributesToCreateScreens {
-  name: string,
-  type: string,
-  formTab: string,
-  apiUrl?: string,
-  propertiesAttributes?: any[],
-  fieldDisplayedInLabel: string
-}
 
 /**
   * Dados que irão criar um campo que irá compor o formulário
@@ -60,11 +27,14 @@ export interface ICreateComponentParams {
   className: string,
   fieldName: string,
   fieldType: string,
+  isRequired: boolean,
   value,
   labelTittle: string,
-  dataToCreatePage: object,
+  dataToCreatePage: PageStructure,
   fieldDisplayedInLabel: string,
-  valuesList: any[]
+  valuesList: any[],
+  dataType?: string,
+  language?: string,
 }
 
 /**
@@ -78,14 +48,12 @@ export class FormGeneratorService {
   protected httpClient: HttpClient;
   protected formBuilder: FormBuilder;
   protected matDialog: MatDialog;
-  protected translocoService: TranslocoService;
-  decimalOperator: any;
 
-  constructor(protected injector: Injector) {
+  constructor(protected injector: Injector, private formFieldFactory: DynamicFormFieldFactory) {
     this.httpClient = injector.get(HttpClient);
     this.formBuilder = injector.get(FormBuilder);
     this.matDialog = injector.get(MatDialog);
-    this.translocoService = injector.get(TranslocoService);
+    
   }
 
   buildResourceForm(formBuilder: FormBuilder): FormGroup {
@@ -94,7 +62,6 @@ export class FormGeneratorService {
     });
   }
 
-  //TODO remover código repetitivo
   createComponent(
     createComponentData: ICreateComponentParams
   ) {
@@ -104,154 +71,11 @@ export class FormGeneratorService {
       return null;
     }
 
-    let createdComponent;
-    switch (createComponentData.fieldType) {
-      case 'date': {
-        createdComponent = createComponentData.target.createComponent(InputDateFieldComponent);
-        createdComponent.instance.label = createComponentData.labelTittle;
-
-        break;
-      }
-      case 'string': {
-        createdComponent = createComponentData.target.createComponent(InputFieldComponent);
-        createdComponent.instance.label = createComponentData.labelTittle;
-        createdComponent.instance.isRequired = true;
-
-        // createdComponent.instance.svgIcon = "heroicons_solid:user";
-        //createdComponent.instance.actionOnClickInIcon = ()=>{console.log("Você apertou no icone")}
-
-        break;
-      }
-      case 'object': {
-        createdComponent = createComponentData.target.createComponent(SelectorInputFieldComponent);
-        const component = createdComponent.instance;
-
-        component.label = createComponentData.labelTittle;
-        //TODO esses valore serão pegos pela API
-        // component.apiUrl = "http://localhost:8080/api/clientes";
-        component.apiURL = createComponentData.value.apiUrl;
-        //TODO fazer um verificador para ver se value carrega as informações, se não tiver, pegar algum campo
-        component.displayedSelectedVariableOnInputField = "nome";
-        component.returnedVariable = "id";
-        //TODO fazer um verificador para ver se value carrega as informações, se não tiver, pegar algum campo
-        // component.returnedVariable = value.returnedVariable;
-        break;
-      }
-      case 'foreignKey': {
-        createdComponent = createComponentData.target.createComponent(ForeignKeyInputFieldComponent);
-        createdComponent.instance.label = createComponentData.labelTittle;
-        createdComponent.instance.fieldName = createComponentData.fieldName;
-        createdComponent.instance.value = createComponentData.value;
-        // console.log("Dados para criar o componente de chave estrangeira: ",createComponentData.dataToCreatePage)
-        createdComponent.instance.dataToCreatePage = createComponentData.dataToCreatePage;
-        createdComponent.instance.fieldDisplayedInLabel = createComponentData.fieldDisplayedInLabel;
-        break;
-      }
-      case 'subform': {
-        createdComponent = createComponentData.target.createComponent(SubformComponent);
-        const component = createdComponent.instance;
-        component.JSONPath = createComponentData.dataToCreatePage;
-        break;
-      }
-      case 'number': {
-        createdComponent = createComponentData.target.createComponent(InputFieldComponent);
-        createdComponent.instance.label = createComponentData.labelTittle;
-        createdComponent.instance.svgIcon = "heroicons_solid:calculator";
-        createdComponent.instance.isRequired = true;
-        createdComponent.instance.iconPosition = "start";
-        createdComponent.instance.dataType = "number";
-        createdComponent.instance.language = this.translocoService.getActiveLang();
-
-        createdComponent.instance.actionOnClickInIcon = () => { this.openDialog(CalculatorComponent, null) }
-        var calculatorDialogRef: MatDialogRef<CalculatorComponent>;//Referência da calculadora que será aberta com o dialog
-        createdComponent.instance.actionOnClickInIcon = () => { 
-          console.log("Valor atual do campo numérico do formulário: ",createdComponent.instance.inputValue.value);
-          calculatorDialogRef = this.openDialog(CalculatorComponent, {data: {formData: createdComponent.instance.inputValue.value}});//Criar a calculadora
-
-          //Toda vez que a calculadora for criada, será criado um observador que informará quando a calculadora será fechada
-          calculatorDialogRef.afterClosed().pipe(take(1)).subscribe(result => {
-            var calculatorResult = result.toString();
-            createdComponent.instance.inputValue.setValue(calculatorResult);
-          });
-        };
-        break;
-      }
-      //TODO fazer o componente da imagem
-
-      //TDO
-      default: {
-        return;
-        break;
-      }
-    }
-
-    if(createdComponent == null){ console.error("Componente não foi criado!"); return;}
-    createdComponent.instance.className = createComponentData.className;
-    createComponentData.resourceForm.addControl(createComponentData.fieldName, createdComponent.instance.inputValue);
-
+    const formField: FormField = this.formFieldFactory.createFormField(createComponentData);
+    createComponentData.resourceForm.addControl(createComponentData.fieldName,formField.createFormField(createComponentData));
   }
 
-  openDialog(component: ComponentType<any>, dialogConfiguration: dialogConfiguration) {
-    return this.matDialog.open(component, dialogConfiguration);
-  }
-
-  printForm(resourceForm: FormGroup) {
-    console.log(resourceForm.value);
-  }
-
-  /**
-  * Obtem os atributos principais das variáveis da classe do JSON que informa como criar as telas.
-  * @param JSONDictionary Dados do JSON que irá orientar a criação das telas.
-  * @returns Array com os atributos que irão orientar na criação das telas.
-  */
-  getAttributesData(JSONDictionary): IAttributesToCreateScreens[] {
-    if (JSONDictionary == null) return;
-
-    let attributes: IAttributesToCreateScreens[] = [];
-
-    JSONDictionary.attributes.forEach(element => {
-      let propertiesAttributes = [];
-      let apiUrl = null;
-      let className = null;
-      let fieldDisplayedInLabel: string | null = null;
-
-      if (element.hasOwnProperty('apiUrl') == true) {
-        apiUrl = element.apiUrl;
-      }
-
-      if (element.hasOwnProperty('type') && element.type === "foreignKey" && element.hasOwnProperty('fieldDisplayedInLabel')) {
-        fieldDisplayedInLabel = element.fieldDisplayedInLabel;
-      }
-
-      if (element.hasOwnProperty('properties') == true) {
-
-        element.properties.forEach(attribute => {
-          if (attribute.hasOwnProperty('name') && attribute.hasOwnProperty('type')) {
-            propertiesAttributes.push({ name: attribute.name, type: attribute.type });
-          }
-        });
-      }
-
-      attributes.push(
-        {
-          name: element.name,
-          type: element.type,
-          formTab: element.formTab,
-          apiUrl: apiUrl,
-          propertiesAttributes: propertiesAttributes,
-          fieldDisplayedInLabel: element.fieldDisplayedInLabel != null ? element.fieldDisplayedInLabel : null
-        });
-    });
-
-    return attributes;
-  }
-
-  getConfig(JSONDictionary): any {
-    if (JSONDictionary == null) return;
-
-    return JSONDictionary.config;
-  }
-
+  //TODO remover essa função
   getFormStepperStructure(JSONDictionary): string[] {
 
     if (!JSONDictionary.hasOwnProperty('config') &&
@@ -265,7 +89,7 @@ export class FormGeneratorService {
     return JSONDictionary.config.formTabs;
   }
 
-  getJSONFromDicionario(JSONToGenerateScreenPath: any): Observable<any[]> {
-    return this.httpClient.get<any[]>(JSONToGenerateScreenPath);//TODO aqui será a rota do backend que pegará o JSON do usuário
+  getJSONFromDicionario(JSONToGenerateScreenPath: any): Observable<IPageStructure> {
+    return this.httpClient.get<IPageStructure>(JSONToGenerateScreenPath);//TODO aqui será a rota do backend que pegará o JSON do usuário
   }
 }

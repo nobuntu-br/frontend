@@ -15,8 +15,10 @@ import { Observable, Subject, map, shareReplay, take, takeUntil, tap } from 'rxj
 interface INavListOption {
   routeUrl: string,
   optionName: string,
-  svgIcon: string,
-  optionNameTranslated: string
+  icon: string,
+  optionNameTranslated: string,
+  isSubmenu?: boolean,
+  subMenu?: INavListOption[]
 }
 
 @Component({
@@ -116,7 +118,10 @@ export class SideNavComponent implements OnInit, OnDestroy {
           if (('itens' in data) == false) return;
 
           data.itens.forEach(item => {
-            navListOptions.push({ optionName: item.name, svgIcon: item.icon, routeUrl: item.routeUrl, optionNameTranslated: item.name })
+            navListOptions.push({ optionName: item.name, icon: item.icon, routeUrl: item.routeUrl, optionNameTranslated: item.name, isSubmenu: item.subMenu ? true : false, subMenu: item.subMenu });
+            if(item.subMenu) {
+              item.isSubmenu = true;
+            }
           });
 
           resolve(navListOptions);
@@ -152,6 +157,11 @@ export class SideNavComponent implements OnInit, OnDestroy {
 
   private saveRedirectURL(redirectURL: string) {
     localStorage.setItem("redirectURL", redirectURL);
+  }
+
+  logout(){
+    console.log("Logout")
+    this.authService.logoutRedirect();
   }
 
   ngOnDestroy() {

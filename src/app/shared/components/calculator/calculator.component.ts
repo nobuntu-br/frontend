@@ -8,7 +8,8 @@ import { Subject, takeUntil } from 'rxjs';
   templateUrl: './calculator.component.html',
   styleUrls: ['./calculator.component.scss'],
 })
-export class CalculatorComponent implements OnInit, OnDestroy {
+
+export class CalculatorComponent {
   display = '';
   lastOperator = '';
   lastOperand = '';
@@ -16,51 +17,44 @@ export class CalculatorComponent implements OnInit, OnDestroy {
   history: string[] = [];
   isVisible = true;
   decimalOperator: any;
-  isHistoryVisible = true; // Controla a visibilidade do histórico no modo celular
-  isMobile = window.innerWidth <= 768; // Detecta se a tela é de um dispositivo móvel
 
-  private ngUnsubscribe = new Subject();
-
-  constructor(
-    private translocoService: TranslocoService,
-    public dialogCalculatorRef: MatDialogRef<CalculatorComponent>,
-    @Optional() @Inject(MAT_DIALOG_DATA) public dialogInjectorData,
-  ) {
-    this.decimalOperator = this.translocoService.translate('componentsBase.filter-number-range-component.decimalOperator');
-    window.addEventListener('resize', this.checkIfMobile.bind(this));
-
-  }
-
-  checkIfMobile() {
-    this.isMobile = window.innerWidth <= 768;
-    console.log(`window.innerWidth (check): ${window.innerWidth}`);
-    console.log(`isMobile (check): ${this.isMobile}`);
-  }
   ngOnInit(): void {
-    this.subscribeChangeLanguageEvent(this.translocoService);
-    if (this.dialogInjectorData.formData === undefined || this.dialogInjectorData.formData === null) {
-      this.display = "";
-    } else {
-      this.display = this.dialogInjectorData.formData;
-    }
-  }
-
-  subscribeChangeLanguageEvent(translocoService: TranslocoService) {
-    translocoService.events$.pipe(takeUntil(this.ngUnsubscribe)).subscribe((eventResponse) => {
-      if (eventResponse.type == "langChanged") {
-        // Implementar lógica para mudança de idioma, se necessário
+        this.subscribeChangeLanguageEvent(this.translocoService);
+        if(this.dialogInjectorData.formData===undefined || this.dialogInjectorData.formData ===null){
+          this.display="";
+        }else{
+        this.display=this.dialogInjectorData.formData;
       }
-    });
+      }
+      
+
+      private ngUnsubscribe = new Subject();
+
+      subscribeChangeLanguageEvent(translocoService: TranslocoService){
+              translocoService.events$.pipe(takeUntil(this.ngUnsubscribe)).subscribe((eventResponse)=>{
+                if(eventResponse.type == "langChanged"){
+                  
+                }
+              });
+            }
+
+
+  constructor(private translocoService: TranslocoService,
+        public dialogCalculatorRef: MatDialogRef<CalculatorComponent>,
+        @Optional() @Inject(MAT_DIALOG_DATA) public dialogInjectorData,
+    ) {
+
+      this.decimalOperator = this.translocoService.translate('componentsBase.filter-number-range-component.decimalOperator');
   }
 
   appendCharacter(char: string) {
     if (char === '.') {
-      const parts = this.display.split(/[+\-*/]/);
-      const lastPart = parts[parts.length - 1];
-      if (lastPart.includes('.')) {
+    const parts = this.display.split(/[+\-*/]/);
+    const lastPart = parts[parts.length - 1];
+    if (lastPart.includes('.')) {
         return;
-      }
     }
+}
     if (this.newCalculation && !'+-*/'.includes(char)) {
       this.display = char;
       this.newCalculation = false;
@@ -93,6 +87,7 @@ export class CalculatorComponent implements OnInit, OnDestroy {
         this.history.push(`${this.display}${this.lastOperator}${this.lastOperand} = ${result}`);
       } else {
         const result = parseFloat(eval(this.display).toFixed(2));
+
         this.history.push(`${this.display} = ${result}`);
         this.lastOperator = this.display.match(/[+\-*/]/g)?.pop() || '';
         this.lastOperand = this.display.split(/[+\-*/]/g).pop() || '';
@@ -113,19 +108,16 @@ export class CalculatorComponent implements OnInit, OnDestroy {
   }
 
   confirm() {
+    // Chame a função que você já tem pronta para inserir o número no formulário
     this.dialogCalculatorRef.close(parseFloat(this.display));
   }
 
   insertNumberIntoForm(number: string) {
+    // Função de exemplo, substitua pela sua implementação real
     console.log(`Número inserido no formulário: ${number}`);
   }
-
-  toggleHistoryVisibility() {
-    this.isHistoryVisible = !this.isHistoryVisible;
-  }
-
-  ngOnDestroy(): void {
+     ngOnDestroy(): void {
     this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
-  }
+}
 }

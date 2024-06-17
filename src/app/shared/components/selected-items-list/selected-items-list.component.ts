@@ -9,6 +9,7 @@ import { DefaultCardComponent } from '../default-card/default-card.component';
 import { DinamicBaseResourceFormComponent, IDinamicBaseResourceFormComponent } from '../dinamic-base-resource-form/dinamic-base-resource-form.component';
 import { HttpClient } from '@angular/common/http';
 import { ISearchableField } from '../search-input-field/search-input-field.component';
+import { IPageStructure } from 'app/shared/models/pageStructure';
 
 @Component({
   selector: 'app-selected-items-list',
@@ -113,7 +114,7 @@ export class SelectedItemsListComponent implements AfterViewInit, OnDestroy {
   /**
    * JSONPath localização de onde se encontra o JSON que orienta na criação das paginas.
    */
-  @Input() dataToCreatePage: object;
+  @Input() dataToCreatePage: IPageStructure;
 
   @ViewChild('placeToRender', { read: ViewContainerRef }) target!: ViewContainerRef;
 

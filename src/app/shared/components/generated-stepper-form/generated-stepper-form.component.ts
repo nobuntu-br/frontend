@@ -1,8 +1,9 @@
 import { AfterViewInit, Component, EventEmitter, Input, Optional, Output, QueryList, ViewChildren, ViewContainerRef } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
-import { FormGeneratorService, IAttributesToCreateScreens, ICreateComponentParams } from 'app/shared/services/form-generator.service';
+import { FormGeneratorService, ICreateComponentParams } from 'app/shared/services/form-generator.service';
 import { FormGroup } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
+import { IPageStructure } from 'app/shared/models/pageStructure';
 
 /**
  * Componente que fará a geração do formulário. Sendo esse formulário com estrutura separada por passos.
@@ -31,7 +32,7 @@ export class GeneratedStepperFormComponent implements AfterViewInit{
   /**
    * Data que oreinta na criação do JSON
    */
-  @Input() dataToCreatePage: object;
+  @Input() dataToCreatePage: IPageStructure;
   /**
    * Função que informa e envia para API os dados para criação ou edição do item.
    */
@@ -57,7 +58,7 @@ export class GeneratedStepperFormComponent implements AfterViewInit{
   /**
    * No JSON que orienta a criação de paginas, cada um JSON é uma classe, nessa classe se tem cada variável com suas informações.
    */
-  @Input() attributes: IAttributesToCreateScreens[];
+  // @Input() attributes: IAttributesToCreateScreens[];
   /**
    * Nome da classe na qual o formulário pertence.
    * @example "Produtos"
@@ -93,7 +94,7 @@ export class GeneratedStepperFormComponent implements AfterViewInit{
     setTimeout(() => {
 
       this.formStepperStructure.forEach((stepName, index) => {
-        this.attributes.forEach((attribute) => {
+        this.dataToCreatePage.attributes.forEach((attribute) => {
           
           const createComponentData : ICreateComponentParams = {
             target:this.targets.toArray()[index],
@@ -101,7 +102,8 @@ export class GeneratedStepperFormComponent implements AfterViewInit{
             className: this.className,
             fieldName: attribute.name,
             fieldType: attribute.type,
-            value: {propertiesAttributes: attribute.propertiesAttributes, apiUrl: attribute.apiUrl},
+            isRequired: attribute.isRequired ? attribute.isRequired : false,
+            value: {propertiesAttributes: attribute.properties, apiUrl: attribute.apiUrl},
             labelTittle: attribute.name,
             dataToCreatePage: this.dataToCreatePage,
             fieldDisplayedInLabel: attribute.fieldDisplayedInLabel,

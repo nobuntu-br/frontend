@@ -9,6 +9,7 @@ export class User extends BaseResourceModel {
     isAdministrator: boolean;
     memberType: string;
     Roles: string[];
+    tenants?: string[];
 
     static fromJson(jsonData: any): User {
         return Object.assign(new User(), jsonData);

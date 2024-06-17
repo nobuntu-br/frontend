@@ -1,8 +1,8 @@
 import { Injectable, ViewContainerRef } from '@angular/core';
 import { FormGeneratorService } from './form-generator.service';
-import { take, takeUntil } from 'rxjs';
+import { take } from 'rxjs';
 import { DefaultListComponent } from '../components/default-list/default-list.component';
-import { ISearchableField } from '../components/search-input-field/search-input-field.component';
+import { IPageStructure } from '../models/pageStructure';
 
 // @Injectable()
 @Injectable({
@@ -21,57 +21,25 @@ export class ListFactoryService {
    * @param JSONURL Caminho que se encontra o JSON que orienta na criação do componente
    */
   createList(target: ViewContainerRef, JSONURL: string) {
-    let attributes;
-    let config;
 
-    this.formGenerator.getJSONFromDicionario(JSONURL).pipe(take(1)).subscribe((dicionarioJSON) => {
-      attributes = this.formGenerator.getAttributesData(dicionarioJSON);
-      config = this.formGenerator.getConfig(dicionarioJSON);
+    this.formGenerator.getJSONFromDicionario(JSONURL).pipe(take(1)).subscribe((pageData: IPageStructure) => {
 
-      if (attributes == null) {
-        alert("Não foi possível obter os dados do servidor!");
-        return;
-      }
-
+      if (pageData == null) console.warn("Dados de criação de pagina não obtidos");
       if (target == null) console.warn("Target não instanciada");
 
       const createdComponent = target.createComponent(DefaultListComponent).instance;
-      createdComponent.apiUrl = config.apiUrl;
+      createdComponent.apiUrl = pageData.config.apiUrl;
       createdComponent.columnsQuantity = 2;
-      createdComponent.displayedfieldsName = attributes.map(attribute => attribute.name);
-      createdComponent.fieldsType = attributes.map(attribute => attribute.type);
-      createdComponent.isSelectable = false;
+      createdComponent.displayedfieldsName = pageData.attributes.map(attribute => attribute.name);
+      createdComponent.fieldsType = pageData.attributes.map(attribute => attribute.type);
+      createdComponent.isSelectable = pageData.config.edit;
       createdComponent.selectedItemsLimit = null;
-      createdComponent.searchableFields = this.getSearchableFieldsFromDataToCreatePage(dicionarioJSON);
-      createdComponent.className = config.name;
-      createdComponent.dataToCreatePage = dicionarioJSON;
-      createdComponent.objectDisplayedValue = attributes.map(attribute => attribute.fieldDisplayedInLabel);
-      createdComponent.route = config.route;
+      createdComponent.searchableFields = pageData.config.searchableFields;
+      createdComponent.className = pageData.config.name;
+      createdComponent.dataToCreatePage = pageData;
+      createdComponent.objectDisplayedValue = pageData.attributes.map(attribute => attribute.fieldDisplayedInLabel);
+      createdComponent.route = pageData.config.route;
     });
   }
 
-  /**
-   * Obtem dados relacionados aos campos buscáveis dessa classe, que serão usados por componentes de pesquisa
-   * @param dataToCreatePage Dados do JSON que orienda na criação das páginas
-   * @returns ISearchableField[] Que contém dados do nome da variável e tipo
-   */
-  getSearchableFieldsFromDataToCreatePage(dataToCreatePage: object) {
-    const searchableFieldsNames: string[] = dataToCreatePage["config"]["searchableFields"];
-
-    if (searchableFieldsNames == null || searchableFieldsNames.length == 0) {
-      return null;
-    }
-
-    let searchableFields: ISearchableField[] = [];
-
-    dataToCreatePage["attributes"].forEach((attribute: object) => {
-      if (attribute["name"] != null || attribute["type"] != null) {
-        if (searchableFieldsNames.find((searchableFieldName: string) => searchableFieldName === attribute["name"])) {
-          searchableFields.push({ name: attribute["name"], type: attribute["type"] });
-        }
-      }
-    });
-
-    return searchableFields;
-  }
 }

@@ -107,7 +107,7 @@ export class LanguagesComponent implements OnInit, OnDestroy
         // it's up to you.
 
         // Get the navigation
-        const navigation = this._translocoService.translate('navigation', { lang });
+        // const navigation = this._translocoService.translate('navigation', { lang });
 
         // Update the navigation
         // this._navigationService.unregister('main');

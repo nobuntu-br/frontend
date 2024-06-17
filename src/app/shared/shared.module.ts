@@ -57,6 +57,8 @@ import { LayoutTestComponent } from './components/layout-test/layout-test.compon
 import { LanguagesComponent } from './components/languages/languages.component';
 import { SubformComponent } from './components/subform/subform.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { ThreeDotMenuComponent } from './components/three-dot-menu/three-dot-menu.component';
 
 @NgModule({
     imports: [
@@ -91,7 +93,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
         MatTabsModule,
         MatToolbarModule,
         MatSidenavModule,
-        MatProgressSpinnerModule
+        MatProgressSpinnerModule,
+        MatExpansionModule
     ],
     providers: [
         { provide: TRANSLOCO_SCOPE, useValue: { scope: "components", alias: "componentsBase" } }
@@ -145,7 +148,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
         ConfirmationDialogComponent,
         LayoutTestComponent,
         LanguagesComponent,
-        SubformComponent
+        SubformComponent,
+        ThreeDotMenuComponent
     ],
 })
 export class SharedModule { }
