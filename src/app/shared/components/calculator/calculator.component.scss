@@ -1,4 +1,5 @@
 .container {
+<<<<<<< HEAD
     display: flex;
     justify-content: center;
     align-items: flex-start;
@@ -73,6 +74,125 @@
     margin-bottom: 5px;
     padding: 5px;
     border-radius: 5px;
+=======
+  display: flex;
+  flex-wrap: wrap; /* Permite que os itens se ajustem em linhas diferentes se necessário */
+  justify-content: center;
+  align-items: flex-start;
+  margin-top: 20px;
+  background-color: #f2f2f2;
+  padding: 20px;
+}
+
+.calculator {
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  // border: 0.5px solid #ccc; /* Reduz a borda da calculadora */
+  border-radius: 10px; /* Adiciona bordas arredondadas */
+  padding: 10px; /* Adiciona padding interno */
+  
+}
+
+.calculator-display {
+  grid-column: span 4;
+  height: 60px;
+  width: 100%; /* Ajusta a largura para 100% do contêiner pai */
+  font-size: 2rem;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.calculator-buttons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15px;
+}
+
+.calculator-buttons button {
+  border: 2px solid #c3c9d3;
+  border-radius: 100px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  height: 70px; /* Define altura padrão dos botões */
+  width: 70px;  /* Define largura padrão dos botões */
+  padding: 20px; /* Aumenta o padding dos botões para deixá-los maiores */
+  background-color: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1.5rem; /* Aumenta o tamanho da fonte dos botões */
+}
+
+.calculator-buttons button:hover {
+  background-color: #f0f0f0;
+}
+
+button {
+  padding: 20px;
+  font-size: 1.5rem;
+}
+
+.zero {
+  grid-column: span 2;
+}
+
+.history-container {
+  display: flex;
+  flex-direction: column;
+  margin-left: 20px;
+}
+
+.history {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.history h3 {
+  margin-bottom: 10px;
+}
+
+.history ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.history li {
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  margin-bottom: 5px;
+  padding: 5px;
+  border-radius: 5px;
+}
+
+.action-buttons {
+  grid-column: span 4;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.action-buttons button {
+  padding: 10px 20px;
+  font-size: 1rem;
+}
+
+.toggle-history {
+  display: none;
+  margin-top: 10px;
+}
+
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column; /* Alinha os itens em coluna no modo móvel */
+    align-items: center; /* Centraliza os itens no modo móvel */
+  }
+
+  .calculator {
+    width: 100%; /* Garante que a calculadora ocupe toda a largura da tela no modo móvel */
+  }
+
+  .calculator-buttons button {
+    font-size: 1.2rem; /* Ajuste o tamanho da fonte dos botões para caber melhor na tela menor */
+>>>>>>> 65b847b (fix: concertado os erros de null e espaçamento entre os componentes)
   }
   
   .action-buttons {
@@ -81,6 +201,7 @@
     justify-content: space-between;
     margin-top: 10px;
   }
+<<<<<<< HEAD
   
   .action-buttons button {
     padding: 10px 20px;
@@ -88,3 +209,44 @@
   }
   
   
+=======
+
+  .history-container {
+    margin-left: 0;
+    width: 100%; /* Garante que o histórico ocupe toda a largura da tela no modo móvel */
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  .history {
+    max-height: 200px; /* Reduza a altura máxima do histórico para telas menores */
+  }
+}
+
+@media (max-width: 480px) {
+  .calculator-display {
+    font-size: 1.5rem; /* Reduz o tamanho da fonte do display para caber em telas menores */
+  }
+  .calculator-buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+  .calculator-buttons button {
+    padding: 25px; /* Ajusta o padding dos botões para caber em telas menores */
+    height: 60px;  /* Ajusta a altura dos botões para telas menores */
+    width: 60px;   /* Ajusta a largura dos botões para telas menores */
+
+  }
+
+  .action-buttons button {
+    padding: 5px 10px; /* Reduz o padding dos botões de ação para caber em telas menores */
+    font-size: 0.8rem; /* Reduz o tamanho da fonte dos botões de ação para caber em telas menores */
+  }
+
+  .history-container {
+    margin-left: 0;
+    width: 100%;
+  }
+}
+>>>>>>> 65b847b (fix: concertado os erros de null e espaçamento entre os componentes)

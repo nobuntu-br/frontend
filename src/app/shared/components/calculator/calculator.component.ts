@@ -102,14 +102,54 @@ export class CalculatorComponent {
   isOperator(char: string) {
     return '+-*/'.includes(char);
   }
+  calculatePercentage() {
+    try {
+      // Extrair o resultado da expressão atual sem o operador final e número
+      let expression = this.display;
+      let lastOperatorIndex = Math.max(
+        expression.lastIndexOf('+'),
+        expression.lastIndexOf('-'),
+        expression.lastIndexOf('*'),
+        expression.lastIndexOf('/')
+      );
+      
+      if (lastOperatorIndex !== -1) {
+        let lastOperator = expression.charAt(lastOperatorIndex);
+        let beforeOperator = expression.slice(0, lastOperatorIndex);
+        let afterOperator = parseFloat(expression.slice(lastOperatorIndex + 1));
+        
+        if (!isNaN(afterOperator)) {
+          let resultBeforeOperator = parseFloat(eval(beforeOperator).toFixed(2));
+          let percentage = resultBeforeOperator * (afterOperator / 100);
+          
+          this.display = beforeOperator + lastOperator + percentage.toString();
+        }
+      }
+    } catch {
+      this.display = 'Erro';
+    }
+  }
 
   cancel() {
+    if (this.dialogInjectorData.formData === undefined || this.dialogInjectorData.formData === null) {
+      this.dialogCalculatorRef.close();
+    }else{
     this.dialogCalculatorRef.close(parseFloat(this.dialogInjectorData.formData));
+  }
   }
 
   confirm() {
+<<<<<<< HEAD
     // Chame a função que você já tem pronta para inserir o número no formulário
     this.dialogCalculatorRef.close(parseFloat(this.display));
+=======
+    if(this.display== ''){
+      this.dialogCalculatorRef.close('');
+    }else{
+      this.dialogCalculatorRef.close(parseFloat(this.display));
+    }
+    
+>>>>>>> 65b847b (fix: concertado os erros de null e espaçamento entre os componentes)
   }
 
   insertNumberIntoForm(number: string) {
