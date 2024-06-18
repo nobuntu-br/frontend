@@ -139,17 +139,13 @@ export class CalculatorComponent {
   }
 
   confirm() {
-<<<<<<< HEAD
-    // Chame a função que você já tem pronta para inserir o número no formulário
-    this.dialogCalculatorRef.close(parseFloat(this.display));
-=======
+
     if(this.display== ''){
       this.dialogCalculatorRef.close('');
     }else{
       this.dialogCalculatorRef.close(parseFloat(this.display));
     }
     
->>>>>>> 65b847b (fix: concertado os erros de null e espaçamento entre os componentes)
   }
 
   insertNumberIntoForm(number: string) {
