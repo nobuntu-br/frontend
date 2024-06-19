@@ -16,7 +16,9 @@ export class CalculatorComponent {
   newCalculation = false;
   history: string[] = [];
   isVisible = true;
-  decimalOperator: any;
+  decimalOperator: string;
+  isHistoryVisible = false; // Controla a visibilidade do histórico no modo celular
+  isMobile = window.innerWidth <= 768; // Detecta se a tela é de um dispositivo móvel
 
   ngOnInit(): void {
         this.subscribeChangeLanguageEvent(this.translocoService);
@@ -45,8 +47,14 @@ export class CalculatorComponent {
     ) {
 
       this.decimalOperator = this.translocoService.translate('componentsBase.filter-number-range-component.decimalOperator');
-  }
-
+      window.addEventListener('resize', this.checkIfMobile.bind(this));
+    }
+    checkIfMobile() {
+      this.isMobile = window.innerWidth <= 768;
+      console.log(`window.innerWidth (check): ${window.innerWidth}`);
+      console.log(`isMobile (check): ${this.isMobile}`);
+    }
+  
   appendCharacter(char: string) {
     if (char === '.') {
     const parts = this.display.split(/[+\-*/]/);
@@ -147,7 +155,9 @@ export class CalculatorComponent {
     }
     
   }
-
+  toggleHistoryVisibility() {
+    this.isHistoryVisible = !this.isHistoryVisible;
+  }
   insertNumberIntoForm(number: string) {
     // Função de exemplo, substitua pela sua implementação real
     console.log(`Número inserido no formulário: ${number}`);

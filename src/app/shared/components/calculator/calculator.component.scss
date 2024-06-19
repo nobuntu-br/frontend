@@ -16,7 +16,8 @@
   // border: 0.5px solid #ccc; /* Reduz a borda da calculadora */
   border-radius: 10px; /* Adiciona bordas arredondadas */
   padding: 10px; /* Adiciona padding interno */
-  
+  max-width: 100%; /* Garante que a calculadora ocupe no máximo 100% da largura do contêiner pai */
+
 }
 
 .calculator-display {
@@ -101,7 +102,7 @@ button {
 }
 
 .toggle-history {
-  display: none;
+  display: flex;
   margin-top: 10px;
 }
 
@@ -117,7 +118,18 @@ button {
 
   .calculator-buttons button {
     font-size: 1.2rem; /* Ajuste o tamanho da fonte dos botões para caber melhor na tela menor */
-
+    display: flex;
+  justify-content: center; /* Centraliza horizontalmente */
+  align-items: center; /* Centraliza verticalmente */
+  border: 2px solid #c3c9d3;
+  border-radius: 100px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  height: 70px; /* Define altura padrão dos botões */
+  width: 70px;  /* Define largura padrão dos botões */
+  padding: 20px; /* Aumenta o padding dos botões para deixá-los maiores */
+  background-color: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease;
   }
   
   .action-buttons {
@@ -164,5 +176,49 @@ button {
   .history-container {
     margin-left: 0;
     width: 100%;
+  }
+}
+
+/* Estilos para a calculadora em telas maiores */
+@media (min-width: 769px) {
+  .calculator {
+    max-width: 400px; /* Define uma largura máxima para a calculadora em telas maiores */
+    padding: 20px;
+  }
+
+  .calculator-display {
+    font-size: 1.5rem; /* Ajusta o tamanho da fonte do display para telas maiores */
+    height: 50px; /* Ajusta a altura do display */
+  }
+
+  .calculator-buttons button {
+    font-size: 1.5rem; /* Ajusta o tamanho da fonte dos botões para telas maiores */
+    height: 60px; /* Ajusta a altura dos botões */
+    width: 60px; /* Ajusta a largura dos botões */
+    padding: 15px; /* Ajusta o padding dos botões */
+
+    display: flex;
+  justify-content: center; /* Centraliza horizontalmente */
+  align-items: center; /* Centraliza verticalmente */
+  border: 2px solid #c3c9d3;
+  border-radius: 100px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  }
+
+  .action-buttons button {
+    font-size: 1rem; /* Ajusta o tamanho da fonte dos botões de ação para telas maiores */
+    padding: 10px 20px; /* Ajusta o padding dos botões de ação */
+  }
+
+  .history-container {
+    margin-left: 20px;
+    max-width: 400px; /* Define uma largura máxima para o contêiner de histórico */
+  }
+
+  .history {
+    max-height: 400px; /* Define uma altura máxima para o histórico */
   }
 }
