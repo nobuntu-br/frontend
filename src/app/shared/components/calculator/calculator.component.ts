@@ -151,7 +151,8 @@ export class CalculatorComponent {
     if(this.display== ''){
       this.dialogCalculatorRef.close('');
     }else{
-      this.dialogCalculatorRef.close(parseFloat(this.display));
+      const result = eval(this.display);
+      this.dialogCalculatorRef.close(parseFloat(result));
     }
     
   }
