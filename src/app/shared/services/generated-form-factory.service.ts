@@ -43,6 +43,7 @@ interface IAttribute {
 })
 export class GeneratedFormFactoryService {
 
+
   constructor(
     private formGeneratorService: FormGeneratorService,
   ) {}
@@ -123,5 +124,22 @@ export class GeneratedFormFactoryService {
     }
     return attributes;
 
+  }
+
+  getDataToCreateFrom(JSONDictionary: any, target: ViewContainerRef, getDataFromAPIFunction: () => void, resourceForm: FormGroup, submitFormFunction: () => void, deleteFormFunction: () => void, currentFormAction: string, secondaryFormClassName?: string) {
+
+    const createFormParams: ICreateFormParams = {
+      target: target,
+      getDataFromAPIFunction: getDataFromAPIFunction,
+      resourceForm: resourceForm,
+      formOption: JSONDictionary.config.isFormStepper ? "stepperForm" : null,
+      submitFormFunction: submitFormFunction,
+      deleteFormFunction: deleteFormFunction,
+      currentFormAction: currentFormAction,
+      dataToCreatePage: JSONDictionary,
+      secondaryFormClassName: secondaryFormClassName
+    }
+
+    this.createForm(createFormParams);
   }
 }
