@@ -59,6 +59,7 @@ import { SubformComponent } from './components/subform/subform.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { ThreeDotMenuComponent } from './components/three-dot-menu/three-dot-menu.component';
+import { ListAppsComponent } from './components/list-apps/list-apps.component';
 
 @NgModule({
     imports: [
@@ -149,7 +150,8 @@ import { ThreeDotMenuComponent } from './components/three-dot-menu/three-dot-men
         LayoutTestComponent,
         LanguagesComponent,
         SubformComponent,
-        ThreeDotMenuComponent
+        ThreeDotMenuComponent,
+        ListAppsComponent
     ],
 })
 export class SharedModule { }

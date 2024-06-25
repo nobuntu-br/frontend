@@ -41,8 +41,9 @@
                 <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
             </button>
             <span>{{applicationTitle}}</span>
-
+            <app-list-apps *ngIf="canShowLogOutButton == true"></app-list-apps>
             <div>
+             
                 <languages></languages>
                 <button *ngIf="canShowLogOutButton == true" mat-button (click)="logout()">LogOut</button>
                 <button *ngIf="canShowLogOutButton == false" mat-button (click)="redirectToSignInPage()">SignIn</button>

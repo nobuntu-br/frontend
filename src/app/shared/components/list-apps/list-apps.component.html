@@ -1,0 +1,26 @@
+<!-- app.component.html -->
+<div class="app-header">
+  <button mat-icon-button (click)="toggleAppMenu()">
+    <mat-icon>apps</mat-icon>
+  </button>
+</div>
+
+<div *ngIf="showAppMenu" class="app-menu">
+  <div class="app-grid">
+    <div *ngFor="let app of apps" class="app-item" (click)="openApp(app)">
+      <mat-icon>{{ app.icon }}</mat-icon>
+      <span>{{ app.displayName }}</span>
+    </div>
+  </div>
+</div>
+
+<div class="app-container" *ngIf="selectedApp">
+  <div class="app-header">
+    <h2>{{ selectedApp.displayName }}</h2>
+    <button mat-icon-button (click)="closeApp()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+  <!-- Aqui você pode incluir a lógica para carregar o conteúdo do aplicativo -->
+  <p>{{ selectedApp.content }}</p>
+</div>
