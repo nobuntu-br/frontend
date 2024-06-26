@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { ApplicationService, Application } from 'app/shared/services/application.service';
+import { AuthService } from 'app/core/auth/auth.service';
 
 @Component({
   selector: 'app-list-apps',
@@ -6,14 +8,19 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./list-apps.component.scss']
 })
 export class ListAppsComponent implements OnInit {
-  apps: any[] = [];
+  customData: any = null;
   showAppMenu: boolean = false;
   selectedApp: any = null;
+  apps: Application[] = [];
 
-  constructor() {}
+  constructor(private applicationService: ApplicationService, private authService: AuthService) {}
 
   ngOnInit(): void {
-    this.fetchApps(); // Carrega os aplicativos fictícios na inicialização
+    if (!this.authService.isLoggedIn()) {
+      this.authService.login();
+    } else {
+      this.fetchApps();
+    }
   }
 
   toggleAppMenu() {
@@ -21,22 +28,22 @@ export class ListAppsComponent implements OnInit {
   }
 
   fetchApps() {
-    // Use dados fictícios para simular aplicativos, incluindo ícones
-    this.apps = [
-      { displayName: 'Mail', content: 'Conteúdo do Mail', icon: 'mail' },
-      { displayName: 'Drive', content: 'Conteúdo do Drive', icon: 'cloud' },
-      { displayName: 'Planilhas', content: 'Conteúdo das Planilhas', icon: 'insert_chart' },
-      { displayName: 'Documentos', content: 'Conteúdo dos Documentos', icon: 'description' },
-      { displayName: 'Calendário', content: 'Conteúdo do Calendário', icon: 'calendar_today' }
-    ];
+    this.applicationService.getApplications().subscribe(
+      (response: Application[]) => {
+        this.apps = response;
+      },
+      error => {
+        console.error('Erro ao buscar aplicativos:', error);
+      }
+    );
   }
 
-  openApp(app: any) {
+  openApp(app: Application) {
     this.selectedApp = app;
-    this.showAppMenu = false; // Fecha o menu de aplicativos ao selecionar um
+    this.showAppMenu = false;
   }
 
   closeApp() {
-    this.selectedApp = null; // Fecha o aplicativo atual
+    this.selectedApp = null;
   }
 }
