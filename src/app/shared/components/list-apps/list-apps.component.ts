@@ -10,7 +10,7 @@ import { AuthService } from 'app/core/auth/auth.service';
 export class ListAppsComponent implements OnInit {
   customData: any = null;
   showAppMenu: boolean = false;
-  selectedApp: any = null;
+  selectedApp: Application | null = null;
   apps: Application[] = [];
 
   constructor(private applicationService: ApplicationService, private authService: AuthService) {}
@@ -38,9 +38,15 @@ export class ListAppsComponent implements OnInit {
     );
   }
 
-  openApp(app: Application) {
+  confirmOpenApp(app: Application) {
     this.selectedApp = app;
-    this.showAppMenu = false;
+    // Aqui você pode adicionar a lógica para exibir o popup de confirmação antes de abrir o aplicativo
+    // Por exemplo: this.showConfirmationPopup = true;
+  }
+
+  openApp() {
+    // Aqui você pode adicionar a lógica de navegação para o aplicativo selecionado
+    // Por exemplo: window.open(this.selectedApp.spaRedirectUris[0], '_blank');
   }
 
   closeApp() {

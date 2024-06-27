@@ -4,9 +4,10 @@ import { Observable } from 'rxjs';
 import { environment } from 'environments/environment';
 
 export interface Application {
-    name: string;
-    icon: string | null;
-  }
+  displayName: string;
+  icon: string | null;
+  spaRedirectUris: string[];
+}
   
 @Injectable({
   providedIn: 'root'
