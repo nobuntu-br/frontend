@@ -2,6 +2,7 @@
   position: relative;
   display: flex;
   justify-content: flex-start;
+  align-items: center; /* Alinha itens verticalmente ao centro */
   padding: 10px;
   background-color: #f5f5f5;
   border-bottom: 1px solid #ccc;
@@ -26,6 +27,7 @@
 }
 
 .app-item {
+  position: relative; /* Adiciona posição relativa para poder ajustar o z-index */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -67,4 +69,28 @@
   background: none;
   border: none;
   cursor: pointer;
+}
+
+.app-icon {
+  width: 50px;  /* Largura do ícone */
+  height: 50px; /* Altura do ícone */
+  vertical-align: middle; /* Alinha verticalmente ao meio */
+  object-fit: cover; /* Garante que a imagem se ajuste bem dentro do espaço */
+}
+
+.confirm-popup {
+  position: absolute;
+  top: 50%; /* Centraliza verticalmente */
+  left: 50%; /* Centraliza horizontalmente */
+  transform: translate(-50%, -50%); /* Centraliza exatamente no meio */
+  background-color: white;
+  padding: 20px;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  z-index: 1500; /* Z-index maior que o menu de aplicativos */
+  display: none; /* Inicia escondido */
+}
+
+.confirm-popup.visible {
+  display: block; /* Mostra quando a classe visible é aplicada */
 }
