@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ApplicationService, Application } from 'app/shared/services/application.service';
 import { AuthService } from 'app/core/auth/auth.service';
+import { UserManager, UserManagerSettings } from 'oidc-client-ts';
+import { environment } from 'environments/environment';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-list-apps',
@@ -12,8 +15,13 @@ export class ListAppsComponent implements OnInit {
   showAppMenu: boolean = false;
   selectedApp: Application | null = null;
   apps: Application[] = [];
+  private userManagerParameter: UserManager;
 
-  constructor(private applicationService: ApplicationService, private authService: AuthService) {}
+  constructor(
+    private applicationService: ApplicationService, 
+    private authService: AuthService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     if (!this.authService.isLoggedIn()) {
@@ -40,13 +48,35 @@ export class ListAppsComponent implements OnInit {
 
   confirmOpenApp(app: Application) {
     this.selectedApp = app;
-    // Aqui você pode adicionar a lógica para exibir o popup de confirmação antes de abrir o aplicativo
-    // Por exemplo: this.showConfirmationPopup = true;
   }
 
-  openApp() {
-    // Aqui você pode adicionar a lógica de navegação para o aplicativo selecionado
-    // Por exemplo: window.open(this.selectedApp.spaRedirectUris[0], '_blank');
+  async openApp(app: Application) {
+    const settings: UserManagerSettings = {
+      authority: environment.authority,
+      client_id: app.client_id,
+      redirect_uri: app.redirect_uri,
+      post_logout_redirect_uri: app.post_logout_redirect_uri,
+      response_type: 'code',
+      scope: app.scope,
+      filterProtocolClaims: true,
+      loadUserInfo: false,
+      extraQueryParams: {
+        p: environment.signInPolitical,
+      },
+    }
+    
+    this.userManagerParameter = new UserManager(settings);
+    this.saveRedirectURL(this.router.url);
+
+    try {
+      await this.authService.loginInSpecificApp(this.userManagerParameter);
+    } catch (error) {
+      console.error('Erro ao redirecionar para o aplicativo:', error);
+    }
+  }
+
+  private saveRedirectURL(redirectURL: string) {
+    localStorage.setItem("redirectURL", redirectURL);
   }
 
   closeApp() {
