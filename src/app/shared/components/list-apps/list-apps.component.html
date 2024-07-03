@@ -32,6 +32,6 @@
 <!-- Popup de confirmação -->
 <div class="confirm-popup" [class.visible]="selectedApp">
   <p>Tem certeza que deseja ir para {{ selectedApp?.displayName }}?</p>
-  <button mat-button color="primary" (click)="openApp()">Confirmar</button>
+  <button mat-button color="primary" (click)="openApp(selectedApp)">Confirmar</button>
   <button mat-button color="warn" (click)="closeApp()">Cancelar</button>
 </div>
