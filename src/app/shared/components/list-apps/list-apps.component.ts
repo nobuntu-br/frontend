@@ -51,27 +51,40 @@ export class ListAppsComponent implements OnInit {
   }
 
   async openApp(app: Application) {
-    const settings: UserManagerSettings = {
-      authority: environment.authority,
-      client_id: app.client_id,
-      redirect_uri: app.redirect_uri,
-      post_logout_redirect_uri: app.post_logout_redirect_uri,
-      response_type: 'code',
-      scope: app.scope,
-      filterProtocolClaims: true,
-      loadUserInfo: false,
-      extraQueryParams: {
-        p: environment.signInPolitical,
-      },
-    }
+    // const settings: UserManagerSettings = {
+    //   authority: environment.authority,
+    //   client_id: app.client_id,
+    //   redirect_uri: app.redirect_uri,
+    //   post_logout_redirect_uri: app.post_logout_redirect_uri,
+    //   response_type: 'code',
+    //   scope: app.scope,
+    //   filterProtocolClaims: true,
+    //   loadUserInfo: false,
+    //   extraQueryParams: {
+    //     p: environment.signInPolitical,
+    //   },
+    // }
     
-    this.userManagerParameter = new UserManager(settings);
-    this.saveRedirectURL(this.router.url);
+    // this.userManagerParameter = new UserManager(settings);
+    // this.saveRedirectURL(this.router.url);
 
-    try {
-      await this.authService.loginInSpecificApp(this.userManagerParameter);
-    } catch (error) {
-      console.error('Erro ao redirecionar para o aplicativo:', error);
+    // try {
+    //   await this.authService.loginInSpecificApp(this.userManagerParameter);
+    // } catch (error) {
+    //   console.error('Erro ao redirecionar para o aplicativo:', error);
+    // }
+
+    const user = await this.authService.getUser();
+    if (user) {
+      // Serializar o usuário como JSON e codificar em base64
+      const userString = JSON.stringify(user);
+      const userEncoded = btoa(userString); // Converte para base64
+
+      // Redirecionar para o aplicativo com o usuário codificado na URL
+      const redirectUrl = `${app.redirect_uri}?user=${encodeURIComponent(userEncoded)}`;
+      window.location.href = redirectUrl;
+    } else {
+      this.authService.login();
     }
   }
 

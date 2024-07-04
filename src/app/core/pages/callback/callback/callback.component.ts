@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from 'app/core/auth/auth.service';
 import { User } from 'app/core/auth/user.model';
 import { UserService } from 'app/core/auth/user.service';
@@ -25,11 +25,36 @@ export class CallbackComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private router: Router,
+    private route: ActivatedRoute,
     private userService: UserService,
     private tenantService: TenantService,
   ) {}
 
   async ngOnInit(): Promise<void> {
+    //Verificar se o localstorage tem informação da autheticacao realizada no outro aplicativo
+
+
+    //Se ele for registrar nova sessao
+
+
+    //verificar se o usuario que esta entrando tem acesso a aplicacao se ele tiver acesso deixa
+    //usar e redirecionar para o barra
+
+    const userParam = this.route.snapshot.queryParamMap.get('user');
+    console.log(userParam)
+    if (userParam) {
+        // Decodificar o usuário da URL e converter de volta para JSON
+        const userString = atob(decodeURIComponent(userParam)); // Converte de base64
+        const user = JSON.parse(userString);
+
+        // Usar o objeto do usuário para autenticar no aplicativo de destino
+        await this.authService.authenticateWithUser(user);
+
+        // Utilize o perfil para inicializar ou criar o usuário
+        // Por exemplo: this.userService.createUserProfile(user.profile);
+
+        this.router.navigate(['/']);
+    }
     try {
       await this.completeAuthentication();
       const user = this.createUserObject();
