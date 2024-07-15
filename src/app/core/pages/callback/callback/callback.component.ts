@@ -40,37 +40,79 @@ export class CallbackComponent implements OnInit {
     //verificar se o usuario que esta entrando tem acesso a aplicacao se ele tiver acesso deixa
     //usar e redirecionar para o barra
 
-    const userParam = this.route.snapshot.queryParamMap.get('user');
-    console.log(userParam)
-    if (userParam) {
-        // Decodificar o usuário da URL e converter de volta para JSON
-        const userString = atob(decodeURIComponent(userParam)); // Converte de base64
-        const user = JSON.parse(userString);
+    // const userParam = this.route.snapshot.queryParamMap.get('user');
+    // console.log(userParam)
+    // if (userParam) {
+    //     // Decodificar o usuário da URL e converter de volta para JSON
+    //     const userString = atob(decodeURIComponent(userParam)); // Converte de base64
+    //     const user = JSON.parse(userString);
+    //     console.log(user);
 
-        // Usar o objeto do usuário para autenticar no aplicativo de destino
-        await this.authService.authenticateWithUser(user);
+    //     // Usar o objeto do usuário para autenticar no aplicativo de destino
+    //     await this.authService.authenticateWithUser(user);
 
-        // Utilize o perfil para inicializar ou criar o usuário
-        // Por exemplo: this.userService.createUserProfile(user.profile);
+    //     // Utilize o perfil para inicializar ou criar o usuário
+    //     // Por exemplo: this.userService.createUserProfile(user.profile);
 
-        this.router.navigate(['/']);
-    }
+    //     this.router.navigate(['/']);
+    // }
+    // try {
+    //   await this.completeAuthentication();
+    //   const user = this.createUserObject();
+
+    //   this.userService.getByUID(this.authService.userUID).pipe(take(1)).subscribe({
+    //     next: async (returnedUser: User) => {
+    //       this.saveUserSessionStorage(returnedUser);
+    //       this.registerNewSession(returnedUser.id);
+    //     },
+    //     error: () => {
+    //       this.registerNewUser(user);
+    //     }
+    //   });
+    // } catch (error) {
+    //   console.log(error);
+    //   this.redirectToErrorPage();
+    // }
     try {
       await this.completeAuthentication();
       const user = this.createUserObject();
-
+      console.log("Estou passando por aqui")
       this.userService.getByUID(this.authService.userUID).pipe(take(1)).subscribe({
         next: async (returnedUser: User) => {
           this.saveUserSessionStorage(returnedUser);
-          this.registerNewSession(returnedUser.id);
+          this.registerNewSession(returnedUser);
         },
         error: () => {
           this.registerNewUser(user);
         }
       });
     } catch (error) {
-      console.log(error);
-      this.redirectToErrorPage();
+      console.log("Estou passando pelo catch porcausa do erro: ", error)
+      this.route.paramMap.subscribe(async params => {
+        const encodedUser = params.get('user');
+        if (encodedUser) {
+          const decodedUserOID = this.base64Decode(encodedUser).trim().replace(/"/g, ''); // Remove as aspas usando replace()
+          console.log('Decoded User:', decodedUserOID); 
+      try {
+        await this.authService.login();
+        
+        this.userService.getByUID(decodedUserOID).pipe(take(1)).subscribe({
+          next: async (returnedUser: User) => {
+            console.log("Estou aqui no Get Uid user decoded")
+            returnedUser.username="AAA"
+            this.saveUserSessionStorage(returnedUser);
+            this.registerNewSession(returnedUser);
+          },
+          error: () => {
+          }
+        });
+      } catch (error) {
+        
+        console.log(error);
+        this.redirectToErrorPage();
+      }
+    }
+    });
     }
   }
 
@@ -99,7 +141,7 @@ export class CallbackComponent implements OnInit {
   registerNewUser(user: User): void {
     this.userService.create(user).pipe(take(1)).subscribe({
       next: (newUser: User) => {
-        this.registerNewSession(newUser.id);
+        this.registerNewSession(newUser);
       },
       error: (error) => {
         console.log(error);
@@ -109,8 +151,10 @@ export class CallbackComponent implements OnInit {
     });
   }
 
-  registerNewSession(userID: string): void {
-    this.authService.registerNewSession(this.authService.userUID, userID).pipe(take(1)).subscribe({
+  registerNewSession(user: User): void {
+    console.log("UID:",user.id);
+  console.log("ID:" ,user.UID)
+    this.authService.registerNewSession(user.UID, user.id).pipe(take(1)).subscribe({
       next: () => {
         this.redirectToPageBeforeSignIn();
       },
@@ -148,5 +192,14 @@ export class CallbackComponent implements OnInit {
 
   redirectToErrorPage(): void {
     this.router.navigate(["/404-not-found"]);
+  }
+   // Função para decodificar base64
+   base64Decode(encoded: string): string {
+    try {
+      return decodeURIComponent(escape(atob(encoded)));
+    } catch (e) {
+      console.error('Invalid base64 string', e);
+      return null;
+    }
   }
 }

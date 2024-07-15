@@ -77,12 +77,15 @@ export class ListAppsComponent implements OnInit {
     const user = await this.authService.getUser();
     if (user) {
       // Serializar o usuário como JSON e codificar em base64
-      const userString = JSON.stringify(user);
-      const userEncoded = btoa(userString); // Converte para base64
 
+      const userString = JSON.stringify(user.profile.oid);
+      const userEncoded = btoa(userString); // Converte para base64
+      
       // Redirecionar para o aplicativo com o usuário codificado na URL
-      const redirectUrl = `${app.redirect_uri}?user=${encodeURIComponent(userEncoded)}`;
+      const redirectUrl = `${app.redirect_uri}/${encodeURIComponent(userEncoded)}`;
+      console.log(redirectUrl);
       window.location.href = redirectUrl;
+
     } else {
       this.authService.login();
     }

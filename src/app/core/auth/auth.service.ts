@@ -49,29 +49,6 @@ export class AuthService {
   get authenticated() {
     return this._authenticated;
   }
-  async authenticateWithUser(user: any) {
-   
-    const userObject = new User({
-      id_token: "abc",
-      access_token: user.access_token,
-      token_type: 'Bearer',
-      expires_at: user.expires_at,
-      session_state:"aplicativos",
-      refresh_token:user.refresh_token,
-      scope:user.scope,
-      profile:user.profile,
-      userState:user.userState,
-      url_state:user.url_state
-
-      
-    });
-
-    this.user = await this.userManager.signinRedirectCallback();
-    
-    await this.userManager.storeUser(userObject);
-
-
-  }
 
   get accessToken(): string {
 
@@ -98,20 +75,18 @@ export class AuthService {
   }
 
   login(): Promise<void> {
+    console.log(this.userManager)
     return this.userManager.signinRedirect();
   }
-  loginInSpecificApp(userManagerParameter: UserManager): Promise<void> {
-    return userManagerParameter.signinRedirect();
-  }
+
+
   async completeAuthentication(): Promise<void> {
     this.user = await this.userManager.signinRedirectCallback();
-    console.log(this.user);
+    console.log("Esse aqui é o do complete authentication: " + this.user.access_token);
     this.userManager.storeUser(this.user);
   }
-  async completeAuthenticationByRedirect(): Promise<void> {
-    
-    this.userManager.storeUser(this.user);
-  }
+
+
   isLoggedIn(): boolean {
     return this.user != null && !this.user.expired;
   }
