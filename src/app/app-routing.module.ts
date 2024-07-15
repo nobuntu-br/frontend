@@ -23,7 +23,7 @@ export const appRoutes: Route[] = [
 
                     {path: '500', loadChildren: () => import('app/core/pages/error/error-500/error-500.module').then(m => m.Error500Module)}, 
             {path: 'callback', loadChildren: () => import('app/core/pages/callback/callback.module').then(m => m.CallbackModule)}, 
-
+			{path: 'callback/:user',loadChildren: () => import('app/core/pages/callback/callback.module').then(m => m.CallbackModule)}, 
     // Admin routes 
     { 
         path: '', 
