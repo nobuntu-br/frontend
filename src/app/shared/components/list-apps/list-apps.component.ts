@@ -48,6 +48,11 @@ export class ListAppsComponent implements OnInit {
     );
   }
 
+<<<<<<< HEAD
+=======
+ 
+
+>>>>>>> develop
   async openApp(app: Application) {
     // const settings: UserManagerSettings = {
     //   authority: environment.authority,
