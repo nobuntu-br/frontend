@@ -5,7 +5,6 @@ import { UserManager, UserManagerSettings } from 'oidc-client-ts';
 import { environment } from 'environments/environment';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { ConfirmChangeAppComponent } from '../confirm-change-app/confirm-change-app.component';
 
 @Component({
   selector: 'app-list-apps',
@@ -47,19 +46,6 @@ export class ListAppsComponent implements OnInit {
         console.error('Erro ao buscar aplicativos:', error);
       }
     );
-  }
-
-  confirmOpenApp(app: Application) {
-    this.dialog.open(ConfirmChangeAppComponent, {
-      data: {
-        app: app,
-      },
-    }).afterClosed().subscribe(result => {
-      if (result) {
-        this.selectedApp = app;
-        this.openApp(app);
-      }
-    });
   }
 
   async openApp(app: Application) {
