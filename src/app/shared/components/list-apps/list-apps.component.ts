@@ -49,18 +49,7 @@ export class ListAppsComponent implements OnInit {
     );
   }
 
-  confirmOpenApp(app: Application) {
-    this.dialog.open(ConfirmChangeAppComponent, {
-      data: {
-        app: app,
-      },
-    }).afterClosed().subscribe(result => {
-      if (result) {
-        this.selectedApp = app;
-        this.openApp(app);
-      }
-    });
-  }
+ 
 
   async openApp(app: Application) {
     // const settings: UserManagerSettings = {
