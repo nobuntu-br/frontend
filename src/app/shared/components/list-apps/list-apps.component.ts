@@ -4,6 +4,10 @@ import { AuthService } from 'app/core/auth/auth.service';
 import { UserManager, UserManagerSettings } from 'oidc-client-ts';
 import { environment } from 'environments/environment';
 import { Router } from '@angular/router';
+<<<<<<< HEAD
+import { MatDialog } from '@angular/material/dialog';
+=======
+>>>>>>> 26e724687c6c4683234bedd2a6198ad5821040f9
 
 @Component({
   selector: 'app-list-apps',
@@ -46,9 +50,13 @@ export class ListAppsComponent implements OnInit {
     );
   }
 
+<<<<<<< HEAD
+ 
+=======
   confirmOpenApp(app: Application) {
     this.selectedApp = app;
   }
+>>>>>>> 26e724687c6c4683234bedd2a6198ad5821040f9
 
   async openApp(app: Application) {
     // const settings: UserManagerSettings = {
