@@ -1,96 +1,26 @@
 .app-header {
-  position: relative;
   display: flex;
   justify-content: flex-start;
-  align-items: center; /* Alinha itens verticalmente ao centro */
+  padding: 8px;
+}
+
+.app-grid-menu {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 10px;
   padding: 10px;
-  background-color: #f5f5f5;
-  border-bottom: 1px solid #ccc;
+  max-width: 360px;
+  max-height: 240px;
+  overflow: auto;
 }
 
-.app-menu {
-  position: absolute;
-  top: 50px; /* Ajuste conforme necessário */
-  left: 10px; /* Ajuste conforme necessário */
-  background-color: white;
-  border: 1px solid #ccc;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
-  padding: 10px;
-  max-height: 200px;
-  overflow-y: auto;
-  z-index: 1000; /* Para garantir que o menu fique sobre outros elementos */
+.app-icon-menu {
+  width: 24px;
+  height: 24px;
+  margin-right: 8px;
 }
 
-.app-grid {
+mat-menu-item {
   display: flex;
-  flex-wrap: wrap;
-}
-
-.app-item {
-  position: relative; /* Adiciona posição relativa para poder ajustar o z-index */
-  display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 10px;
-  margin: 5px;
-  width: calc(33.33% - 10px); /* Ajuste conforme necessário */
-  cursor: pointer;
-  text-align: center;
-}
-
-.app-item mat-icon {
-  font-size: 24px; /* Reduzido de 36px para 24px */
-  margin-bottom: 5px;
-}
-
-.app-container {
-  position: relative;
-  margin-top: 20px;
-  padding: 20px;
-  border: 1px solid #ccc;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
-  background-color: white;
-  z-index: 500; /* Para garantir que o conteúdo do aplicativo não sobreponha o menu */
-}
-
-.app-container .app-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.app-container .app-header h2 {
-  margin: 0;
-}
-
-.app-container .app-header button {
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-
-.app-icon {
-  width: 50px;  /* Largura do ícone */
-  height: 50px; /* Altura do ícone */
-  vertical-align: middle; /* Alinha verticalmente ao meio */
-  object-fit: cover; /* Garante que a imagem se ajuste bem dentro do espaço */
-}
-
-.confirm-popup {
-  position: absolute;
-  top: 50%; /* Centraliza verticalmente */
-  left: 50%; /* Centraliza horizontalmente */
-  transform: translate(-50%, -50%); /* Centraliza exatamente no meio */
-  background-color: white;
-  padding: 20px;
-  border: 1px solid #ccc;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
-  z-index: 1500; /* Z-index maior que o menu de aplicativos */
-  display: none; /* Inicia escondido */
-}
-
-.confirm-popup.visible {
-  display: block; /* Mostra quando a classe visible é aplicada */
 }
