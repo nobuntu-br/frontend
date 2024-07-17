@@ -4,8 +4,6 @@ import { AuthService } from 'app/core/auth/auth.service';
 import { UserManager, UserManagerSettings } from 'oidc-client-ts';
 import { environment } from 'environments/environment';
 import { Router } from '@angular/router';
-import { MatDialog } from '@angular/material/dialog';
-import { ConfirmChangeAppComponent } from '../confirm-change-app/confirm-change-app.component';
 
 @Component({
   selector: 'app-list-apps',
@@ -22,8 +20,7 @@ export class ListAppsComponent implements OnInit {
   constructor(
     private applicationService: ApplicationService, 
     private authService: AuthService,
-    private router: Router,
-    private dialog: MatDialog
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -50,16 +47,7 @@ export class ListAppsComponent implements OnInit {
   }
 
   confirmOpenApp(app: Application) {
-    this.dialog.open(ConfirmChangeAppComponent, {
-      data: {
-        app: app,
-      },
-    }).afterClosed().subscribe(result => {
-      if (result) {
-        this.selectedApp = app;
-        this.openApp(app);
-      }
-    });
+    this.selectedApp = app;
   }
 
   async openApp(app: Application) {
@@ -86,7 +74,7 @@ export class ListAppsComponent implements OnInit {
     //   console.error('Erro ao redirecionar para o aplicativo:', error);
     // }
 
-    const user = this.authService.getUser();
+    const user = await this.authService.getUser();
     if (user) {
       // Serializar o usuário como JSON e codificar em base64
 

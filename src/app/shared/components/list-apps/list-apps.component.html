@@ -1,15 +1,37 @@
 <div class="app-header">
-  <button mat-icon-button [matMenuTriggerFor]="appMenu">
+  <button mat-icon-button (click)="toggleAppMenu()">
     <mat-icon>apps</mat-icon>
   </button>
-  <mat-menu #appMenu="matMenu">
-    <div class="app-grid-menu">
-      <button mat-menu-item *ngFor="let app of apps" (click)="confirmOpenApp(app)">
-        <img *ngIf="app.icon" [src]="app.icon" alt="{{ app.displayName }} icon" class="app-icon-menu" />
-        <mat-icon *ngIf="!app.icon">star</mat-icon>
-        <span>{{ app.displayName }}</span>
-      </button>
-    </div>
-  </mat-menu>
 </div>
 
+<div *ngIf="showAppMenu" class="app-menu">
+  <div class="app-grid">
+    <div *ngFor="let app of apps" class="app-item" (click)="openApp(app)">
+      <img *ngIf="app.icon" [src]="app.icon" alt="{{ app.displayName }} icon" class="app-icon" />
+      <mat-icon *ngIf="!app.icon">star</mat-icon>
+      <span>{{ app.displayName }}</span>
+    </div>
+  </div>
+</div>
+<!-- 
+<div class="app-container" *ngIf="selectedApp">
+  <div class="app-header">
+    <h2>{{ selectedApp.displayName }}</h2>
+    <button mat-icon-button (click)="closeApp()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+  <div *ngIf="selectedApp.spaRedirectUris && selectedApp.spaRedirectUris.length > 0">
+    <h3>Redirect URIs:</h3>
+    <ul>
+      <li *ngFor="let uri of selectedApp.spaRedirectUris">{{ uri }}</li>
+    </ul>
+  </div>
+</div> -->
+
+<!-- Popup de confirmação
+<div class="confirm-popup" [class.visible]="selectedApp">
+  <p>Tem certeza que deseja ir para {{ selectedApp?.displayName }}?</p>
+  <button mat-button color="primary" (click)="openApp(selectedApp)">Confirmar</button>
+  <button mat-button color="warn" (click)="closeApp()">Cancelar</button>
+</div> -->

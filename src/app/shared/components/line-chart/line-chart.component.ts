@@ -1,4 +1,6 @@
 import { AfterViewInit, Component, HostListener, Input } from '@angular/core';
+import * as moment from 'moment';
+import 'moment/locale/pt-br';  // Importar localização para português do Brasil
 
 
 
