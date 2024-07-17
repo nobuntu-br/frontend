@@ -6,7 +6,7 @@
 
 <div *ngIf="showAppMenu" class="app-menu">
   <div class="app-grid">
-    <div *ngFor="let app of apps" class="app-item" (click)="confirmOpenApp(app)">
+    <div *ngFor="let app of apps" class="app-item" (click)="openApp(app)">
       <img *ngIf="app.icon" [src]="app.icon" alt="{{ app.displayName }} icon" class="app-icon" />
       <mat-icon *ngIf="!app.icon">star</mat-icon>
       <span>{{ app.displayName }}</span>
@@ -29,9 +29,9 @@
   </div>
 </div> -->
 
-<!-- Popup de confirmação -->
+<!-- Popup de confirmação
 <div class="confirm-popup" [class.visible]="selectedApp">
   <p>Tem certeza que deseja ir para {{ selectedApp?.displayName }}?</p>
   <button mat-button color="primary" (click)="openApp(selectedApp)">Confirmar</button>
   <button mat-button color="warn" (click)="closeApp()">Cancelar</button>
-</div>
+</div> -->

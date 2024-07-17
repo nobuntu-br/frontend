@@ -84,7 +84,7 @@ export class ListAppsComponent implements OnInit {
       // Redirecionar para o aplicativo com o usuário codificado na URL
       const redirectUrl = `${app.redirect_uri}/${encodeURIComponent(userEncoded)}`;
       console.log(redirectUrl);
-      window.location.href = redirectUrl;
+      window.open(redirectUrl, '_blank');
 
     } else {
       this.authService.login();
