@@ -5,7 +5,6 @@ import { UserManager, UserManagerSettings } from 'oidc-client-ts';
 import { environment } from 'environments/environment';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { ConfirmChangeAppComponent } from '../confirm-change-app/confirm-change-app.component';
 
 @Component({
   selector: 'app-list-apps',
