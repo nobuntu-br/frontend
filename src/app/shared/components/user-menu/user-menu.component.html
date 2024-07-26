@@ -1,0 +1,16 @@
+<div class="user-menu-container" (click)="toggleMenu()">
+  <div class="user-avatar">
+    {{ userInitial }}
+  </div>
+  <div class="user-menu" *ngIf="menuOpen">
+    <ng-container *ngFor="let user of users">
+      <div class="user-entry">
+        <button (click)="openUserInNewTab(user.profile.sub)">
+          {{ user.profile.given_name }} ({{ user.profile.email }})
+        </button>
+      </div>
+    </ng-container>
+    <button (click)="addAccount()">Adicionar outra conta</button>
+    <button (click)="logoutAllUsers()">Logout de todas as contas</button>
+  </div>
+</div>
