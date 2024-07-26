@@ -21,8 +21,7 @@ export class ListAppsComponent implements OnInit {
   constructor(
     private applicationService: ApplicationService, 
     private authService: AuthService,
-    private router: Router,
-    private dialog: MatDialog
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -75,6 +74,7 @@ export class ListAppsComponent implements OnInit {
     // const user = this.authService.getUser();
     // if (user) {
     //   // Serializar o usuário como JSON e codificar em base64
+
 
     //   const userString = JSON.stringify(user.profile.oid);
     //   const userEncoded = btoa(userString); // Converte para base64
