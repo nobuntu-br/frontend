@@ -9,6 +9,10 @@ import { TenantModule } from './tenant/tenant.module';
     IconsModule,
     TenantModule
   ],
+  declarations: [
+  
+
+  ],
 })
 export class CoreModule {
   /**

@@ -47,8 +47,6 @@ export class ListAppsComponent implements OnInit {
     );
   }
 
- 
-
   async openApp(app: Application) {
     // const settings: UserManagerSettings = {
     //   authority: environment.authority,
@@ -73,21 +71,22 @@ export class ListAppsComponent implements OnInit {
     //   console.error('Erro ao redirecionar para o aplicativo:', error);
     // }
 
-    const user = await this.authService.getUser();
-    if (user) {
-      // Serializar o usuário como JSON e codificar em base64
+    // const user = this.authService.getUser();
+    // if (user) {
+    //   // Serializar o usuário como JSON e codificar em base64
 
-      const userString = JSON.stringify(user.profile.oid);
-      const userEncoded = btoa(userString); // Converte para base64
+
+    //   const userString = JSON.stringify(user.profile.oid);
+    //   const userEncoded = btoa(userString); // Converte para base64
       
-      // Redirecionar para o aplicativo com o usuário codificado na URL
-      const redirectUrl = `${app.redirect_uri}/${encodeURIComponent(userEncoded)}`;
-      console.log(redirectUrl);
+    //   // Redirecionar para o aplicativo com o usuário codificado na URL
+      const redirectUrl = `${app.redirect_uri}`;
+      // console.log(redirectUrl);
       window.open(redirectUrl, '_blank');
 
-    } else {
-      this.authService.login();
-    }
+    // } else {
+    //   this.authService.login();
+    // }
   }
 
   private saveRedirectURL(redirectURL: string) {
