@@ -42,13 +42,15 @@
             </button>
             <span>{{applicationTitle}}</span>
             <app-list-apps *ngIf="canShowLogOutButton == true"></app-list-apps>
+            
             <div>
              
                 <languages></languages>
-                <button *ngIf="canShowLogOutButton == true" mat-button (click)="logout()">LogOut</button>
-                <button *ngIf="canShowLogOutButton == false" mat-button (click)="redirectToSignInPage()">SignIn</button>
+                <!-- <button *ngIf="canShowLogOutButton == true" mat-button (click)="logout()">LogOut</button> -->
             </div>
             <app-three-dot-menu></app-three-dot-menu>
+            <button class="right-section" *ngIf="canShowLogOutButton == false" mat-button (click)="redirectToSignInPage()">SignIn</button>
+            <app-user-menu class="right-section" *ngIf="canShowLogOutButton == true"></app-user-menu>
         </mat-toolbar>
 
         <div style="overflow-y: auto;" class="flex flex-col flex-auto">

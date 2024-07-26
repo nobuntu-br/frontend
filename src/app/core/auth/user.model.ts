@@ -1,18 +1,18 @@
 import { BaseResourceModel } from "app/shared/models/base-resource.model";
 
-export class User extends BaseResourceModel {
+export class UserModel extends BaseResourceModel {
     UID: string;
-    TenantUID: string;
+    TenantUID: string ;
     username: string;
     firstName: string;
     lastName: string;
     isAdministrator: boolean;
     memberType: string;
-    Roles: string[];
+    Roles?: string[];
     tenants?: string[];
 
-    static fromJson(jsonData: any): User {
-        return Object.assign(new User(), jsonData);
+    static fromJson(jsonData: any): UserModel {
+        return Object.assign(new UserModel(), jsonData);
     }
 }
 
