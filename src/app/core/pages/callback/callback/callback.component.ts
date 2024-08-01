@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from 'app/core/auth/auth.service';
-import { User } from 'app/core/auth/user.model';
+import { UserModel } from 'app/core/auth/user.model';
 import { UserService } from 'app/core/auth/user.service';
 import { TenantService } from 'app/core/tenant/tenant.service';
 import { environment } from 'environments/environment';
@@ -31,14 +31,14 @@ export class CallbackComponent implements OnInit {
   ) {}
 
   async ngOnInit(): Promise<void> {
-    //Verificar se o localstorage tem informação da autheticacao realizada no outro aplicativo
+    // Verificar se o localstorage tem informação da autheticacao realizada no outro aplicativo
 
 
-    //Se ele for registrar nova sessao
+    // Se ele for registrar nova sessao
 
 
-    //verificar se o usuario que esta entrando tem acesso a aplicacao se ele tiver acesso deixa
-    //usar e redirecionar para o barra
+    // verificar se o usuario que esta entrando tem acesso a aplicacao se ele tiver acesso deixa
+    // usar e redirecionar para o barra
 
     // const userParam = this.route.snapshot.queryParamMap.get('user');
     // console.log(userParam)
@@ -61,7 +61,7 @@ export class CallbackComponent implements OnInit {
     //   const user = this.createUserObject();
 
     //   this.userService.getByUID(this.authService.userUID).pipe(take(1)).subscribe({
-    //     next: async (returnedUser: User) => {
+    //     next: async (returnedUser: UserModel) => {
     //       this.saveUserSessionStorage(returnedUser);
     //       this.registerNewSession(returnedUser.id);
     //     },
@@ -73,47 +73,66 @@ export class CallbackComponent implements OnInit {
     //   console.log(error);
     //   this.redirectToErrorPage();
     // }
-    try {
-      await this.completeAuthentication();
-      const user = this.createUserObject();
-      console.log("Estou passando por aqui")
-      this.userService.getByUID(this.authService.userUID).pipe(take(1)).subscribe({
-        next: async (returnedUser: User) => {
-          this.saveUserSessionStorage(returnedUser);
-          this.registerNewSession(returnedUser);
-        },
-        error: () => {
-          this.registerNewUser(user);
-        }
-      });
-    } catch (error) {
-      console.log("Estou passando pelo catch porcausa do erro: ", error)
-      this.route.paramMap.subscribe(async params => {
-        const encodedUser = params.get('user');
-        if (encodedUser) {
-          const decodedUserOID = this.base64Decode(encodedUser).trim().replace(/"/g, ''); // Remove as aspas usando replace()
-          console.log('Decoded User:', decodedUserOID); 
-      try {
-        await this.authService.login();
+
+
+
+
+
+
+
+    // try {
+    //   await this.completeAuthentication();
+    //   const user = this.createUserObject();
+    //   console.log("Estou passando por aqui")
+    //   this.userService.getByUID(this.authService.userUID).pipe(take(1)).subscribe({
+    //     next: async (returnedUser: UserModel) => {
+    //       this.saveUserSessionStorage(returnedUser);
+    //       this.registerNewSession(returnedUser);
+    //     },
+    //     error: () => {
+    //       this.registerNewUser(user);
+    //     }
+    //   });
+    // } catch (error) {
+    //   console.log("Estou passando pelo catch porcausa do erro: ", error)
+    //   this.route.paramMap.subscribe(async params => {
+    //     const encodedUser = params.get('user');
+    //     if (encodedUser) {
+    //       const decodedUserOID = this.base64Decode(encodedUser).trim().replace(/"/g, ''); // Remove as aspas usando replace()
+    //       console.log('Decoded UserModel:', decodedUserOID); 
+    //   try {
+    //     await this.authService.login();
         
-        this.userService.getByUID(decodedUserOID).pipe(take(1)).subscribe({
-          next: async (returnedUser: User) => {
-            console.log("Estou aqui no Get Uid user decoded")
-            returnedUser.username="AAA"
-            this.saveUserSessionStorage(returnedUser);
-            this.registerNewSession(returnedUser);
-          },
-          error: () => {
-          }
-        });
-      } catch (error) {
+    //     this.userService.getByUID(decodedUserOID).pipe(take(1)).subscribe({
+    //       next: async (returnedUser: UserModel) => {
+    //         console.log("Estou aqui no Get Uid user decoded")
+    //         returnedUser.username="AAA"
+    //         this.saveUserSessionStorage(returnedUser);
+    //         this.registerNewSession(returnedUser);
+    //       },
+    //       error: () => {
+    //       }
+    //     });
+    //   } catch (error) {
         
-        console.log(error);
-        this.redirectToErrorPage();
-      }
-    }
+    //     console.log(error);
+    //     this.redirectToErrorPage();
+    //   }
+    // }
+    // });
+    // }
+
+
+
+    this.authService.completeAuthentication().then(() => {
+      // Redirecionar para a página desejada após o login
+      this.router.navigate(['/']);
+    }).catch(error => {
+      console.error('Error completing login', error);
+      this.authService.login();
+
+      // Tratar erros, se necessário
     });
-    }
   }
 
   async completeAuthentication(): Promise<void> {
@@ -125,12 +144,12 @@ export class CallbackComponent implements OnInit {
     }
   }
 
-  createUserObject(): User {
+  createUserObject(): UserModel {
     return {
       firstName: this.authService.getUser.name,
       isAdministrator: false,
       lastName: this.authService.getUser.name,
-      memberType: "User",
+      memberType: "UserModel",
       Roles: [],
       TenantUID: environment.tenant_id,
       UID: this.authService.userUID,
@@ -138,9 +157,9 @@ export class CallbackComponent implements OnInit {
     };
   }
 
-  registerNewUser(user: User): void {
+  registerNewUser(user: UserModel): void {
     this.userService.create(user).pipe(take(1)).subscribe({
-      next: (newUser: User) => {
+      next: (newUser: UserModel) => {
         this.registerNewSession(newUser);
       },
       error: (error) => {
@@ -151,7 +170,7 @@ export class CallbackComponent implements OnInit {
     });
   }
 
-  registerNewSession(user: User): void {
+  registerNewSession(user: UserModel): void {
     console.log("UID:",user.id);
   console.log("ID:" ,user.UID)
     this.authService.registerNewSession(user.UID, user.id).pipe(take(1)).subscribe({
@@ -160,13 +179,13 @@ export class CallbackComponent implements OnInit {
       },
       error: (error) => {
         console.log(error);
-        this.authService.logout();
+        // this.authService.logout();
         this.redirectToErrorPage();
       }
     });
   }
 
-  saveUserSessionStorage(user: User): void {
+  saveUserSessionStorage(user: UserModel): void {
     sessionStorage.setItem('user', JSON.stringify(user));
     if (user.tenants) {
       sessionStorage.setItem('tenant', JSON.stringify(user.tenants[0]));

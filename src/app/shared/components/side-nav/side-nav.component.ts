@@ -1,7 +1,7 @@
 import { Breakpoints, BreakpointObserver } from '@angular/cdk/layout';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from 'app/core/auth/auth.service';
 import { environment } from 'environments/environment';
 import { Observable, Subject, map, shareReplay, take, takeUntil, tap } from 'rxjs';
@@ -61,9 +61,18 @@ export class SideNavComponent implements OnInit, OnDestroy {
     private httpClient: HttpClient,
     public authService: AuthService,
     private router: Router,
+    private route: ActivatedRoute,
   ) { }
 
   ngOnInit(): void {
+
+    this.route.queryParams.subscribe(params => {
+      const userId = params['userId'];
+      if (userId) {
+        this.authService.switchUser(userId);
+      }
+    });
+
     this.getDataToMenu(environment.menuPath).then(data => {
       this.navListOptions = data;
 
@@ -90,10 +99,8 @@ export class SideNavComponent implements OnInit, OnDestroy {
     });
 
     this.showLogOutButton();
-  }
 
-  showSideNavBar() {
-    this.sideNavBarIsOpened = true;
+    
   }
 
   closeSideNavBar() {
@@ -125,6 +132,7 @@ export class SideNavComponent implements OnInit, OnDestroy {
           });
 
           resolve(navListOptions);
+3
 
         },
         error: (error) => {
@@ -150,6 +158,7 @@ export class SideNavComponent implements OnInit, OnDestroy {
     });
   }
 
+
   redirectToSignInPage() {
     this.saveRedirectURL(this.router.url);
     this.router.navigate(['signin']);
@@ -159,9 +168,9 @@ export class SideNavComponent implements OnInit, OnDestroy {
     localStorage.setItem("redirectURL", redirectURL);
   }
 
-  logout(){
-    console.log("Logout")
-    this.authService.logoutRedirect();
+
+  switchAccount(): void {
+    this.authService.switchAccount();
   }
 
   ngOnDestroy() {

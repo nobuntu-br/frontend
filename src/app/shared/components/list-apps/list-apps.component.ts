@@ -5,6 +5,8 @@ import { UserManager, UserManagerSettings } from 'oidc-client-ts';
 import { environment } from 'environments/environment';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
+import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
+import { ConfirmChangeAppComponent } from './confirm-change-app/confirm-change-app.component';
 
 @Component({
   selector: 'app-list-apps',
@@ -21,7 +23,8 @@ export class ListAppsComponent implements OnInit {
   constructor(
     private applicationService: ApplicationService, 
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -47,47 +50,29 @@ export class ListAppsComponent implements OnInit {
     );
   }
 
- 
-
+  /**
+  * Redireciona o usuário para outra aplicação
+  **/
   async openApp(app: Application) {
-    // const settings: UserManagerSettings = {
-    //   authority: environment.authority,
-    //   client_id: app.client_id,
-    //   redirect_uri: app.redirect_uri,
-    //   post_logout_redirect_uri: app.post_logout_redirect_uri,
-    //   response_type: 'code',
-    //   scope: app.scope,
-    //   filterProtocolClaims: true,
-    //   loadUserInfo: false,
-    //   extraQueryParams: {
-    //     p: environment.signInPolitical,
-    //   },
-    // }
+  
+    this.dialog.open(ConfirmChangeAppComponent, {
+      data: {
+        app: app
+      }
+    }).afterClosed().subscribe(result => {
+      if (result) {
+        const user = this.authService.getUser();
+        if (user) {
+          // Redirecionar para o aplicativo com o usuário codificado na URL
+          const redirectUrl = `${app.redirect_uri}`;
+          console.log(redirectUrl);
+          window.open(redirectUrl, '_blank');
     
-    // this.userManagerParameter = new UserManager(settings);
-    // this.saveRedirectURL(this.router.url);
-
-    // try {
-    //   await this.authService.loginInSpecificApp(this.userManagerParameter);
-    // } catch (error) {
-    //   console.error('Erro ao redirecionar para o aplicativo:', error);
-    // }
-
-    const user = await this.authService.getUser();
-    if (user) {
-      // Serializar o usuário como JSON e codificar em base64
-
-      const userString = JSON.stringify(user.profile.oid);
-      const userEncoded = btoa(userString); // Converte para base64
-      
-      // Redirecionar para o aplicativo com o usuário codificado na URL
-      const redirectUrl = `${app.redirect_uri}/${encodeURIComponent(userEncoded)}`;
-      console.log(redirectUrl);
-      window.open(redirectUrl, '_blank');
-
-    } else {
-      this.authService.login();
-    }
+        } else {
+          this.authService.login();
+        }
+      }
+    });
   }
 
   private saveRedirectURL(redirectURL: string) {

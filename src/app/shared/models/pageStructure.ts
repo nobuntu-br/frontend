@@ -13,6 +13,7 @@ export interface IPageStructureConfig {
   localStorage: boolean;
   filter: boolean;
   searchableFields: ISearchableField[];
+  steps: string[];
   addNew: boolean;
   edit: boolean;
   columnsQuantity: number;
@@ -46,6 +47,7 @@ export interface IPageStructureAttribute {
   properties: IPageStructureAttributesProperties[];
   visibleForm: boolean;
   formTab: string;
+  step?: string;
 }
 
 export interface IPageStructureAttributesProperties {

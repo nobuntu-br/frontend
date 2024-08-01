@@ -53,7 +53,6 @@ export class FormGeneratorService {
     this.httpClient = injector.get(HttpClient);
     this.formBuilder = injector.get(FormBuilder);
     this.matDialog = injector.get(MatDialog);
-    
   }
 
   buildResourceForm(formBuilder: FormBuilder): FormGroup {

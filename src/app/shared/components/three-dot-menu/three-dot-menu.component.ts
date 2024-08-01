@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { TenantCredentialsFormComponent } from 'app/core/tenant/tenant-credentials-form/tenant-credentials-form.component';
 import { TenantService } from 'app/core/tenant/tenant.service';
 
 interface ITenant {
@@ -19,9 +21,9 @@ export class ThreeDotMenuComponent implements OnInit {
     /**
      * Todas as tenants que estão disponíveis para serem utilizadas pelo usuario.
      */
-    tenants: ITenant[] = [];
+    tenants: ITenant[];
 
-  constructor(private tenantService: TenantService) { }
+  constructor(private tenantService: TenantService, private dialog: MatDialog) { }
 
   ngOnInit(): void {
     if (!this.tenantService.getTenant()) {
@@ -41,6 +43,13 @@ export class ThreeDotMenuComponent implements OnInit {
       });
     });
   }
+
+  createTenant() {
+    this.dialog.open(TenantCredentialsFormComponent, {
+      width: '380px'
+    });
+  }
+
 
   getTenant() {
     this.tenantService.getTenant().subscribe(tenant => {

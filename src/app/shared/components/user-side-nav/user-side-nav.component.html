@@ -1,0 +1,45 @@
+<!-- Opções para quando o usuário estiver logado -->
+<button mat-icon-button [matMenuTriggerFor]="menu">
+    <mat-icon>account_circle</mat-icon>
+</button>
+
+<mat-menu #menu="matMenu">
+    <div *ngIf="isLoggedIn">
+        <button mat-menu-item (click)="redirectToProfilePage()">
+            <mat-icon>person</mat-icon>
+            <span>{{ selectedUser.profile.name }}</span>
+        </button>
+        <button mat-menu-item [matMenuTriggerFor]="switchAccount" *ngIf="users.length > 1">
+            <mat-icon>swap_horiz</mat-icon>
+            <span>Trocar de conta</span>
+        </button>
+        <button mat-menu-item (click)="addAccount()">
+            <mat-icon>person_add</mat-icon>
+            <span>Adicionar outra conta</span>
+        </button>
+        <button mat-menu-item (click)="logout()">
+            <mat-icon>logout</mat-icon>
+            <span>Sair</span>
+        </button>
+    </div>
+
+<mat-menu #switchAccount="matMenu">
+    <ng-container *ngFor="let user of users">
+        <button mat-menu-item (click)="selectUser(user.id_token)" *ngIf="user.profile.name !== selectedUser.profile.name">
+            <mat-icon>person</mat-icon>
+            <span>{{ user.profile.name }}</span>
+        </button>
+    </ng-container>
+</mat-menu>
+
+    <div *ngIf="!isLoggedIn">
+        <button mat-menu-item (click)="redirectToSignInPage()">
+            <mat-icon>login</mat-icon>
+            <span>Entrar</span>
+        </button>
+        <button mat-menu-item (click)="redirectToSignInPage()">
+            <mat-icon>person_add</mat-icon>
+            <span>Criar conta</span>
+        </button>
+    </div>
+</mat-menu>

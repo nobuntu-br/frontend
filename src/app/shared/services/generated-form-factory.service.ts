@@ -5,6 +5,7 @@ import { FormGeneratorService } from './form-generator.service';
 import { FormGroup } from '@angular/forms';
 import { take } from 'rxjs';
 import { IPageStructure } from '../models/pageStructure';
+import { FormSpaceBuildComponent } from '../components/form-space-build/form-space-build.component';
 
 /**
  * Interface com variáveis para criação dos formulários
@@ -61,7 +62,7 @@ export class GeneratedFormFactoryService {
       createdComponent = createFormParams.target.createComponent(GeneratedStepperFormComponent).instance;
       createdComponent.formStepperStructure = formStepperStructure;
     } else {
-      createdComponent = createFormParams.target.createComponent(GeneratedSimpleFormComponent).instance;
+      createdComponent = createFormParams.target.createComponent(FormSpaceBuildComponent).instance;
     }
 
     let className;
