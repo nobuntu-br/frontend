@@ -48,7 +48,13 @@
 
 }
 
-.right-section {
-    margin-left: auto;
-    position: relative;
-  }
+.flex-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.spacer {
+    flex: 1;
+}
+

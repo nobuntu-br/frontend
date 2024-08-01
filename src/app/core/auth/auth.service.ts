@@ -200,10 +200,10 @@ export class AuthService {
   }
   switchUser(userId: string): void {
     const users = this.getUsers();
-    this.currentUser = users.find(user => user.profile.sub === userId) || null;
-    console.log(this.currentUser);
+    const user: User = users.find(u => u.id_token === userId);
+    this.currentUser = user || null;
     if (this.currentUser) {
-      this.userManager.storeUser(this.currentUser); // Atualizar o userManager com o novo usuário
+      this.storeUser(this.currentUser);
     }
   }
 

@@ -179,7 +179,7 @@ export class CallbackComponent implements OnInit {
       },
       error: (error) => {
         console.log(error);
-        this.authService.logout();
+        // this.authService.logout();
         this.redirectToErrorPage();
       }
     });

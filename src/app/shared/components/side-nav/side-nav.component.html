@@ -1,63 +1,58 @@
-<mat-sidenav-container class="shadow dark:shadow-none dark:border-b bg-card dark:bg-transparent print:hidden"
-    style="height: 100%;">
+<mat-sidenav-container class="shadow dark:shadow-none dark:border-b bg-card dark:bg-transparent print:hidden" style="height: 100%;">
     <mat-sidenav #drawer [mode]="(isHandset$ | async) ? 'over' : 'side'" [opened]="sideNavBarIsOpened">
         <mat-toolbar>{{menuTitle}}</mat-toolbar>
         <mat-nav-list *ngFor="let option of navListOptions">
-                <ng-container *transloco="let t">
-                    <div *ngIf="option.isSubmenu">
-                        <mat-expansion-panel [class.mat-elevation-z0]="true">
-                            <mat-expansion-panel-header>
-                                <mat-panel-title>
-                                    <mat-icon *ngIf="option.icon" class="icon-menu">{{ option.icon }}</mat-icon>
-                                    <span>{{ t(option.optionName+"."+option.optionName) }}</span>
-                                </mat-panel-title>
-                                <mat-icon *ngIf="!option.icon" matSuffix>keyboard_arrow_down</mat-icon>
+            <ng-container *transloco="let t">
+                <div *ngIf="option.isSubmenu">
+                    <mat-expansion-panel [class.mat-elevation-z0]="true">
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                <mat-icon *ngIf="option.icon" class="icon-menu">{{ option.icon }}</mat-icon>
+                                <span>{{ t(option.optionName + "." + option.optionName) }}</span>
+                            </mat-panel-title>
+                            <mat-icon *ngIf="!option.icon" matSuffix>keyboard_arrow_down</mat-icon>
                         </mat-expansion-panel-header>
-                            <mat-nav-list>
-                                <ng-container *ngFor="let subOption of option.subMenu">
-                                    <a mat-list-item [routerLink]="subOption.routeUrl" (mouseup)="closeSideNavBar()" class="custom-button">
-                                        <mat-icon mat-list-icon class="icon-menu">{{ subOption.icon }}</mat-icon>
-                                        <span>{{ subOption.name }}</span>
-                                    </a>
-                                </ng-container>
-                            </mat-nav-list>
-                        </mat-expansion-panel>
-                    </div>
-                    <div *ngIf="!option.isSubmenu">
-                        <a mat-list-item [routerLink]="option.routeUrl" (mouseup)="closeSideNavBar()" class="custom-button">
-                            <mat-icon mat-list-icon *ngIf="option.icon" class="icon-menu">{{ option.icon }}</mat-icon>
-                            <span>{{ t(option.optionName+"."+option.optionName) }}</span>
-                        </a>
-                    </div>
-                </ng-container>
+                        <mat-nav-list>
+                            <ng-container *ngFor="let subOption of option.subMenu">
+                                <a mat-list-item [routerLink]="subOption.routeUrl" (mouseup)="closeSideNavBar()" class="custom-button">
+                                    <mat-icon mat-list-icon class="icon-menu">{{ subOption.icon }}</mat-icon>
+                                    <span>{{ subOption.name }}</span>
+                                </a>
+                            </ng-container>
+                        </mat-nav-list>
+                    </mat-expansion-panel>
+                </div>
+                <div *ngIf="!option.isSubmenu">
+                    <a mat-list-item [routerLink]="option.routeUrl" (mouseup)="closeSideNavBar()" class="custom-button">
+                        <mat-icon mat-list-icon *ngIf="option.icon" class="icon-menu">{{ option.icon }}</mat-icon>
+                        <span>{{ t(option.optionName + "." + option.optionName) }}</span>
+                    </a>
+                </div>
+            </ng-container>
         </mat-nav-list>
-
     </mat-sidenav>
-    <mat-sidenav-content>
-
-        <mat-toolbar id="toolbar">
-            <button type="button" aria-label="Toggle sidenav" mat-icon-button (click)="showSideNavBar()"
-                *ngIf="canCloseNavBar">
+    <mat-sidenav-content class="sidenav-content">
+        <mat-toolbar id="toolbar" class="flex-container">
+            <button type="button" aria-label="Toggle sidenav" mat-icon-button (click)="this.sideNavBarIsOpened = !this.sideNavBarIsOpened">
                 <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
             </button>
             <span>{{applicationTitle}}</span>
-            <app-list-apps *ngIf="canShowLogOutButton == true"></app-list-apps>
-            
-            <div>
-             
-                <languages></languages>
-                <!-- <button *ngIf="canShowLogOutButton == true" mat-button (click)="logout()">LogOut</button> -->
-            </div>
-            <app-three-dot-menu></app-three-dot-menu>
-            <button class="right-section" *ngIf="canShowLogOutButton == false" mat-button (click)="redirectToSignInPage()">SignIn</button>
-            <app-user-menu class="right-section" *ngIf="canShowLogOutButton == true"></app-user-menu>
-        </mat-toolbar>
+          
+            <div class="spacer"></div>
+          
+            <app-list-apps *ngIf="canShowLogOutButton == true" class="toolbar-item"></app-list-apps>
+            <languages class="toolbar-item"></languages>
+            <!-- <button *ngIf="canShowLogOutButton == true" mat-button (click)="logout()" class="toolbar-item">LogOut</button>
+            <button *ngIf="canShowLogOutButton == false" mat-button (click)="redirectToSignInPage()" class="toolbar-item">SignIn</button> -->
+            <app-three-dot-menu class="toolbar-item"></app-three-dot-menu>
+            <app-user-side-nav class="user-menu toolbar-item"></app-user-side-nav>
 
+
+        </mat-toolbar>
         <div style="overflow-y: auto;" class="flex flex-col flex-auto">
             <!-- *ngIf="true" hack is required here for router-outlet to work correctly.
                  Otherwise, layout changes won't be registered and the view won't be updated! -->
             <router-outlet *ngIf="true"></router-outlet>
         </div>
-
     </mat-sidenav-content>
 </mat-sidenav-container>

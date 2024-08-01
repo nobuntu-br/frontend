@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { FormGeneratorService, ICreateComponentParams } from 'app/shared/services/form-generator.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IPageStructure } from 'app/shared/models/pageStructure';
+import { MatStepper } from '@angular/material/stepper';
 
 /**
  * Componente que fará a geração do formulário. Sendo esse formulário o com estrutura simples.
@@ -23,57 +24,22 @@ export class GeneratedSimpleFormComponent implements AfterViewInit {
    * Exemplo: false.
    */
   @Output() formIsReady = new EventEmitter<boolean>();
-  // resourceForm: FormGroup;
-  /**
-   * Formulário usará o localStorage para armazenar valores que estão sendo preenchidos.
-   * @example true
-   */
-  @Input() storeInLocalStorage: boolean = true;
   /**
    * Dados contidos no JSON que orienta a criação da página
    */
   @Input() dataToCreatePage: IPageStructure;
-  /**
-   * Função que informa e envia para API os dados para criação ou edição do item.
-   */
-  @Input() submitFormFunction: () => void;
-  /**
-   * Função que informa para API remover o item está sendo editando. 
-   */
-  @Input() deleteFormFunction: () => void;
-  /**
-   * Função responsável para retornar a pagina anterior
-   */
-  @Input() returnFormFunction: () => void;
-  /**
-   * Situação atual do formuário, sendo ele estando no modo de edita ou criar um novo item.
-   * @example "edit" ou "new"
-   */
-  @Input() currentFormAction: string;
 
-  /**
-   * No JSON que orienta a criação de paginas, cada um JSON é uma classe, nessa classe se tem cada variável com suas informações.
-   */
-  // @Input() attributes: IAttributesToCreateScreens[];
   /**
    * Nome da classe na qual o formulário pertence.
    * @example "Produtos"
    */
   @Input() className: string;
-  /**
-   * Configurações adicionais (ainda não é usado)
-   */
-  @Input() config;
 
-  isLoading: boolean = true;
 
   @ViewChild('placeToRender', { read: ViewContainerRef }) target!: ViewContainerRef;
 
   constructor(
     public formGenerator: FormGeneratorService,
-    private router: Router,
-    private activatedRoute: ActivatedRoute,
-    @Optional() private matDialogComponentRef: MatDialogRef<GeneratedSimpleFormComponent>
   ) { }
 
   ngAfterViewInit(): void {
@@ -104,42 +70,7 @@ export class GeneratedSimpleFormComponent implements AfterViewInit {
         this.formGenerator.createComponent(createComponentData)
 
       });
-      this.isLoading = false;
       this.formIsReady.emit(true);
     }, 0);
   }
-
-  buildResourceForm(formBuilder: FormBuilder): FormGroup {
-    return formBuilder.group({
-      id: [null],
-    });
-  }
-
-  SeeFormData() {
-    console.log(this.resourceForm.value)
-  }
-
-  /**
-   * Caso esse formuário for aberto como dialog, ele fechará. Se não ele irá para pagina anterior.
-   */
-  return() {
-    if (this.matDialogComponentRef) {
-      
-      this.matDialogComponentRef.close();
-
-    } else {
-      if(this.currentFormAction === "edit"){
-        this.router.navigate(['../../'], {relativeTo: this.activatedRoute});
-      } else if(this.currentFormAction === "new"){
-        this.router.navigate(['../'], {relativeTo: this.activatedRoute});
-      }
-    }
-  }
-
-  // alertToReturn(){
-  //   if(this.formSaved == true) return;
-
-  //   alert(this.translocoService.translate("Alerts.rememberToSave"));
-  // }
-
 }

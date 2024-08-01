@@ -98,13 +98,7 @@ export class SideNavComponent implements OnInit, OnDestroy {
 
     });
 
-    this.showLogOutButton();
-
-    
-  }
-
-  showSideNavBar() {
-    this.sideNavBarIsOpened = true;
+    this.showLogOutButton();    
   }
 
   closeSideNavBar() {
@@ -162,6 +156,7 @@ export class SideNavComponent implements OnInit, OnDestroy {
     });
   }
 
+
   redirectToSignInPage() {
     this.saveRedirectURL(this.router.url);
     this.router.navigate(['signin']);
@@ -169,6 +164,10 @@ export class SideNavComponent implements OnInit, OnDestroy {
 
   private saveRedirectURL(redirectURL: string) {
     localStorage.setItem("redirectURL", redirectURL);
+  }
+
+  switchAccount(): void {
+    this.authService.switchAccount();
   }
 
 

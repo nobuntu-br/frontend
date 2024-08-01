@@ -21,6 +21,9 @@ export class TenantService extends BaseResourceService<any> {
 
    getTenant(): Observable<Tenant> {
     let tenantId = sessionStorage.getItem('tenant');
+    if (!tenantId) {
+      return null;
+    }
     tenantId = tenantId.replace(/"/g, '');
     return this.getById(tenantId);
   }

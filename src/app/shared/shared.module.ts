@@ -60,7 +60,10 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { ThreeDotMenuComponent } from './components/three-dot-menu/three-dot-menu.component';
 import { ListAppsComponent } from './components/list-apps/list-apps.component';
-import { UserMenuComponent } from './components/user-menu/user-menu.component';
+import { ConfirmChangeAppComponent } from './components/list-apps/confirm-change-app/confirm-change-app.component';
+import { UserSideNavComponent } from './components/user-side-nav/user-side-nav.component';
+import { FormSpaceBuildComponent } from './components/form-space-build/form-space-build.component';
+
 
 @NgModule({
     imports: [
@@ -153,7 +156,9 @@ import { UserMenuComponent } from './components/user-menu/user-menu.component';
         SubformComponent,
         ThreeDotMenuComponent,
         ListAppsComponent,
-        UserMenuComponent
+        ConfirmChangeAppComponent,
+        UserSideNavComponent,
+        FormSpaceBuildComponent
     ],
 })
 export class SharedModule { }
