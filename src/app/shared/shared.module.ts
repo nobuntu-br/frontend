@@ -64,6 +64,7 @@ import { ConfirmChangeAppComponent } from './components/list-apps/confirm-change
 import { UserSideNavComponent } from './components/user-side-nav/user-side-nav.component';
 import { FormSpaceBuildComponent } from './components/form-space-build/form-space-build.component';
 
+
 @NgModule({
     imports: [
         CommonModule,
