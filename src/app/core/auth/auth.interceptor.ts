@@ -1,17 +1,12 @@
-import { Injectable } from '@angular/core';
-import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
-import { catchError, Observable, throwError } from 'rxjs';
-import { AuthService } from './auth.service';
-import { AuthUtils } from 'app/core/auth/auth.utils';
+import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HttpErrorResponse } from "@angular/common/http";
+import { Injectable } from "@angular/core";
+import { Observable, catchError, throwError } from "rxjs";
+import { TokenService } from "./token.service";
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-  /**
-   * Constructor
-   */
-  constructor(private _authService: AuthService)
-  {
-  }
+    constructor(private _tokenService: TokenService) {}
+
 
   /**
    * Intercept
@@ -22,7 +17,6 @@ export class AuthInterceptor implements HttpInterceptor {
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     // Clone the request object
     let newReq = req.clone();
-
     // Request
     //
     // If the access token didn't expire, add the Authorization header.
@@ -45,15 +39,23 @@ export class AuthInterceptor implements HttpInterceptor {
 
         // Caso obter "401 Unauthorized" (status de não autorizado para fazer a requisição) como erro
         if (error instanceof HttpErrorResponse && error.status === 401) {
-          // TODO Decidir como tratar casos que o usuário não tem autorização para fazer a requisição na API
+          // TODO Aqui lida com o caso do token ficar inválido pelo tempo. Deverá ser feito a requição para obter um token de acesso novo. Caso erro, encerrar o acesso do usuário.
           // this._authService.logout();
 
-          // Recarregar página
-          // location.reload();
+        if (token && !this._tokenService.isTokenExpired(token)) {
+            newReq = req.clone({
+                headers: req.headers.set('Authorization', 'Bearer ' + token)
+            });
         }
 
-        return throwError(error);
-      })
-    );
-  }
+        return next.handle(newReq).pipe(
+            catchError((error) => {
+                if (error instanceof HttpErrorResponse && error.status === 401) {
+                    // Tratar erro 401
+                }
+
+                return throwError(error);
+            })
+        );
+    }
 }

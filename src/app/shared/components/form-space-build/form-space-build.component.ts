@@ -1,24 +1,27 @@
-import { AfterContentInit, AfterViewInit, Component, ComponentFactoryResolver, EventEmitter, Input, OnInit, Optional, Output, QueryList, ViewChild, ViewChildren, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Inject, Input, Optional, Output, QueryList, ViewChildren, ViewContainerRef } from '@angular/core';
 import { FormGroup, FormBuilder } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatStepper } from '@angular/material/stepper';
 import { Router, ActivatedRoute } from '@angular/router';
 import { IPageStructure } from 'app/shared/models/pageStructure';
-import { FormGeneratorService, ICreateComponentParams } from 'app/shared/services/form-generator.service';
 import { GeneratedSimpleFormComponent } from '../generated-simple-form/generated-simple-form.component';
 import { FormSpaceBuildService } from 'app/shared/services/form-space-build.service';
+import { TranslocoService } from '@ngneat/transloco';
+
 
 export interface ICreateSpace{
       resourceForm: any,
       className: string,
       target: any,
       value: IPageStructure,
-      dataToCreatePage: IPageStructure
+      dataToCreatePage: IPageStructure,
+      getDataFromAPIFunction: () => void,
 }
 
 export interface ICreateSpaceStepper{
   name: string,
   component: ICreateSpace
+  type?: string
 }
 
 @Component({
@@ -68,11 +71,6 @@ export class FormSpaceBuildComponent implements AfterViewInit {
    * @example "['endereco', 'valores', 'forma de pagamento']"
    */
     formStepperStructure : ICreateSpaceStepper[] = [];
-
-  /**
-   * No JSON que orienta a criação de paginas, cada um JSON é uma classe, nessa classe se tem cada variável com suas informações.
-   */
-  // @Input() attributes: IAttributesToCreateScreens[];
   /**
    * Nome da classe na qual o formulário pertence.
    * @example "Produtos"
@@ -81,7 +79,7 @@ export class FormSpaceBuildComponent implements AfterViewInit {
   /**
    * Configurações adicionais (ainda não é usado)
    */
-  @Input() config;
+  // @Input() config;
 
   dataToCreatePageSteps: IPageStructure[] = [];
 
@@ -93,31 +91,24 @@ export class FormSpaceBuildComponent implements AfterViewInit {
     public formSpaceBuild: FormSpaceBuildService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
-    @Optional() private matDialogComponentRef: MatDialogRef<GeneratedSimpleFormComponent>
+    protected route: ActivatedRoute,
+    protected translocoService: TranslocoService,
+    @Optional() private matDialogComponentRef: MatDialogRef<GeneratedSimpleFormComponent>,
+    @Optional() @Inject(MAT_DIALOG_DATA) public data?: any,
     ) { }
 
   ngAfterViewInit(): void {
+    if(this.data){
+      this.setDialogData();      
+    }
     this.checkTypeOfForm();
   }
 
   checkTypeOfForm() {
-    if(this.dataToCreatePage.config.isFormStepper && this.checkIfHasSubForm()){
-      console.log("SubForm Stepper");
-      // this.generateStepSubForm();
-      // this.generateStepFormList();
-      // this.generateSubFormList();
-      return;
-    }
-    if(this.checkIfHasSubForm()){
-      console.log("SubForm");
-      this.generateSubFormList();
-    }
     if(this.dataToCreatePage.config.isFormStepper){
-      console.log("Stepper");
       this.generateStepFormList();
     }
-    if(!this.dataToCreatePage.config.isFormStepper && !this.checkIfHasSubForm()){
-      console.log("SimpleForm");
+    if(!this.dataToCreatePage.config.isFormStepper){
       this.generateSimpleFormList();
     }
   }
@@ -126,39 +117,17 @@ export class FormSpaceBuildComponent implements AfterViewInit {
    * Função que irá criar cada campo de preenchimento de acordo com as variáveis da classe do formulário.
    */
   generateSimpleFormList() {
-
+    this.dataToCreatePage = this.subFormLastAttribute(this.dataToCreatePage);
     let send: ICreateSpace = {
       resourceForm: this.resourceForm,
       className: this.className,
       target: this.target.toArray()[0],
       value: this.dataToCreatePage,
-      dataToCreatePage: this.dataToCreatePage
+      dataToCreatePage: this.dataToCreatePage,
+      getDataFromAPIFunction: () => {this.isLoading = false; this.formIsReady.emit(true)}
     }
 
     let simpleForm = this.formSpaceBuild.createComponent(send);
-  }
-
-  generateStepSubForm() {
-    this.formStepperStructure = [];
-    this.buildStepperStructure();
-    // this.buildDataToCreatePageStepsSubForm();
-    this.buildDataToCreatePageSteps()
-    setTimeout(() => {
-      this.dataToCreatePageSteps.forEach((data, index) => {
-          
-        let send: ICreateSpace = {
-          resourceForm: this.resourceForm,
-          className: this.className,
-          target:this.target.toArray()[index],
-          value: data,
-          dataToCreatePage: data
-        }
-        
-        let simpleForm = this.formSpaceBuild.createComponent(send);
-        });
-      });
-      
-      this.formIsReady.emit(true);
   }
 
   generateStepFormList() {
@@ -167,91 +136,19 @@ export class FormSpaceBuildComponent implements AfterViewInit {
     this.buildDataToCreatePageSteps();
     setTimeout(() => {
       this.dataToCreatePageSteps.forEach((data, index) => {
-          
+        data = this.subFormLastAttribute(data);
         let send: ICreateSpace = {
           resourceForm: this.resourceForm,
           className: this.className,
           target:this.target.toArray()[index],
           value: data,
-          dataToCreatePage: data
+          dataToCreatePage: data,
+          getDataFromAPIFunction: () => {this.isLoading = false; this.formIsReady.emit(true)}
         }
         
         let simpleForm = this.formSpaceBuild.createComponent(send);
         });
       });
-      
-      this.formIsReady.emit(true);
-  }
-
-  buildDataToCreatePageSteps(){
-    this.dataToCreatePage.config.steps.forEach((step, index) => {
-      this.dataToCreatePageSteps.push({config: this.dataToCreatePage.config, attributes: this.dataToCreatePage.attributes.filter(attribute => attribute.step === step)});
-    });
-  }
-
-  buildStepperStructure(){
-    this.dataToCreatePage.config.steps.forEach(step => {
-      this.formStepperStructure.push({name: step, component: {resourceForm: this.resourceForm, className: this.className, target: this.target, value: this.dataToCreatePage, dataToCreatePage: this.dataToCreatePage}});
-    });
-  }
-
-  buildDataToCreatePageSubForm(){
-    if(this.dataToCreatePageSteps.length === 0){
-      this.dataToCreatePageSteps.push({config: this.dataToCreatePage.config, attributes: this.dataToCreatePage.attributes.filter(attribute => attribute.type !== "subform")});
-    }
-
-    let dataToCreatePageWithSubForm = this.dataToCreatePage;
-    dataToCreatePageWithSubForm.attributes = this.dataToCreatePage.attributes.filter(attribute => attribute.type === "subform");
-
-    dataToCreatePageWithSubForm.attributes.forEach((attribute, index) => {
-      this.dataToCreatePageSteps.push({config: this.dataToCreatePage.config, attributes: [attribute]});
-    });
-
-  }
-
-  buildDataToCreatePageStepsSubForm(){
-    this.dataToCreatePageSteps.forEach((step, index) => {
-      this.dataToCreatePageSteps[index].attributes = this.dataToCreatePageSteps[index].attributes.filter(attribute => attribute.type !== "subform");
-    });
-
-    // let dataToCreatePageWithSubForm = this.dataToCreatePage;
-    // dataToCreatePageWithSubForm.attributes = this.dataToCreatePage.attributes.filter(attribute => attribute.type === "subform");
-
-    // dataToCreatePageWithSubForm.attributes.forEach((attribute, index) => {
-    //   this.dataToCreatePageSteps.push({config: this.dataToCreatePage.config, attributes: [attribute]});
-    // });
-  }
-
-  generateSubFormList() {
-    console.log("SubForm");
-    this.buildDataToCreatePageSubForm();
-    setTimeout(() => {
-
-      this.dataToCreatePageSteps.forEach((data, index) => {
-          
-        let send: ICreateSpace = {
-          resourceForm: this.resourceForm,
-          className: this.className,
-          target:this.target.toArray()[index],
-          value: data,
-          dataToCreatePage: data
-        }
-    
-        let simpleForm = this.formSpaceBuild.createComponent(send);
-        });
-      });
-      console.log("SubForm: ", this.formStepperStructure);
-      this.formIsReady.emit(true);
-  }
-
-  buildResourceForm(formBuilder: FormBuilder): FormGroup {
-    return formBuilder.group({
-      id: [null],
-    });
-  }
-
-  SeeFormData() {
-    console.log(this.resourceForm.value)
   }
 
   /**
@@ -271,17 +168,6 @@ export class FormSpaceBuildComponent implements AfterViewInit {
     }
   }
 
-  checkIfHasSubForm(): boolean {
-    let hasSubForm: boolean = false;
-    this.dataToCreatePage.attributes.forEach((attribute, index) => {
-      if(attribute.type === "subform"){
-        this.formStepperStructure.push({name: attribute.name, component: {resourceForm: this.resourceForm, className: this.className, target: this.target, value: this.dataToCreatePage, dataToCreatePage: this.dataToCreatePage}});
-        hasSubForm = true;
-      }
-    });
-    return hasSubForm;
-  }
-
   isLastStep(stepper: MatStepper): boolean {
     return stepper.selectedIndex === stepper.steps.length - 1;
   }
@@ -290,11 +176,48 @@ export class FormSpaceBuildComponent implements AfterViewInit {
     return stepper.selectedIndex === 0;
   }
 
-  // alertToReturn(){
-  //   if(this.formSaved == true) return;
+  private subFormLastAttribute(dataToCreatePage: IPageStructure): IPageStructure {
+    for(let i = 0; i < dataToCreatePage.attributes.length; i++){
+      if(dataToCreatePage.attributes[i].type === "subform"){
+        let attributeSubForm = dataToCreatePage.attributes[i];
+        dataToCreatePage.attributes.splice(i, 1);
+        dataToCreatePage.attributes.push(attributeSubForm);
+      }
+    }
+    return dataToCreatePage;
+  }
 
-  //   alert(this.translocoService.translate("Alerts.rememberToSave"));
-  // }
+  private buildResourceForm(formBuilder: FormBuilder): FormGroup {
+    return formBuilder.group({
+      id: [null],
+    });
+  }
 
+  private setDialogData(){
+    this.dataToCreatePage = this.data.dataToCreatePage;
+    this.resourceForm = this.buildResourceForm(new FormBuilder());
+    this.className = this.data.className;
+    this.currentFormAction = this.data.currentFormAction;
+    this.deleteFormFunction = this.data.deleteFormFunction;
+    this.returnFormFunction = this.data.returnFormFunction;
+    // this.config = this.data.config;
+    if(this.data.currentFormAction === "edit"){
+      this.submitFormFunction = () => {this.data.submitFormFunction(this.dataToCreatePage, this.data.itemToEdit, this.resourceForm.value)};
+    }
+    if(this.data.currentFormAction === "new"){
+      this.submitFormFunction = () => {this.data.submitFormFunction(this.dataToCreatePage, this.resourceForm.value)};
+    }
+  }
+  
+  private buildDataToCreatePageSteps(){
+    this.dataToCreatePage.config.steps.forEach((step, index) => {
+      this.dataToCreatePageSteps.push({config: this.dataToCreatePage.config, attributes: this.dataToCreatePage.attributes.filter(attribute => attribute.step === step)});
+    });
+  }
 
+  private buildStepperStructure(){
+    this.dataToCreatePage.config.steps.forEach(step => {
+      this.formStepperStructure.push({name: step, component: {resourceForm: this.resourceForm, className: this.className, target: this.target, value: this.dataToCreatePage, dataToCreatePage: this.dataToCreatePage, getDataFromAPIFunction: () => {this.isLoading = false; this.formIsReady.emit(true)}}, type: "step"});
+    });
+  }
 }

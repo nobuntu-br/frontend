@@ -10,12 +10,14 @@ import { SelectedItemsListComponent } from '../selected-items-list/selected-item
 import { TranslocoService } from '@ngneat/transloco';
 import { environment } from 'environments/environment';
 import { IPageStructure } from 'app/shared/models/pageStructure';
+import { takeUntil } from 'rxjs';
 
 export interface IDinamicBaseResourceFormComponent {
   dataToCreatePage: IPageStructure,
   className: string,
   itemId: string,
-  currentAction: string
+  currentAction: string,
+  target?: ViewContainerRef
 }
 
 @Injectable({
@@ -88,7 +90,7 @@ export class DinamicBaseResourceFormComponent implements AfterViewInit {
     //passar aqui o nome da classe e da variável, assim percorre o JSON e pega o necessário
     @Optional() @Inject(MAT_DIALOG_DATA) public dialogInjectorData: IDinamicBaseResourceFormComponent,
     @Optional() private matDialogComponentRef: MatDialogRef<SelectedItemsListComponent>,
-
+    @Optional() private dialogRef?: MatDialogRef<DinamicBaseResourceFormComponent>,
   ) {
 
     if (dialogInjectorData != null) {
@@ -112,6 +114,11 @@ export class DinamicBaseResourceFormComponent implements AfterViewInit {
 
     setTimeout(() => {
 
+      if(this.dialogInjectorData){
+        this.createPageOnDialog();
+        return
+      }
+
       if (this.dataToCreatePage == null) {
         console.warn("dataToCreatePage don't exist");
         return;
@@ -132,7 +139,7 @@ export class DinamicBaseResourceFormComponent implements AfterViewInit {
         this.resourceService.apiPath = environment.backendUrl+'/'+apiUrl;
 
         // this.generatedFormFactoryService.getDataToCreateFrom(, this.target, () => { this.loadForm() }, this.resourceForm, () => { this.submitForm() }, () => { this.deleteResource() }, this.currentAction, this.className);
-        this.generatedFormFactoryService.createForm({target: this.target, getDataFromAPIFunction: ()=>{this.loadResource()}, submitFormFunction: ()=>{this.submitForm()}, deleteFormFunction: ()=>{this.deleteResource()}, currentFormAction: this.currentAction, dataToCreatePage: this.dataToCreatePage, formOption: null, resourceForm: this.resourceForm, secondaryFormClassName: this.className })
+        this.generatedFormFactoryService.createForm({target: this.dialogInjectorData.target, getDataFromAPIFunction: ()=>{this.loadResource()}, submitFormFunction: ()=>{this.submitForm()}, deleteFormFunction: ()=>{this.deleteResource()}, currentFormAction: this.currentAction, dataToCreatePage: this.dataToCreatePage, formOption: null, resourceForm: this.resourceForm, secondaryFormClassName: this.className })
   
       } else {
 
@@ -145,6 +152,23 @@ export class DinamicBaseResourceFormComponent implements AfterViewInit {
 
       }
     }, 0);
+  }
+
+  createPageOnDialog(){
+    this.dataToCreatePage = this.dialogInjectorData.dataToCreatePage;
+
+    if (this.matDialogComponentRef != null) {
+
+      let jsonPath = this.dataToCreatePage.attributes[0].className;
+
+      jsonPath = jsonPath.charAt(0).toLowerCase() + jsonPath.slice(1);
+
+      this.formGeneratorService.getJSONFromDicionario(jsonPath).pipe().subscribe((JSONDictionary: any) => {
+        this.dataToCreatePage = JSONDictionary;
+        console.log("DataToCreatePage : ",this.dataToCreatePage);
+        this.generatedFormFactoryService.createForm({target: this.target, getDataFromAPIFunction: ()=>{this.loadResource()}, submitFormFunction: ()=>{this.submitForm()}, deleteFormFunction: ()=>{this.deleteResource()}, currentFormAction: this.currentAction, dataToCreatePage: this.dataToCreatePage, formOption: null, resourceForm: this.resourceForm, secondaryFormClassName: this.className })
+      }); 
+     } 
   }
 
   loadForm() {

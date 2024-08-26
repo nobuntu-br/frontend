@@ -33,6 +33,7 @@ export interface ICreateComponentParams {
   dataToCreatePage: PageStructure,
   fieldDisplayedInLabel: string,
   valuesList: any[],
+  index: number,
   dataType?: string,
   language?: string,
 }
@@ -70,8 +71,9 @@ export class FormGeneratorService {
       return null;
     }
 
-    const formField: FormField = this.formFieldFactory.createFormField(createComponentData);
-    createComponentData.resourceForm.addControl(createComponentData.fieldName,formField.createFormField(createComponentData));
+    const formField: FormField = this.formFieldFactory.createFormField(createComponentData, createComponentData.dataToCreatePage);
+    createComponentData.resourceForm.addControl(createComponentData.fieldName,formField.createFormField(createComponentData, createComponentData.dataToCreatePage));
+    console.log("Criando campo: ", createComponentData.resourceForm);
   }
 
   //TODO remover essa função
@@ -90,5 +92,30 @@ export class FormGeneratorService {
 
   getJSONFromDicionario(JSONToGenerateScreenPath: any): Observable<IPageStructure> {
     return this.httpClient.get<IPageStructure>(JSONToGenerateScreenPath);//TODO aqui será a rota do backend que pegará o JSON do usuário
+  }
+
+  createForm(dataToCreatePage: IPageStructure) {
+    const formGroup = this.buildResourceForm(this.formBuilder);
+    this.createFormFields(dataToCreatePage, formGroup);
+  }
+
+  createFormFields(dataToCreatePage: IPageStructure, formGroup: FormGroup) {
+    dataToCreatePage.attributes.forEach((attribute, index) => {
+      this.createComponent({
+        target: null,
+        resourceForm: formGroup,
+        className: attribute.className,
+        fieldName: attribute.name,
+        fieldType: attribute.type,
+        isRequired: attribute.isRequired,
+        value: attribute.apiUrl,
+        labelTittle: attribute.name,
+        dataToCreatePage: null,
+        fieldDisplayedInLabel: attribute.fieldDisplayedInLabel,
+        valuesList: null,
+        dataType: attribute.type,
+        index: index
+      });
+    });
   }
 }

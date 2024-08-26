@@ -26,6 +26,8 @@ export class DefaultCardComponent implements AfterViewInit {
   @Input() isSelectable: boolean = true;
   @Output() eventClick = new EventEmitter<void>();
   @Output() eventOnSelect = new EventEmitter<void>();
+  @Output() eventClickToEdit = new EventEmitter<void>();
+
 
   columnsQuantityStyle;
   isSelected: boolean = false;
@@ -118,8 +120,7 @@ export class DefaultCardComponent implements AfterViewInit {
    * @param object Objeto que contém os campos e valores, sendo que um desses campos serão apresentados 
    */
   createObjectField(objectDisplayedValue: string, object: object){
-
-    if (objectDisplayedValue == null) {
+    if (objectDisplayedValue == null || objectDisplayedValue == "") {
       console.error("Campo de chave estrangeira não especificou o campo do objeto que será apresentado");
       return;
     }
@@ -133,18 +134,28 @@ export class DefaultCardComponent implements AfterViewInit {
     } 
 
     //Verificar se tem a propriedade do valor que será apresentado
-    if (object.hasOwnProperty(objectDisplayedValue) == false) {
-      //Caso o nome não for encontrado do campo, pega o promeiro
-      const objectPropertyNames = Object.getOwnPropertyNames(object);
-      objectDisplayedValue = objectPropertyNames[0];
-    }
+
 
     let displayedValue : string;
 
     //Verifica se é um array
     if(object instanceof Array){
-      displayedValue = object.map(_value => _value[objectDisplayedValue]).join(', ');
+      if(object.length == 0){
+        componentCreated.value = " - ";
+        return componentCreated;
+      }
+      if(object[0].hasOwnProperty(objectDisplayedValue) == false){
+        objectDisplayedValue = Object.getOwnPropertyNames(object[0])[0];
+        displayedValue = object.map((item: any) => item[objectDisplayedValue]).join(", ");
+      } else {
+        displayedValue = object.map((item: any) => item[objectDisplayedValue]).join(", ");
+      }
     } else {
+      if (object.hasOwnProperty(objectDisplayedValue) == false) {
+      //Caso o nome não for encontrado do campo, pega o promeiro
+      const objectPropertyNames = Object.getOwnPropertyNames(object);
+      objectDisplayedValue = objectPropertyNames[0];
+    }
       displayedValue = object[objectDisplayedValue];
     }
     
@@ -184,6 +195,10 @@ export class DefaultCardComponent implements AfterViewInit {
 
   selectItem(event: any | null) {
     this.eventOnSelect.emit(this.itemDisplayed);
+  }
+
+  onClickToEdit(){
+    this.eventClickToEdit.emit(this.itemDisplayed);
   }
 
 }

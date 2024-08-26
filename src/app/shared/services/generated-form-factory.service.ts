@@ -1,6 +1,4 @@
 import { Injectable, ViewContainerRef } from '@angular/core';
-import { GeneratedSimpleFormComponent } from '../components/generated-simple-form/generated-simple-form.component';
-import { GeneratedStepperFormComponent } from '../components/generated-stepper-form/generated-stepper-form.component';
 import { FormGeneratorService } from './form-generator.service';
 import { FormGroup } from '@angular/forms';
 import { take } from 'rxjs';
@@ -56,14 +54,8 @@ export class GeneratedFormFactoryService {
    */
   createForm(createFormParams: ICreateFormParams) {
     let createdComponent;
-    const formStepperStructure = this.formGeneratorService.getFormStepperStructure(createFormParams.dataToCreatePage);
-
-    if (createFormParams.formOption != null && formStepperStructure != null) {
-      createdComponent = createFormParams.target.createComponent(GeneratedStepperFormComponent).instance;
-      createdComponent.formStepperStructure = formStepperStructure;
-    } else {
-      createdComponent = createFormParams.target.createComponent(FormSpaceBuildComponent).instance;
-    }
+    
+    createdComponent = createFormParams.target.createComponent(FormSpaceBuildComponent).instance;
 
     let className;
     if(createFormParams.secondaryFormClassName){
@@ -89,14 +81,13 @@ export class GeneratedFormFactoryService {
       // attributes = this.formGeneratorService.getAttributesData(createFormParams.dataToCreatePage);
       attributes = createFormParams.dataToCreatePage;
     }
-    
+    console.log("Attributes: ", attributes);
+    console.log("resourceForm: ", createFormParams.resourceForm);
     createdComponent.resourceForm = createFormParams.resourceForm;
     createdComponent.submitFormFunction = createFormParams.submitFormFunction;
     createdComponent.deleteFormFunction = createFormParams.deleteFormFunction;
     createdComponent.currentFormAction = createFormParams.currentFormAction;
-    console.log("atributos que serão criados: ", attributes);
     createdComponent.attributes = attributes;
-    console.log("ClassName do formulário atual: ", className);
     createdComponent.className = className;
     createdComponent.dataToCreatePage = createFormParams.dataToCreatePage;
     createdComponent.formIsReady.pipe(take(1)).subscribe(() => { createFormParams.getDataFromAPIFunction() })//Quando o formulário é terminado de ser construido ele chama a função para obter os dados

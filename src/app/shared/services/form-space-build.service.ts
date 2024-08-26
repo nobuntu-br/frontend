@@ -1,5 +1,4 @@
-import { ComponentFactoryResolver, Injectable, QueryList, ViewContainerRef } from '@angular/core';
-import { ICreateComponentParams } from './form-generator.service';
+import { Injectable } from '@angular/core';
 import { GeneratedSimpleFormComponent } from '../components/generated-simple-form/generated-simple-form.component';
 import { ICreateSpace } from '../components/form-space-build/form-space-build.component';
 
@@ -21,12 +20,12 @@ export class FormSpaceBuildService {
     }
 
     let simpleForm = createComponentData.target.createComponent(GeneratedSimpleFormComponent);
-    // let simpleForm = createComponentData.target.createComponent(GeneratedSimpleFormComponent);
     simpleForm.instance.resourceForm = createComponentData.resourceForm;
     simpleForm.instance.className = createComponentData.className;
     simpleForm.instance.target = createComponentData.target;
     // simpleForm.instance.value = createComponentData.value;
     simpleForm.instance.dataToCreatePage = createComponentData.dataToCreatePage;
-    
+    //Aqui que ficaria ouvindo que o simpleForm teve seus campos criados, assim iria executar uma função para realizar a requisição na API para obter os dados
+    simpleForm.instance.formIsReady.pipe().subscribe(() => { createComponentData.getDataFromAPIFunction() });
   }
 }

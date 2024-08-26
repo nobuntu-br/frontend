@@ -1,10 +1,7 @@
-import { AfterViewInit, Component, EventEmitter, Input, Optional, Output, ViewChild, ViewContainerRef } from '@angular/core';
-import { MatDialogRef } from '@angular/material/dialog';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { AfterViewInit, Component, EventEmitter, Input, Output, ViewChild, ViewContainerRef } from '@angular/core';
+import { FormGroup } from '@angular/forms';
 import { FormGeneratorService, ICreateComponentParams } from 'app/shared/services/form-generator.service';
-import { ActivatedRoute, Router } from '@angular/router';
 import { IPageStructure } from 'app/shared/models/pageStructure';
-import { MatStepper } from '@angular/material/stepper';
 
 /**
  * Componente que fará a geração do formulário. Sendo esse formulário o com estrutura simples.
@@ -51,7 +48,7 @@ export class GeneratedSimpleFormComponent implements AfterViewInit {
    */
   generateSimpleFormList() {
     setTimeout(() => {
-      this.dataToCreatePage.attributes.forEach((attribute) => {
+      this.dataToCreatePage.attributes.forEach((attribute, index) => {
 
         const createComponentData : ICreateComponentParams = {
           target:this.target,
@@ -64,7 +61,8 @@ export class GeneratedSimpleFormComponent implements AfterViewInit {
           labelTittle: attribute.name,
           dataToCreatePage: this.dataToCreatePage,
           fieldDisplayedInLabel: attribute.fieldDisplayedInLabel,
-          valuesList: null
+          valuesList: null,
+          index: index,
         }
 
         this.formGenerator.createComponent(createComponentData)

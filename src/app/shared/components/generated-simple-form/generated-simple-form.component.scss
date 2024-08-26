@@ -22,6 +22,7 @@ $breakpoint-extra-large: 1200px; // Exemplo: monitores grandes
 @media screen and (max-width: $breakpoint-small) {
     #formBase {
         display: grid; grid-template-columns: repeat(1, 1fr); column-gap: 20px; padding: 10px;
+        height: 100%;
     }
 
     #fixedButtons {
@@ -34,6 +35,7 @@ $breakpoint-extra-large: 1200px; // Exemplo: monitores grandes
 @media screen and (min-width: $breakpoint-medium) and (max-width: $breakpoint-large) {
     #formBase {
         display: grid; grid-template-columns: repeat(2, 1fr); column-gap: 20px; padding: 10px;
+        height: 100%;
     }
 }
 
@@ -41,6 +43,7 @@ $breakpoint-extra-large: 1200px; // Exemplo: monitores grandes
 @media screen and (min-width: $breakpoint-large) and (max-width: $breakpoint-extra-large) {
     #formBase {
         display: grid; grid-template-columns: repeat(3, 1fr); column-gap: 20px; padding: 10px;
+        height: 100%;
     }
 }
 
@@ -48,5 +51,6 @@ $breakpoint-extra-large: 1200px; // Exemplo: monitores grandes
 @media screen and (min-width: $breakpoint-extra-large) {
     #formBase {
         display: grid; grid-template-columns: repeat(3, 1fr); column-gap: 20px; padding: 10px;
+        height: 100%;
     }
 }
