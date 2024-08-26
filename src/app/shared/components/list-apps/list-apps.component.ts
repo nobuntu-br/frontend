@@ -73,6 +73,7 @@ export class ListAppsComponent implements OnInit {
         }
       }
     });
+
   }
 
   private saveRedirectURL(redirectURL: string) {

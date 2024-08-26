@@ -105,9 +105,7 @@ export class SideNavComponent implements OnInit, OnDestroy {
 
     });
 
-    this.showLogOutButton();
-
-    
+    this.showLogOutButton();    
   }
 
   closeSideNavBar() {
@@ -174,11 +172,9 @@ export class SideNavComponent implements OnInit, OnDestroy {
     localStorage.setItem("redirectURL", redirectURL);
   }
 
-
-  // switchAccount(): void {
-  //   this.authService.switchAccount();
-  // }
-
+  switchAccount(): void {
+    this.authService.switchAccount();
+  }
   ngOnDestroy() {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();

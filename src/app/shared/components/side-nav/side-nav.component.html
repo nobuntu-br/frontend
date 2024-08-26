@@ -39,13 +39,14 @@
             <span>{{applicationTitle}}</span>
           
             <div class="spacer"></div>
+          
             <app-list-apps *ngIf="canShowLogOutButton == true" class="toolbar-item"></app-list-apps>
             <languages class="toolbar-item"></languages>
             <!-- <button *ngIf="canShowLogOutButton == true" mat-button (click)="logout()" class="toolbar-item">LogOut</button>
             <button *ngIf="canShowLogOutButton == false" mat-button (click)="redirectToSignInPage()" class="toolbar-item">SignIn</button> -->
             <app-three-dot-menu *ngIf="authService._authenticated" class="toolbar-item"></app-three-dot-menu>
             <app-user-side-nav class="user-menu toolbar-item"></app-user-side-nav>
-             <!-- <app-user-menu class="user-menu toolbar-item"></app-user-menu> -->
+
 
         </mat-toolbar>
         <div style="overflow-y: auto;" class="flex flex-col flex-auto">
