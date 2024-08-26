@@ -1,3 +1,9 @@
-<form id="formBase" [formGroup]="resourceForm">
+<form [formGroup]="resourceForm" *ngIf="dataToCreatePage.attributes.length == 1; else noAttributes">
     <ng-container style="display: flex; padding: 4px;" #placeToRender></ng-container>
 </form>
+
+<ng-template #noAttributes>
+    <form id="formBase" [formGroup]="resourceForm">
+        <ng-container style="display: flex; padding: 4px;" #placeToRender></ng-container>
+    </form>
+</ng-template>

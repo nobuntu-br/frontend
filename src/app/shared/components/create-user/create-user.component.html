@@ -1,0 +1,41 @@
+<div class="form-container">
+    <form (ngSubmit)="onSubmit()" #createUserForm="ngForm" class="create-user-form">
+      <div class="form-group">
+        <label for="username">Username:</label>
+        <input type="text" id="username" required [(ngModel)]="user.username" name="username">
+      </div>
+  
+      <div class="form-group">
+        <label>Email:</label>
+        <input type="text" [value]="user.username +domain" disabled>
+      </div>
+  
+      <div class="form-group">
+        <label for="displayName">Display Name:</label>
+        <input type="text" id="displayName" required [(ngModel)]="user.displayName" name="displayName">
+      </div>
+  
+      <div class="form-group">
+        <label for="surname">Surname:</label>
+        <input type="text" id="surname" required [(ngModel)]="user.surname" name="surname">
+      </div>
+  
+      <div class="form-group">
+        <label for="givenName">Given Name:</label>
+        <input type="text" id="givenName" required [(ngModel)]="user.givenName" name="givenName">
+      </div>
+  
+      <div class="form-group">
+        <label for="password">Password:</label>
+        <input type="password" id="password" required [(ngModel)]="user.password" name="password">
+      </div>
+  
+      <div class="form-group">
+        <label for="confirmPassword">Confirm Password:</label>
+        <input type="password" id="confirmPassword" required [(ngModel)]="user.confirmPassword" name="confirmPassword">
+      </div>
+  
+      <button type="submit" [disabled]="!createUserForm.form.valid" class="btn-submit">Create User</button>
+    </form>
+  </div>
+  

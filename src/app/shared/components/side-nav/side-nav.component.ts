@@ -4,6 +4,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from 'app/core/auth/auth.service';
 import { environment } from 'environments/environment';
+import { User } from 'oidc-client-ts';
 import { Observable, Subject, map, shareReplay, take, takeUntil, tap } from 'rxjs';
 
 /**
@@ -55,7 +56,8 @@ export class SideNavComponent implements OnInit, OnDestroy {
   canShowLogOutButton: boolean = false;
 
   private ngUnsubscribe = new Subject<void>();
-
+  
+  currentUser: User
   constructor(
     private breakpointObserver: BreakpointObserver,
     private httpClient: HttpClient,
@@ -66,10 +68,15 @@ export class SideNavComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
 
+    const userString= localStorage.getItem('currentUser');
+    this.currentUser= userString ? JSON.parse(userString) : [];
+
+    //arrumar o email e a senha do currentUser
+    // this.authService.loginCredential("teslaeletronico@gmail.com","adminN123")
     this.route.queryParams.subscribe(params => {
       const userId = params['userId'];
       if (userId) {
-        this.authService.switchUser(userId);
+        this.authService.switchUser(userId)
       }
     });
 
@@ -147,7 +154,6 @@ export class SideNavComponent implements OnInit, OnDestroy {
   showLogOutButton() {
     this.authService.check().pipe(takeUntil(this.ngUnsubscribe)).subscribe({
       next: (isAuthorized: boolean) => {
-        console.log("Resultado da checkagem: ", isAuthorized)
         this.canShowLogOutButton = isAuthorized;
       },
       error: (error) => {
@@ -165,11 +171,6 @@ export class SideNavComponent implements OnInit, OnDestroy {
   private saveRedirectURL(redirectURL: string) {
     localStorage.setItem("redirectURL", redirectURL);
   }
-
-  switchAccount(): void {
-    this.authService.switchAccount();
-  }
-
 
   switchAccount(): void {
     this.authService.switchAccount();

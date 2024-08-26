@@ -10,8 +10,6 @@ import { TenantModule } from './tenant/tenant.module';
     TenantModule
   ],
   declarations: [
-  
-
   ],
 })
 export class CoreModule {

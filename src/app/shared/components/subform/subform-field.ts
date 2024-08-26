@@ -1,14 +1,35 @@
 import { FormField } from 'app/shared/models/form-field';
-import { SubformComponent } from './subform.component';
 import { FormControl } from '@angular/forms';
 import { ICreateComponentParams } from 'app/shared/services/form-generator.service';
+import { IPageStructure } from 'app/shared/models/pageStructure';
+import { SubformComponent } from './subform.component';
 
 export class SubFormField implements FormField {
+
+  constructor(
+    public dataToCreatePage: IPageStructure
+  ) {
+  }
+
   createFormField(createComponentData: ICreateComponentParams): FormControl {
 
-    let createdComponent = createComponentData.target.createComponent(SubformComponent);
-    // createdComponent.JSONPath = createComponentData.dataToCreatePage;
-    return null;
-
+      if (this.dataToCreatePage == null) console.warn("Dados de criação de pagina não obtidos");
+      if (createComponentData.target == null) console.warn("Target não instanciada");
+ 
+      let createdComponent = createComponentData.target.createComponent(SubformComponent).instance;
+      createdComponent.apiUrl = this.dataToCreatePage.attributes[createComponentData.index].apiUrl;
+      createdComponent.columnsQuantity = 2;
+      createdComponent.resourceForm = createComponentData.resourceForm;
+      createdComponent.index = createComponentData.index;
+      createdComponent.displayedfieldsName = this.dataToCreatePage.attributes[createComponentData.index].properties.map(attribute => attribute.name);
+      createdComponent.fieldsType = this.dataToCreatePage.attributes[createComponentData.index].properties.map(attribute => attribute.type);
+      createdComponent.isSelectable = this.dataToCreatePage.config.edit;
+      createdComponent.selectedItemsLimit = null;
+      createdComponent.searchableFields = this.dataToCreatePage.config.searchableFields;
+      createdComponent.className = this.dataToCreatePage.config.name;
+      createdComponent.dataToCreatePage = this.dataToCreatePage;
+      createdComponent.objectDisplayedValue = this.dataToCreatePage.attributes.map(attribute => attribute.fieldDisplayedInLabel);
+      createdComponent.route = this.dataToCreatePage.config.route;
+      return createdComponent.inputValue;
   }
 }

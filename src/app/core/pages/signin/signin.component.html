@@ -1,9 +1,20 @@
-<div class="background">
+<!-- <div class="background">
     <div *ngIf="pageState == 0">
         <p style="color: white;">{{ 'componentsBase.auth-signin-page.redirect-to-signin' | transloco }}</p>
     </div>
     
-    <div *ngIf="pageState == 1">
+    <div *ngIf="pageState == 1"> -->
         <!-- <p style="color: white;">{{ 'componentsBase.auth-signin-page.authentication-error-redirect-to-signin' | transloco }}</p> -->
-    </div>
-</div>
+    <!-- </div>
+</div> -->
+<div class="background">
+    <input type="email" [(ngModel)]="email" placeholder="Email" />
+    <input type="password" [(ngModel)]="password" placeholder="Password" />
+    <button (click)="login()">Login</button>
+    <button (click)="logout()">Logout</button>
+    <button (click)="createUser()">SignUp</button>
+    <button (click)="logout()">RecuperarSenha</button>
+  </div>
+  <div *ngIf="authService.isLoggedIn()">
+    <p>Logged in as {{ authService.getUser()?.profile.name }}</p>
+  </div>

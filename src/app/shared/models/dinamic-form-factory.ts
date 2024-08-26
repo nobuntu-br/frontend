@@ -8,6 +8,7 @@ import { NumberField } from "../components/input-field/number-field";
 import { SelectorField } from "../components/selector-input-field/selector-field";
 import { SubFormField } from "../components/subform/subform-field";
 import { FormField } from "./form-field";
+import { IPageStructure } from "./pageStructure";
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +16,7 @@ import { FormField } from "./form-field";
 export class DynamicFormFieldFactory implements FormFactory {
   constructor(private injector: Injector) { }
 
-  createFormField(createComponentData: ICreateComponentParams): FormField {
+  createFormField(createComponentData: ICreateComponentParams, dataToCreatePage: IPageStructure): FormField {
     switch (createComponentData.fieldType) {
       case 'string': {
         return new TextField();
@@ -30,7 +31,7 @@ export class DynamicFormFieldFactory implements FormFactory {
         return new DateField();
       }
       case 'subform': {
-        return new SubFormField();
+        return new SubFormField(dataToCreatePage);
       }
       case 'object': {
         return new SelectorField();

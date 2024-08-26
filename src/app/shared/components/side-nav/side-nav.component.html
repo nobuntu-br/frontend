@@ -44,7 +44,7 @@
             <languages class="toolbar-item"></languages>
             <!-- <button *ngIf="canShowLogOutButton == true" mat-button (click)="logout()" class="toolbar-item">LogOut</button>
             <button *ngIf="canShowLogOutButton == false" mat-button (click)="redirectToSignInPage()" class="toolbar-item">SignIn</button> -->
-            <app-three-dot-menu class="toolbar-item"></app-three-dot-menu>
+            <app-three-dot-menu *ngIf="authService._authenticated" class="toolbar-item"></app-three-dot-menu>
             <app-user-side-nav class="user-menu toolbar-item"></app-user-side-nav>
 
 

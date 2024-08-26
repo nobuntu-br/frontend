@@ -11,15 +11,22 @@ import { User } from 'oidc-client-ts';
 export class UserSideNavComponent implements OnInit {
 
   isLoggedIn: boolean = false;
-  users: User[] = [];
+
   selectedUser: User | null = null;
+  userName: string = ''; // Inicial padrão do usuário
+  users: User[] = [];
+  currentUser: User;
 
   constructor(private authService: AuthService, private router: Router) { }
 
   ngOnInit(): void {
     this.checkUser();
-    console.log(this.users);
-    console.log(this.selectUser);
+    const user = this.authService.getUser();
+    if (user) {
+      this.userName = user.profile.given_name
+      this.currentUser = user;
+    }
+    this.users = this.authService.getUsers();
   }
 
   checkUser() {
@@ -28,7 +35,6 @@ export class UserSideNavComponent implements OnInit {
         this.isLoggedIn = true;
         this.users = this.authService.getUsers();
         this.selectedUser = this.authService.getUser();
-        console.log(this.selectedUser);
       }
     });
   }
@@ -62,9 +68,25 @@ export class UserSideNavComponent implements OnInit {
   private saveRedirectURL(redirectURL: string) {
     localStorage.setItem("redirectURL", redirectURL);
   }
-
-  logout(){
-    // this.authService.logoutRedirect();
+  addAccount() {
+    this.router.navigate(['signin']);
+  }
+  async logoutAllUsers() {
+    await this.authService.logoutAll();
+    this.router.navigate(['/']); // Redirecionar para a página inicial
+}
+openUserInNewTab(userId: string) {
+  const url = `${window.location.origin}/?userId=${userId}`;
+  window.open(url, '_blank');
+}
+  configurarUsuario(): void {
+    // Redirecionar para a página de edição de perfil do Azure AD B2C
+    this.authService.editProfile().catch(error => {
+      console.error('Error initiating profile edit', error);
+    });
   }
 
+  isCurrentUser(user: any): boolean {
+    return this.currentUser && user.profile.email === this.currentUser.profile.email;
+  }
 }

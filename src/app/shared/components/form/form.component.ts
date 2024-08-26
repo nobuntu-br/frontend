@@ -192,9 +192,11 @@ export abstract class BaseResourceFormComponent<T extends BaseResourceModel> imp
       if(resourceForm[field] instanceof Object){
         // console.log("é um objeto o campo: ", resourceForm[field]);
         if(resourceForm[field] instanceof Array){
-          // console.log("é um array também");
-          resourceForm[field] = resourceForm[field].map(value => value.id);
+          resourceForm[field] = resourceForm[field].map((value) => value.id == undefined || value.id == null ? value : value.id);
         } else {
+          if(resourceForm[field].id == undefined || resourceForm[field].id == null){
+            continue;
+          }
           resourceForm[field] = resourceForm[field].id;
         }
       }
