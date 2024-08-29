@@ -68,13 +68,7 @@ export class UserSideNavComponent implements OnInit {
   private saveRedirectURL(redirectURL: string) {
     localStorage.setItem("redirectURL", redirectURL);
   }
-  addAccount() {
-    this.router.navigate(['signin']);
-  }
-  async logoutAllUsers() {
-    await this.authService.logoutAll();
-    this.router.navigate(['/']); // Redirecionar para a página inicial
-}
+
 openUserInNewTab(userId: string) {
   const url = `${window.location.origin}/?userId=${userId}`;
   window.open(url, '_blank');

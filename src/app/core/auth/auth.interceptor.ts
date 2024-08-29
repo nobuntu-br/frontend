@@ -2,10 +2,12 @@ import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HttpErrorResponse
 import { Injectable } from "@angular/core";
 import { Observable, catchError, throwError } from "rxjs";
 import { TokenService } from "./token.service";
+import { AuthService } from "./auth.service";
+import { AuthUtils } from "./auth.utils";
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-    constructor(private _tokenService: TokenService) {}
+    constructor(private _tokenService: TokenService, private _authService: AuthService ) {}
 
 
   /**
@@ -39,14 +41,16 @@ export class AuthInterceptor implements HttpInterceptor {
 
         // Caso obter "401 Unauthorized" (status de não autorizado para fazer a requisição) como erro
         if (error instanceof HttpErrorResponse && error.status === 401) {
-          // TODO Aqui lida com o caso do token ficar inválido pelo tempo. Deverá ser feito a requição para obter um token de acesso novo. Caso erro, encerrar o acesso do usuário.
-          // this._authService.logout();
-
-        if (token && !this._tokenService.isTokenExpired(token)) {
-            newReq = req.clone({
-                headers: req.headers.set('Authorization', 'Bearer ' + token)
-            });
-        }
+            // TODO Aqui lida com o caso do token ficar inválido pelo tempo. Deverá ser feito a requição para obter um token de acesso novo. Caso erro, encerrar o acesso do usuário.
+            // this._authService.logout();
+            let token = this._authService.accessToken;
+            if (token && !this._tokenService.isTokenExpired(token)) {
+                newReq = req.clone({
+                    headers: req.headers.set('Authorization', 'Bearer ' + token)
+                });
+            }
+        
+     }
 
         return next.handle(newReq).pipe(
             catchError((error) => {
@@ -57,5 +61,7 @@ export class AuthInterceptor implements HttpInterceptor {
                 return throwError(error);
             })
         );
-    }
+    })
+    );
+}
 }

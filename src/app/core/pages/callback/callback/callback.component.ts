@@ -146,9 +146,9 @@ export class CallbackComponent implements OnInit {
 
   createUserObject(): UserModel {
     return {
-      firstName: this.authService.getUser.name,
+      firstname: this.authService.getUser.name,
       isAdministrator: false,
-      lastName: this.authService.getUser.name,
+      lastname: this.authService.getUser.name,
       memberType: "UserModel",
       Roles: [],
       TenantUID: environment.tenant_id,
@@ -172,8 +172,9 @@ export class CallbackComponent implements OnInit {
 
   registerNewSession(user: UserModel): void {
     console.log("UID:",user.id);
-  console.log("ID:" ,user.UID)
-    this.authService.registerNewSession(user.UID, user.id).pipe(take(1)).subscribe({
+  console.log("ID:" ,user.UID);
+  let token = this.authService.accessToken;
+    this.authService.registerNewSession(user.UID, user.id, token).pipe(take(1)).subscribe({
       next: () => {
         this.redirectToPageBeforeSignIn();
       },
