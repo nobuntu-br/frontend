@@ -74,8 +74,10 @@ export class AuthService {
     try {
       // const user = await this.userManager.getUser();
       const userString = localStorage.getItem('currentUser');
-      const user = userString ? JSON.parse(userString) : [];
-      if (user) {
+      const user = userString ? JSON.parse(userString) : null;
+      // Verifica se o user não é null, não é undefined e não é um array vazio
+      if (user && (!Array.isArray(user) || user.length > 0)) {
+        console.log("To aqui");
         this.currentUser = user;
         this._authenticated = true;
         this.userManager.storeUser(user);
@@ -484,7 +486,6 @@ export class AuthService {
     if (data.refresh_token) {
       currentUser.refresh_token = data.refresh_token;
     }
-
      // Salve o currentUser atualizado no localStorage
     this.storeUser(currentUser);
     this._authenticated = true;
