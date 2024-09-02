@@ -6,12 +6,8 @@ import { AuthUtils } from 'app/core/auth/auth.utils';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-  /**
-   * Constructor
-   */
-  constructor(private _authService: AuthService)
-  {
-  }
+    constructor(private _tokenService: TokenService, private _authService: AuthService ) {}
+
 
   /**
    * Intercept
@@ -47,5 +43,5 @@ export class AuthInterceptor implements HttpInterceptor {
         );
       })
     );
-  }
+}
 }

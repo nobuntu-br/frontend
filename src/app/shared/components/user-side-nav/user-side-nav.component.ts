@@ -11,6 +11,7 @@ import { User } from 'oidc-client-ts';
 export class UserSideNavComponent implements OnInit {
 
   isLoggedIn: boolean = false;
+//   selectedUser: User | null = null;
   userName: string = ''; // Inicial padrão do usuário
   users: User[] = [];
   currentUser: User;
@@ -31,6 +32,8 @@ export class UserSideNavComponent implements OnInit {
     this.authService.check().subscribe((res) => {
       if (res) {
         this.isLoggedIn = true;
+//         this.users = this.authService.getUsers();
+//         this.selectedUser = this.authService.getUser();
       }
     });
   }

@@ -48,7 +48,6 @@ import { InputImageFieldComponent } from './components/input-image-field/input-i
 import { DefaultListComponent } from './components/default-list/default-list.component';
 import { DefaultCardComponent } from './components/default-card/default-card.component';
 import { GeneratedSimpleFormComponent } from './components/generated-simple-form/generated-simple-form.component';
-import { GeneratedStepperFormComponent } from './components/generated-stepper-form/generated-stepper-form.component';
 import { SelectedItemsListComponent } from './components/selected-items-list/selected-items-list.component';
 import { SearchInputFieldComponent } from './components/search-input-field/search-input-field.component';
 import { DefaultTableComponent } from './components/default-table/default-table.component';
@@ -123,7 +122,6 @@ import { EditProfileComponent } from './components/edit-profile/edit-profile.com
         MatButtonModule,
         GeneratedSimpleFormComponent,
         DefaultListComponent,
-        GeneratedStepperFormComponent,
         TranslocoModule,
         DinamicBaseResourceFormComponent,
         LanguagesComponent,
@@ -147,7 +145,6 @@ import { EditProfileComponent } from './components/edit-profile/edit-profile.com
         DefaultListComponent,
         DefaultCardComponent,
         GeneratedSimpleFormComponent,
-        GeneratedStepperFormComponent,
         SelectedItemsListComponent,
         SearchInputFieldComponent,
         DefaultTableComponent,
