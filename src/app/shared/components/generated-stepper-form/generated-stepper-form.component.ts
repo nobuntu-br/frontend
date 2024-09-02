@@ -104,6 +104,7 @@ export class GeneratedStepperFormComponent implements AfterViewInit{
             fieldType: attribute.type,
             isRequired: attribute.isRequired ? attribute.isRequired : false,
             value: {propertiesAttributes: attribute.properties, apiUrl: attribute.apiUrl},
+            index: 1,
             labelTittle: attribute.name,
             dataToCreatePage: this.dataToCreatePage,
             fieldDisplayedInLabel: attribute.fieldDisplayedInLabel,

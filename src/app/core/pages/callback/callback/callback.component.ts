@@ -122,17 +122,34 @@ export class CallbackComponent implements OnInit {
     // });
     // }
 
+    try {
+      // Pega o currentUser do localStorage
+      const storedUser = this.authService.getUserFromStorage();
+      if (storedUser) {
+        this.authService.switchUser(storedUser.profile.sub);
 
+        const userModel = this.createUserObject(storedUser);
 
-    this.authService.completeAuthentication().then(() => {
-      // Redirecionar para a página desejada após o login
-      this.router.navigate(['/']);
-    }).catch(error => {
-      console.error('Error completing login', error);
-      this.authService.login();
+        // Verifica se o usuário existe no serviço de usuários
+        this.userService.getByUID(storedUser.profile.sub).pipe(take(1)).subscribe({
+          next: async (returnedUser: UserModel) => {
+            // this.saveUserSessionStorage(returnedUser);
+            this.registerNewSession(returnedUser,storedUser.access_token);
+          },
+          error: () => {
+            this.registerNewUser(userModel,storedUser.access_token);
+          }
+        });
 
-      // Tratar erros, se necessário
-    });
+        // Redireciona para a página principal
+        this.router.navigate(['/']);
+      } else {
+        throw new Error('Usuário não encontrado no localStorage');
+      }
+    } catch (error) {
+      console.error('Erro ao completar login', error);
+      this.redirectToErrorPage();
+    }
   }
 
   async completeAuthentication(): Promise<void> {
@@ -144,23 +161,23 @@ export class CallbackComponent implements OnInit {
     }
   }
 
-  createUserObject(): UserModel {
+  createUserObject(user: any): UserModel {
     return {
-      firstName: this.authService.getUser.name,
+      firstName: user.profile.given_name,
+      lastName: user.profile.family_name,
+      username: user.profile.name,
+      UID: user.profile.sub,
       isAdministrator: false,
-      lastName: this.authService.getUser.name,
-      memberType: "UserModel",
+      memberType: 'UserModel',
       Roles: [],
-      TenantUID: environment.tenant_id,
-      UID: this.authService.userUID,
-      username: this.authService.getUser.name,
+      TenantUID: environment.tenant_id
     };
   }
 
-  registerNewUser(user: UserModel): void {
+  registerNewUser(user: UserModel, token: string): void {
     this.userService.create(user).pipe(take(1)).subscribe({
       next: (newUser: UserModel) => {
-        this.registerNewSession(newUser);
+        this.registerNewSession(newUser,token);
       },
       error: (error) => {
         console.log(error);
@@ -170,16 +187,16 @@ export class CallbackComponent implements OnInit {
     });
   }
 
-  registerNewSession(user: UserModel): void {
+  registerNewSession(user: UserModel,token: string): void {
     console.log("UID:",user.id);
   console.log("ID:" ,user.UID)
-    this.authService.registerNewSession(user.UID, user.id).pipe(take(1)).subscribe({
+    this.authService.registerNewSession(user.UID, user.id, token).pipe(take(1)).subscribe({
       next: () => {
         this.redirectToPageBeforeSignIn();
       },
       error: (error) => {
         console.log(error);
-        this.authService.logout();
+        // this.authService.logout();
         this.redirectToErrorPage();
       }
     });
@@ -221,4 +238,5 @@ export class CallbackComponent implements OnInit {
       return null;
     }
   }
+ 
 }

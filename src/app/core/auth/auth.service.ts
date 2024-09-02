@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of, take } from 'rxjs';
 import { UserManager, UserManagerSettings, User, WebStorageStateStore } from 'oidc-client-ts';
 import { environment } from 'environments/environment';
@@ -9,6 +9,7 @@ import { HighContrastModeDetector } from '@angular/cdk/a11y';
 import { Router } from '@angular/router';
 import { UserService } from './user.service';
 import { UserModel } from './user.model';
+import { AuthUtils } from './auth.utils';
 
 @Injectable({
   providedIn: 'root',
@@ -16,7 +17,6 @@ import { UserModel } from './user.model';
 export class AuthService {
 
   _authenticated: boolean = false;
-
   claims: any;
   authorizationResponse;
 
@@ -31,6 +31,7 @@ export class AuthService {
     private sessionService: SessionService,
     private router: Router,
     private userService: UserService,
+    private http: HttpClient
   ) {
 
     const settings: UserManagerSettings = {
@@ -40,36 +41,38 @@ export class AuthService {
       post_logout_redirect_uri: environment.frontendUrl + '/' + environment.post_logout_redirect_uri,
       response_type: 'code',
       scope: environment.scope,
-      
+
       filterProtocolClaims: true,
       loadUserInfo: false,
       userStore: new WebStorageStateStore({ store: window.localStorage }), // Armazena no localStorage
       extraQueryParams: {
-        p: environment.signInPolitical,
+        p: "B2C_1_ROPC",
       },
       automaticSilentRenew: true, // Ativa a renovação automática do token
-      silent_redirect_uri: environment.frontendUrl+'/silent-renew' // URL para renovação silenciosa
+      silent_redirect_uri: environment.frontendUrl + '/silent-renew' // URL para renovação silenciosa
 
     }
-    
+
     this.userManager = new UserManager(settings);
 
     // Recuperar o estado do usuário do localStorage ao iniciar
     this.restoreUser();
 
-     // Adicionar eventos de renovação automática
-     this.userManager.events.addAccessTokenExpired(() => {
-      this.loginSilent();
-    });
+    //  // Adicionar eventos de renovação automática
+    //  this.userManager.events.addAccessTokenExpired(() => {
+    //   this.loginSilent();
+    // });
 
-    this.userManager.events.addSilentRenewError(error => {
-      console.error('Silent renew error', error);
-    });
+    // this.userManager.events.addSilentRenewError(error => {
+    //   console.error('Silent renew error', error);
+    // });
 
   }
   private async restoreUser(): Promise<void> {
     try {
-      const user = await this.userManager.getUser();
+      // const user = await this.userManager.getUser();
+      const userString = localStorage.getItem('currentUser');
+      const user = userString ? JSON.parse(userString) : [];
       if (user) {
         this.currentUser = user;
         this._authenticated = true;
@@ -88,7 +91,7 @@ export class AuthService {
       this.login();
     });
   }
-  
+
   get authenticated() {
     return this._authenticated;
   }
@@ -112,36 +115,36 @@ export class AuthService {
   get userUID(): string {
 
     try {
-      var sessionData = sessionStorage.getItem('oidc.user:https://'+environment.provider+'/'+environment.tenant_id+'/'+environment.signInPolitical+'/v2.0/:'+environment.client_id) ?? '';
+      var sessionData = sessionStorage.getItem('oidc.user:https://' + environment.provider + '/' + environment.tenant_id + '/' + environment.signInPolitical + '/v2.0/:' + environment.client_id) ?? '';
       const parsedData = JSON.parse(sessionData);
       return parsedData?.profile.oid || '';
     } catch (e) {
       return '';
     }
-    
+
   }
 
   private async checkAndRegisterUser(user: User): Promise<void> {
     try {
       const existingUser = await this.userService.getByUID(user.profile.sub).toPromise();
-        await this.registerNewSession(existingUser.UID,existingUser.id);
+      await this.registerNewSession(existingUser.UID, existingUser.id, user.access_token);
 
     } catch (error) {
 
-              // Criar novo usuário
-              const newUser: UserModel = {
-                UID: user.profile.sub,
-                TenantUID: environment.tenant_id, // Altere conforme necessário para obter o TenantUID
-                username: user.profile.name,
-                firstName: user.profile.given_name,
-                lastName: user.profile.family_name,
-                isAdministrator: true, //user.profile.role === 'admin' , // Supondo que a role é um atributo do perfil
-                memberType: 'member', // Defina conforme necessário
-                tenants: [] // Defina conforme necessário
-              };
-              const createdUser = await this.userService.create(newUser).toPromise();
-              // Salvar na tabela de sessão
-              await this.registerNewSession(newUser.UID,newUser.id);
+      // Criar novo usuário
+      const newUser: UserModel = {
+        UID: user.profile.sub,
+        TenantUID: environment.tenant_id, // Altere conforme necessário para obter o TenantUID
+        username: user.profile.name,
+        firstName: user.profile.given_name,
+        lastName: user.profile.family_name,
+        isAdministrator: true, //user.profile.role === 'admin' , // Supondo que a role é um atributo do perfil
+        memberType: 'member', // Defina conforme necessário
+        tenants: [] // Defina conforme necessário
+      };
+      const createdUser = await this.userService.create(newUser).toPromise();
+      // Salvar na tabela de sessão
+      await this.registerNewSession(newUser.UID, newUser.id, user.access_token);
     }
   }
 
@@ -156,7 +159,7 @@ export class AuthService {
   }
   switchAccount(): void {
     console.log(
-     this.userManager.signinRedirect({ prompt: 'select_account' }));
+      this.userManager.signinRedirect({ prompt: 'select_account' }));
   }
 
   async completeAuthentication(): Promise<void> {
@@ -172,17 +175,12 @@ export class AuthService {
       console.error('Error completing login', error);
     }
   }
-  
-  storeUser(user: User) {
-    const users = JSON.parse(localStorage.getItem('authenticatedUsers') || '[]');
-    const userIndex = users.findIndex(u => u.profile.sub === user.profile.sub);
-    if (userIndex === -1) {
-      users.push(user);
-    } else {
-      users[userIndex] = user;
-    }
-    localStorage.setItem('authenticatedUsers', JSON.stringify(users));
+
+  private storeUser(user: User): void {
+    this.currentUser = user;
+    localStorage.setItem('currentUser', JSON.stringify(user));
   }
+
   isLoggedIn(): boolean {
     return this.currentUser != null && !this.currentUser.expired;
   }
@@ -192,18 +190,20 @@ export class AuthService {
   }
 
   getUsers(): User[] {
-    return JSON.parse(localStorage.getItem('authenticatedUsers') || '[]');
+    return JSON.parse(localStorage.getItem('users') || '[]');
   }
   getUserById(userId: string): User | null {
     const users = this.getUsers();
     return users.find(user => user.profile.sub === userId) || null;
   }
-  switchUser(userId: string): void {
+
+  async switchUser(userId: string): Promise<void> {
     const users = this.getUsers();
     this.currentUser = users.find(user => user.profile.sub === userId) || null;
-    console.log(this.currentUser);
     if (this.currentUser) {
-      this.userManager.storeUser(this.currentUser); // Atualizar o userManager com o novo usuário
+      // this.userManager.storeUser(this.currentUser); // Atualizar o userManager com o novo usuário
+      this.storeUser(this.currentUser);
+      this.currentUser = this.currentUser;
     }
   }
 
@@ -213,8 +213,7 @@ export class AuthService {
 
   async logoutAll(): Promise<void> {
     try {
-      localStorage.removeItem(`oidc.user:${this.userManager.settings.authority}:${this.userManager.settings.client_id}`);
-      localStorage.removeItem('authenticatedUsers');
+      localStorage.clear();
       this.currentUser = null;
       await this.userManager.signoutRedirect();
     } catch (error) {
@@ -257,7 +256,7 @@ export class AuthService {
       return of(true);
     }
 
-    if(this.accessToken != null && this.accessToken != ''){
+    if (this.accessToken != null && this.accessToken != '') {
       return of(true);
     }
 
@@ -296,7 +295,7 @@ export class AuthService {
     });
   }
 
-  registerNewSession(uid: string, userid: string): Observable<Session> {
+  registerNewSession(uid: string, userid: string, token: string): Observable<Session> {
     const newSession: Session = {
       finishSessionDate: new Date(),
       hashValidationLogin: "test",
@@ -304,7 +303,7 @@ export class AuthService {
       initialDate: new Date(),
       stayConnected: false,
       tenantUID: environment.tenant_id,
-      accessToken: this.accessToken,
+      accessToken: token,
       userUID: uid,
       accessTokenExpirationDate: new Date(),
       user: userid,
@@ -313,4 +312,165 @@ export class AuthService {
     return this.sessionService.create(newSession);
   }
 
+
+  // Método para redirecionar para a página de edição do perfil
+  editProfile(): Promise<void> {
+    const extraQueryParams = { p: environment.profileEditPolitical };
+    this.userManager.signinRedirect({ extraQueryParams });
+    return this.completeProfileEdit();
+  }
+  // Método para processar a resposta de edição do perfil
+  async completeProfileEdit(): Promise<void> {
+    try {
+      this.currentUser = await this.userManager.signinRedirectCallback();
+      this.storeUser(this.currentUser);
+      console.log('Profile edit successful', this.currentUser);
+
+      // Verificar e registrar o usuário no banco de dados
+      await this.checkAndRegisterUser(this.currentUser);
+
+      // Redirecionar para a página inicial ou outra página após a edição do perfil
+      this.router.navigate(['/']);
+    } catch (error) {
+      console.error('Error completing profile edit', error);
+    }
+  }
+
+
+  async loginCredential(username: string, password: string, email: string): Promise<void> {
+    try {
+      const response = await fetch('https://allystore.b2clogin.com/allystore.onmicrosoft.com/oauth2/v2.0/token?p=b2c_1_ropc', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: new URLSearchParams({
+          'grant_type': 'password',
+          'client_id': environment.client_id,
+          'username': username,
+          'password': password,
+          'scope': environment.scope + " offline_access"
+        })
+      });
+      const data = await response.json();
+      console.log(data);
+      if (data.error) {
+        throw new Error(data.error_description);
+      }
+
+      // Convert the token response to the User format expected by oidc-client-ts
+      const user = new User({
+        access_token: data.access_token,
+        refresh_token: data.refresh_token,
+        token_type: data.token_type,
+        profile: this.parseJwt(data.access_token),
+        expires_at: Math.floor(Date.now() / 1000) + Number(data.expires_in)
+      });
+
+      user.profile.email = email;
+
+
+      // await this.userManager.storeUser(user);
+      this.storeUser(user);
+      this.addUserToArrayUsersLocalStorage(user);
+      this.currentUser = user;
+      this._authenticated = true;
+
+      // Verificar e registrar o usuário no banco de dados
+      await this.checkAndRegisterUser(user);
+    } catch (error) {
+      console.error('Login failed', error);
+    }
+    // return this.http.post('https://allystore.b2clogin.com/allystore.onmicrosoft.com/oauth2/v2.0/token?p=b2c_1_ropc', body.toString(), { headers });
+  }
+  private parseJwt(token: string): any {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => {
+      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+
+    return JSON.parse(jsonPayload);
+  }
+
+  getUserFromStorage(): User | null {
+    const userJson = localStorage.getItem('currentUser');
+    if (userJson) {
+      return JSON.parse(userJson) as User;
+    }
+    return null;
+  }
+
+  private addUserToArrayUsersLocalStorage(user: User): void {
+    // Recupera o array de usuários do localStorage
+    const usersString = localStorage.getItem('users');
+    const users = usersString ? JSON.parse(usersString) : [];
+
+    // Verifica se o usuário já existe no array de usuários
+    const userExists = users.some((usuario: any) => usuario.profile.email === user.profile.email);
+
+    if (!userExists) {
+      // Adiciona o novo usuário ao array se não existir
+      users.push(user);
+
+      // Armazena o array de volta no localStorage
+      localStorage.setItem('users', JSON.stringify(users));
+      console.log('Usuário adicionado ao array users localStorage.');
+    } else {
+      console.log('Usuário já existe no array users localStorage.');
+    }
+  }
+  async handleTokenExpiration(): Promise<void> {
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    const accessToken = currentUser.access_token;
+
+    if (AuthUtils.isTokenExpired(accessToken)) {
+      console.log('Token expirado, renovando...');
+      await this.refreshAccessToken();
+    } else {
+      console.log('Token ainda é válido.');
+    }
+  }
+
+  async refreshAccessToken() {
+    // Recupere o refresh token do currentUser armazenado no localStorage
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    const refreshToken = currentUser.refresh_token;
+
+    if (!refreshToken) {
+      throw new Error('Refresh token not found in currentUser');
+    }
+
+    // Faça a requisição para renovar o access token usando o refresh token
+    const response = await fetch('https://allystore.b2clogin.com/allystore.onmicrosoft.com/oauth2/v2.0/token?p=b2c_1_ropc', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: new URLSearchParams({
+        'grant_type': 'refresh_token',
+        'client_id': environment.client_id,
+        'refresh_token': refreshToken,
+        'scope': environment.scope + " offline_access"
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to refresh access token');
+    }
+
+    const data = await response.json();
+
+    // Atualize o access token no currentUser e salve no localStorage
+    currentUser.access_token = data.access_token;
+
+    // Se houver um novo refresh token, atualize o currentUser
+    if (data.refresh_token) {
+      currentUser.refresh_token = data.refresh_token;
+    }
+
+     // Salve o currentUser atualizado no localStorage
+    this.storeUser(currentUser);
+    this._authenticated = true;
+  }
 }

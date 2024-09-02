@@ -17,7 +17,7 @@ export interface IDefaultListComponentDialogConfig {
    * Campo com os dados dos itens que serÃo apresenados na lista.
    * @example ['nome':'Maria', 'idade':'44'].
    */
-  itemsDisplayed: any[],
+  itemsDisplayed: any,
   /**
    * Quantidade de colunas que tenha cada Card da lista.
    * @example "3"

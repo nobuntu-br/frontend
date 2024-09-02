@@ -1,0 +1,42 @@
+<!-- Opções para quando o usuário estiver logado -->
+<button mat-icon-button [matMenuTriggerFor]="menu">
+    <mat-icon>account_circle</mat-icon>
+</button>
+
+<mat-menu #menu="matMenu">
+    <div *ngIf="isLoggedIn">
+        <ng-container *ngFor="let user of users">
+            <div [ngClass]="{'user-entry': true, 'current-user': isCurrentUser(user)}">
+              <button (click)="openUserInNewTab(user.profile.sub)">
+                {{ user.profile.given_name }} ({{ user.profile.email }})
+              </button>
+            </div>
+          </ng-container>
+        <button mat-menu-item>
+            <mat-icon>dashboard</mat-icon>
+            <span>Dashboard</span>
+        </button>
+        <button mat-menu-item (click)="configurarUsuario()">
+            <mat-icon>settings</mat-icon>
+            <span>Editar Perfil</span>
+        </button>
+        <button mat-menu-item (click)="addAccount()">
+            <mat-icon>add</mat-icon>
+            <span>Adicionar outra conta</span>
+        </button>
+        <button mat-menu-item (click)="logoutAllUsers()">
+            <mat-icon>logout</mat-icon>
+            <span>Sair</span>
+        </button>
+    </div>
+    <div *ngIf="!isLoggedIn">
+        <button mat-menu-item (click)="redirectToSignInPage()">
+            <mat-icon>login</mat-icon>
+            <span>Entrar</span>
+        </button>
+        <button mat-menu-item (click)="createUser()">
+            <mat-icon>person_add</mat-icon>
+            <span>Criar conta</span>
+        </button>
+    </div>
+</mat-menu>

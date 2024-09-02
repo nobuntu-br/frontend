@@ -1,11 +1,24 @@
-<default-list
-[displayedfieldsName]="displayedfieldsName"
-[fieldsType]="fieldsType"
-[isSelectable]="false"
-[apiUrl]="apiUrl"
-[className]="className"
-[dataToCreatePage]="dataToCreatePage"
-[isEnabledToGetDataFromAPI]="false"
-[menuIsFixedOnScreen]="false"
-[useFormOnDialog]="true">
-</default-list>
+<div class="content">
+    <div *ngIf="isSelectable == true"
+      style="display: flex; flex-direction: row; width: 100%; background-color: white; border-radius: 5px; margin-bottom: 5px;">
+    </div>
+  
+    <!-- Cards criados -->
+    <div style="flex:1; overflow-y: auto; overflow-x: auto;">
+      <ng-container #placeToRender></ng-container>
+    </div>  
+  
+    <div *ngIf="isLoading == true" style="margin: auto;">
+      <mat-spinner></mat-spinner>
+    </div>
+
+    <div style="display: flex; flex-direction: row; justify-content:flex-start; width: 100%; margin-top: 10px;">
+      <button mat-fab (click)="openFormOnDialog()" style="margin-right: 10px;">
+          <mat-icon>add</mat-icon>
+      </button>  
+
+      <button mat-fab  (click)="deleteSubForm(selectedItems)" *ngIf="selectedItems.length > 0"> 
+        <mat-icon>delete</mat-icon>
+    </button>
+    </div>
+</div>
