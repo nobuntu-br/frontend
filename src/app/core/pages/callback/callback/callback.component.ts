@@ -190,6 +190,7 @@ export class CallbackComponent implements OnInit {
   registerNewSession(user: UserModel,token: string): void {
     console.log("UID:",user.id);
   console.log("ID:" ,user.UID)
+
     this.authService.registerNewSession(user.UID, user.id, token).pipe(take(1)).subscribe({
       next: () => {
         this.redirectToPageBeforeSignIn();

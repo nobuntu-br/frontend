@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 import { UserService } from './user.service';
 import { UserModel } from './user.model';
 import { AuthUtils } from './auth.utils';
+import { TenantService } from '../tenant/tenant.service';
 
 @Injectable({
   providedIn: 'root',
@@ -31,7 +32,8 @@ export class AuthService {
     private sessionService: SessionService,
     private router: Router,
     private userService: UserService,
-    private http: HttpClient
+    private http: HttpClient,
+    private tenantService: TenantService
   ) {
 
     const settings: UserManagerSettings = {
@@ -77,14 +79,20 @@ export class AuthService {
         this.currentUser = user;
         this._authenticated = true;
         this.userManager.storeUser(user);
+        //TODO obter os tenants aquit
+        this.tenantService.getAllTenantsAndSaveInLocalStorage(this.currentUser.profile.aud as string);
+
       }
     } catch (error) {
       console.error('Error restoring user', error);
     }
   }
+
   loginSilent(): void {
     this.userManager.signinSilent().then(user => {
       this.currentUser = user;
+      //TODO obter os tenants aqui
+      this.tenantService.getAllTenantsAndSaveInLocalStorage(this.currentUser.profile.aud as string);
     }).catch(error => {
       console.error('Silent login error', error);
       // Pode redirecionar para login se necessário
@@ -171,6 +179,9 @@ export class AuthService {
       // Verificar e registrar o usuário no banco de dados
       await this.checkAndRegisterUser(this.currentUser);
 
+      //TODO obter os tenants aqui
+      this.tenantService.getAllTenantsAndSaveInLocalStorage(this.currentUser.profile.aud as string);
+
     } catch (error) {
       console.error('Error completing login', error);
     }
@@ -199,8 +210,10 @@ export class AuthService {
 
   async switchUser(userId: string): Promise<void> {
     const users = this.getUsers();
+
     this.currentUser = users.find(user => user.profile.sub === userId) || null;
     if (this.currentUser) {
+      //eliminando o userManager aos poucos
       // this.userManager.storeUser(this.currentUser); // Atualizar o userManager com o novo usuário
       this.storeUser(this.currentUser);
       this.currentUser = this.currentUser;
@@ -369,7 +382,7 @@ export class AuthService {
 
       user.profile.email = email;
 
-
+      //eliminando o user manager aos poucos
       // await this.userManager.storeUser(user);
       this.storeUser(user);
       this.addUserToArrayUsersLocalStorage(user);
@@ -378,6 +391,9 @@ export class AuthService {
 
       // Verificar e registrar o usuário no banco de dados
       await this.checkAndRegisterUser(user);
+
+      //TODO obter os tenants aqui
+      await this.tenantService.getAllTenantsAndSaveInLocalStorage(this.currentUser.profile.aud as string);
     } catch (error) {
       console.error('Login failed', error);
     }
