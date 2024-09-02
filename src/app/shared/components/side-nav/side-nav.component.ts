@@ -70,13 +70,13 @@ export class SideNavComponent implements OnInit, OnDestroy {
 
     const userString= localStorage.getItem('currentUser');
     this.currentUser= userString ? JSON.parse(userString) : [];
-
     //arrumar o email e a senha do currentUser
     // this.authService.loginCredential("teslaeletronico@gmail.com","adminN123")
-    this.route.queryParams.subscribe(params => {
+    this.route.queryParams.subscribe(async params => {
       const userId = params['userId'];
       if (userId) {
-        this.authService.switchUser(userId)
+        await this.authService.switchUser(userId)
+        this.router.navigate(['']);
       }
     });
 

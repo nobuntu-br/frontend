@@ -11,8 +11,7 @@ import { User } from 'oidc-client-ts';
 export class UserSideNavComponent implements OnInit {
 
   isLoggedIn: boolean = false;
-
-  selectedUser: User | null = null;
+//   selectedUser: User | null = null;
   userName: string = ''; // Inicial padrão do usuário
   users: User[] = [];
   currentUser: User;
@@ -33,8 +32,8 @@ export class UserSideNavComponent implements OnInit {
     this.authService.check().subscribe((res) => {
       if (res) {
         this.isLoggedIn = true;
-        this.users = this.authService.getUsers();
-        this.selectedUser = this.authService.getUser();
+//         this.users = this.authService.getUsers();
+//         this.selectedUser = this.authService.getUser();
       }
     });
   }
@@ -44,42 +43,26 @@ export class UserSideNavComponent implements OnInit {
     this.router.navigate(['signin']);
   }
 
-   addAccount() {
-    this.authService.loginWithPrompt();
-  }
-
-  logoutSelectedUser() {
-    if (this.selectedUser) {
-      this.authService.logoutUserById(this.selectedUser.profile.sub);
-      this.users = this.authService.getUsers(); // Atualizar a lista de usuários
-      this.router.navigate(['/']); // Redirecionar para a página inicial
-    }
-  }
-  async logoutAllUsers() {
-      await this.authService.logoutAll();
-      this.router.navigate(['/']); // Redirecionar para a página inicial
-  }
-
-  selectUser(userId: string) {
-    this.authService.switchUser(userId);
-    this.checkUser();
-  }
-
   private saveRedirectURL(redirectURL: string) {
     localStorage.setItem("redirectURL", redirectURL);
   }
-
+  addAccount() {
+    this.router.navigate(['signin']);
+  }
+  async logoutAllUsers() {
+    await this.authService.logoutAll();
+    this.router.navigate(['/']); // Redirecionar para a página inicial
+}
 openUserInNewTab(userId: string) {
   const url = `${window.location.origin}/?userId=${userId}`;
   window.open(url, '_blank');
 }
   configurarUsuario(): void {
-    // Redirecionar para a página de edição de perfil do Azure AD B2C
-    this.authService.editProfile().catch(error => {
-      console.error('Error initiating profile edit', error);
-    });
+    this.router.navigate(['editProfile']);
   }
-
+  createUser(): void{
+    this.router.navigate(['createuser'])
+  }
   isCurrentUser(user: any): boolean {
     return this.currentUser && user.profile.email === this.currentUser.profile.email;
   }

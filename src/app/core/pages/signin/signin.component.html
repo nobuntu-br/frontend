@@ -1,20 +1,40 @@
-<!-- <div class="background">
-    <div *ngIf="pageState == 0">
-        <p style="color: white;">{{ 'componentsBase.auth-signin-page.redirect-to-signin' | transloco }}</p>
+<div class="container">
+  <div class="panel">
+    <h2>{{ step === 1 ? 'Entre com seu Email' : 'Digite sua Senha' }}</h2>
+
+    <!-- Formulário para inserção do email -->
+    <form *ngIf="step === 1" (ngSubmit)="onEmailSubmit()">
+      <label for="email">Email</label>
+      <input type="email" id="email" [(ngModel)]="email" name="email" placeholder="Seu email" required>
+      <button type="submit">Next</button>
+    </form>
+
+    <div *ngIf="step === 1" class="create-account">
+      <p>Não tem uma conta? <a (click)="createUser()">Crie uma agora</a></p>
     </div>
-    
-    <div *ngIf="pageState == 1"> -->
-        <!-- <p style="color: white;">{{ 'componentsBase.auth-signin-page.authentication-error-redirect-to-signin' | transloco }}</p> -->
-    <!-- </div>
-</div> -->
-<div class="background">
-    <input type="email" [(ngModel)]="email" placeholder="Email" />
-    <input type="password" [(ngModel)]="password" placeholder="Password" />
-    <button (click)="login()">Login</button>
-    <button (click)="logout()">Logout</button>
-    <button (click)="createUser()">SignUp</button>
-    <button (click)="logout()">RecuperarSenha</button>
+
+    <!-- Formulário para inserção da senha -->
+    <form *ngIf="step === 2" (ngSubmit)="login()">
+      <label for="password">Senha</label>
+      <input type="password" id="password" [(ngModel)]="password" name="password" placeholder="Sua senha" required>
+
+      <div class="forgot-password">
+        <a (click)="resetPassword()">Esqueceu a senha?</a>
+      </div>
+
+      <button type="submit">Entrar</button>
+    </form>
+
+    <!-- Mensagem para criar conta se o email não existir -->
+    <div *ngIf="step === 3">
+      <p>Email não encontrado. Deseja criar uma conta?</p>
+      <button (click)="createUser()">Criar Conta</button>
+      <button class="back-button" (click)="goBackToLogin()">Voltar para Login</button>
+    </div>
+
+    <!-- Mostrar erro se estiver na página de erro -->
+    <div *ngIf="pageState === SignInPageState.Error">
+      <p>Ocorreu um erro. Tente novamente mais tarde.</p>
+    </div>
   </div>
-  <div *ngIf="authService.isLoggedIn()">
-    <p>Logged in as {{ authService.getUser()?.profile.name }}</p>
-  </div>
+</div>

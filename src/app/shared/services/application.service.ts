@@ -18,6 +18,9 @@ export interface Application {
 })
 
 export class ApplicationService {
+  resetPassword(resetPasswordPayload: { email: string; password: string; }) {
+    throw new Error('Method not implemented.');
+  }
   private apiUrl = environment.backendUrl+'/api/token'; // URL do seu servidor Node.js
 
   constructor(private http: HttpClient) { }
@@ -33,6 +36,29 @@ export class ApplicationService {
       .pipe(
         map(response => response.domain) // Extrai a string dentro de "domain"
       );
+  }
+  getUserPrincipalName(email: string): Observable<string> {
+    const body = { email: email };
+
+    return this.http.post<{ message: string, userPrincipalName: string }>(`${this.apiUrl}/getUserPrincipalName`, body)
+      .pipe(
+        map(response => response.userPrincipalName) // Extrai apenas o userPrincipalName
+      );
+  }
+  sendVerificationCode(email: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/send-verification-code`, { email });
+  }
+
+  verifyCode(email: string, code: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/verify-code`, { email, code });
+  }
+  
+  updateUserProfile(user: any): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/update-user-profile`, user);
+  }
+
+  checkEmail(email: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/check-email`, { email });
   }
 }
 

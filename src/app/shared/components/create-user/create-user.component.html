@@ -1,41 +1,41 @@
-<div class="form-container">
-    <form (ngSubmit)="onSubmit()" #createUserForm="ngForm" class="create-user-form">
-      <div class="form-group">
-        <label for="username">Username:</label>
-        <input type="text" id="username" required [(ngModel)]="user.username" name="username">
-      </div>
-  
-      <div class="form-group">
-        <label>Email:</label>
-        <input type="text" [value]="user.username +domain" disabled>
-      </div>
-  
-      <div class="form-group">
-        <label for="displayName">Display Name:</label>
-        <input type="text" id="displayName" required [(ngModel)]="user.displayName" name="displayName">
-      </div>
-  
-      <div class="form-group">
-        <label for="surname">Surname:</label>
-        <input type="text" id="surname" required [(ngModel)]="user.surname" name="surname">
-      </div>
-  
-      <div class="form-group">
-        <label for="givenName">Given Name:</label>
-        <input type="text" id="givenName" required [(ngModel)]="user.givenName" name="givenName">
-      </div>
-  
-      <div class="form-group">
-        <label for="password">Password:</label>
-        <input type="password" id="password" required [(ngModel)]="user.password" name="password">
-      </div>
-  
-      <div class="form-group">
-        <label for="confirmPassword">Confirm Password:</label>
-        <input type="password" id="confirmPassword" required [(ngModel)]="user.confirmPassword" name="confirmPassword">
-      </div>
-  
-      <button type="submit" [disabled]="!createUserForm.form.valid" class="btn-submit">Create User</button>
+<div class="container">
+  <div class="panel">
+    <h2 *ngIf="!codeSent && !codeVerified">Verifique seu Email</h2>
+    <h2 *ngIf="codeSent && !codeVerified">Digite o Código de Verificação</h2>
+    <h2 *ngIf="codeVerified">Complete seu Cadastro</h2>
+
+    <!-- Formulário de email -->
+    <form *ngIf="!codeSent" (ngSubmit)="onEmailSubmit()">
+      <label for="email">Insira seu Email</label>
+      <input type="email" id="email" [(ngModel)]="email" name="email" placeholder="seuemail@dominio.com" required>
+      <button type="submit">Verificar Email</button>
+    </form>
+
+    <!-- Formulário de código de verificação -->
+    <form *ngIf="codeSent && !codeVerified" (ngSubmit)="onCodeSubmit()">
+      <label for="verificationCode">Código de Verificação</label>
+      <input type="text" id="verificationCode" [(ngModel)]="verificationCode" name="verificationCode" placeholder="Digite o código" required>
+      <button type="submit">Verificar Código</button>
+    </form>
+
+    <!-- Formulário de cadastro -->
+    <form *ngIf="codeVerified" (ngSubmit)="onRegisterSubmit()">
+      <label for="displayName">Nome de Exibição</label>
+      <input type="text" id="displayName" [(ngModel)]="user.displayName" name="displayName" placeholder="Nome de Exibição" required>
+
+      <label for="givenName">Nome</label>
+      <input type="text" id="givenName" [(ngModel)]="user.givenName" name="givenName" placeholder="Seu nome" required>
+
+      <label for="surname">Sobrenome</label>
+      <input type="text" id="surname" [(ngModel)]="user.surname" name="surname" placeholder="Seu sobrenome" required>
+
+      <label for="password">Senha</label>
+      <input type="password" id="password" [(ngModel)]="user.password" name="password" placeholder="Digite uma senha" required>
+
+      <label for="confirmPassword">Confirmar Senha</label>
+      <input type="password" id="confirmPassword" [(ngModel)]="user.confirmPassword" name="confirmPassword" placeholder="Confirme sua senha" required>
+
+      <button type="submit">Cadastrar</button>
     </form>
   </div>
-  
+</div>

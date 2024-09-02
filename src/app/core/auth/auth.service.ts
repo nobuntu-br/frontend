@@ -9,6 +9,7 @@ import { HighContrastModeDetector } from '@angular/cdk/a11y';
 import { Router } from '@angular/router';
 import { UserService } from './user.service';
 import { UserModel } from './user.model';
+import { AuthUtils } from './auth.utils';
 import { TenantService } from '../tenant/tenant.service';
 
 @Injectable({
@@ -59,19 +60,21 @@ export class AuthService {
     // Recuperar o estado do usuário do localStorage ao iniciar
     this.restoreUser();
 
-    // Adicionar eventos de renovação automática
-    this.userManager.events.addAccessTokenExpired(() => {
-      this.loginSilent();
-    });
+    //  // Adicionar eventos de renovação automática
+    //  this.userManager.events.addAccessTokenExpired(() => {
+    //   this.loginSilent();
+    // });
 
-    this.userManager.events.addSilentRenewError(error => {
-      console.error('Silent renew error', error);
-    });
+    // this.userManager.events.addSilentRenewError(error => {
+    //   console.error('Silent renew error', error);
+    // });
 
   }
   private async restoreUser(): Promise<void> {
     try {
-      const user = await this.userManager.getUser();
+      // const user = await this.userManager.getUser();
+      const userString = localStorage.getItem('currentUser');
+      const user = userString ? JSON.parse(userString) : [];
       if (user) {
         this.currentUser = user;
         this._authenticated = true;
@@ -141,10 +144,11 @@ export class AuthService {
         UID: user.profile.sub,
         TenantUID: environment.tenant_id, // Altere conforme necessário para obter o TenantUID
         username: user.profile.name,
-        firstname: user.profile.given_name,
-        lastname: user.profile.family_name,
+        firstName: user.profile.given_name,
+        lastName: user.profile.family_name,
         isAdministrator: true, //user.profile.role === 'admin' , // Supondo que a role é um atributo do perfil
         memberType: 'member', // Defina conforme necessário
+        tenants: [] // Defina conforme necessário
       };
       const createdUser = await this.userService.create(newUser).toPromise();
       // Salvar na tabela de sessão
@@ -203,13 +207,14 @@ export class AuthService {
     const users = this.getUsers();
     return users.find(user => user.profile.sub === userId) || null;
   }
-  switchUser(userId: string): void {
+
+  async switchUser(userId: string): Promise<void> {
     const users = this.getUsers();
 
     this.currentUser = users.find(user => user.profile.sub === userId) || null;
-    console.log(this.currentUser.profile.given_name);
     if (this.currentUser) {
-      this.userManager.storeUser(this.currentUser); // Atualizar o userManager com o novo usuário
+      //eliminando o userManager aos poucos
+      // this.userManager.storeUser(this.currentUser); // Atualizar o userManager com o novo usuário
       this.storeUser(this.currentUser);
       this.currentUser = this.currentUser;
     }
@@ -345,7 +350,7 @@ export class AuthService {
   }
 
 
-  async loginCredential(username: string, password: string): Promise<void> {
+  async loginCredential(username: string, password: string, email: string): Promise<void> {
     try {
       const response = await fetch('https://allystore.b2clogin.com/allystore.onmicrosoft.com/oauth2/v2.0/token?p=b2c_1_ropc', {
         method: 'POST',
@@ -374,13 +379,13 @@ export class AuthService {
         profile: this.parseJwt(data.access_token),
         expires_at: Math.floor(Date.now() / 1000) + Number(data.expires_in)
       });
-      user.profile.email = username
 
+      user.profile.email = email;
 
-
-      await this.userManager.storeUser(user);
+      //eliminando o user manager aos poucos
+      // await this.userManager.storeUser(user);
       this.storeUser(user);
-      this.userService.addUserToArrayUsersLocalStorage(user);
+      this.addUserToArrayUsersLocalStorage(user);
       this.currentUser = user;
       this._authenticated = true;
 
@@ -404,6 +409,84 @@ export class AuthService {
     return JSON.parse(jsonPayload);
   }
 
+  getUserFromStorage(): User | null {
+    const userJson = localStorage.getItem('currentUser');
+    if (userJson) {
+      return JSON.parse(userJson) as User;
+    }
+    return null;
+  }
 
+  private addUserToArrayUsersLocalStorage(user: User): void {
+    // Recupera o array de usuários do localStorage
+    const usersString = localStorage.getItem('users');
+    const users = usersString ? JSON.parse(usersString) : [];
 
+    // Verifica se o usuário já existe no array de usuários
+    const userExists = users.some((usuario: any) => usuario.profile.email === user.profile.email);
+
+    if (!userExists) {
+      // Adiciona o novo usuário ao array se não existir
+      users.push(user);
+
+      // Armazena o array de volta no localStorage
+      localStorage.setItem('users', JSON.stringify(users));
+      console.log('Usuário adicionado ao array users localStorage.');
+    } else {
+      console.log('Usuário já existe no array users localStorage.');
+    }
+  }
+  async handleTokenExpiration(): Promise<void> {
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    const accessToken = currentUser.access_token;
+
+    if (AuthUtils.isTokenExpired(accessToken)) {
+      console.log('Token expirado, renovando...');
+      await this.refreshAccessToken();
+    } else {
+      console.log('Token ainda é válido.');
+    }
+  }
+
+  async refreshAccessToken() {
+    // Recupere o refresh token do currentUser armazenado no localStorage
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    const refreshToken = currentUser.refresh_token;
+
+    if (!refreshToken) {
+      throw new Error('Refresh token not found in currentUser');
+    }
+
+    // Faça a requisição para renovar o access token usando o refresh token
+    const response = await fetch('https://allystore.b2clogin.com/allystore.onmicrosoft.com/oauth2/v2.0/token?p=b2c_1_ropc', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: new URLSearchParams({
+        'grant_type': 'refresh_token',
+        'client_id': environment.client_id,
+        'refresh_token': refreshToken,
+        'scope': environment.scope + " offline_access"
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to refresh access token');
+    }
+
+    const data = await response.json();
+
+    // Atualize o access token no currentUser e salve no localStorage
+    currentUser.access_token = data.access_token;
+
+    // Se houver um novo refresh token, atualize o currentUser
+    if (data.refresh_token) {
+      currentUser.refresh_token = data.refresh_token;
+    }
+
+     // Salve o currentUser atualizado no localStorage
+    this.storeUser(currentUser);
+    this._authenticated = true;
+  }
 }

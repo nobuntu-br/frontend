@@ -2,23 +2,31 @@ import { Route } from '@angular/router';
 import { AuthGuard } from 'app/core/auth/guards/auth.guard'; 
 import { NoAuthGuard } from 'app/core/auth/guards/noAuth.guard'; 
 import { SideNavComponent } from './shared/components/side-nav/side-nav.component'; 
+import { CreateUserComponent } from './shared/components/create-user/create-user.component';
+import { ResetPasswordComponent } from './shared/components/reset-password/reset-password.component';
+import { EditProfileComponent } from './shared/components/edit-profile/edit-profile.component';
+import { SigninComponent } from './core/pages/signin/signin.component';
 
 
 export const appRoutes: Route[] = [ 
 
     // Redirect empty path to '/example' 
     {path: '', pathMatch: 'full', component: SideNavComponent}, 
-
+    {path: 'createuser', pathMatch: 'full', component: CreateUserComponent},
+	{path: 'resetPassword', pathMatch: 'full', component: ResetPasswordComponent},
     // Auth routes for guests 
-    { 
-        path: '', 
-        canMatch: [NoAuthGuard], 
-        component: SideNavComponent, 
-        children: [ 
-            {path: 'signin', loadChildren: () => import('app/core/pages/signin/signin.module').then(m => m.SigninModule)}, 
-        ] 
-    }, 
-
+    // { 
+    //     path: '', 
+    //     canMatch: [NoAuthGuard], 
+    //     component: SigninComponent, 
+    //     children: [ 
+    //         {path: 'signin', loadChildren: () => import('app/core/pages/signin/signin.module').then(m => m.SigninModule)}, 
+    //     ] 
+    // }, 
+	{ 
+		path: 'signin', 
+		loadChildren: () => import('app/core/pages/signin/signin.module').then(m => m.SigninModule) 
+	  },
         {path: '404-not-found', loadChildren: () => import('app/core/pages/error/error-404/error-404.module').then(m => m.Error404Module)}, 
 
                     {path: '500', loadChildren: () => import('app/core/pages/error/error-500/error-500.module').then(m => m.Error500Module)}, 
@@ -60,7 +68,10 @@ export const appRoutes: Route[] = [
 	{ path: 'roles', loadChildren: () => import('./modules/roles/roles.module' ).then(m => m.RolesModule) },
 	{ path: 'functionssystem', loadChildren: () => import('./modules/functions-system/functions-system.module' ).then(m => m.FunctionsSystemModule) },
 	{ path: 'functionssystemroles', loadChildren: () => import('./modules/functions-system-roles/functions-system-roles.module' ).then(m => m.FunctionsSystemRolesModule) },
+	{path: 'tenant', loadChildren: () => import('app/core/tenant/tenant.module').then(m => m.TenantModule)},
+	{path: 'editProfile', pathMatch: 'full', component: EditProfileComponent},		
           {path: '**', redirectTo: '/404-not-found'}, 
         ] 
     }, 
+
 ]; 
