@@ -37,12 +37,12 @@ export class SigninComponent implements OnInit {
 
   async onEmailSubmit() {
     try {
-      const response = await this.applicationService.checkEmail(this.email).toPromise();
-      if (response.exists) {
+      // const response = await this.applicationService.checkEmail(this.email).toPromise();
+      // if (response.exists) {
         this.step = 2; // Se o email existe, vai para a etapa de senha
-      } else {
-        this.step = 3; // Se o email não existe, oferece criar uma conta
-      }
+      // } else {
+        // this.step = 3; // Se o email não existe, oferece criar uma conta
+      // }
     } catch (error) {
       console.error('Erro ao verificar email:', error);
       this.pageState = SignInPageState.Error;

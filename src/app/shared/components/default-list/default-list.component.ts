@@ -520,7 +520,6 @@ export class DefaultListComponent implements AfterViewInit, OnDestroy, IDefaultL
    * Função que removerá os itens selecionados na API e atualizará os itens da lista com os itens da API.
    */
   deleteSelectedItens(): any[] {
-
     if (this.selectedItems.length <= 0) {
       return;
     }
@@ -532,16 +531,15 @@ export class DefaultListComponent implements AfterViewInit, OnDestroy, IDefaultL
       if (result == true) {
 
         this.selectedItems.forEach((item) => {
-          this.http.delete(environment.backendUrl + "/" + this.apiUrl + '/' + item.id).subscribe({
-            error: (error) => alert(this.translocoService.translate("componentsBase.Alerts.deleteErrorMessage")),
-          }).unsubscribe();
+          console.log(environment.backendUrl + "/" + this.apiUrl + '/' + item.id)
+          this.http.delete(environment.backendUrl + "/" + this.apiUrl + '/' + item.id).subscribe((data)=> {
+            this.selectedItems = [];
+
+            alert(this.translocoService.translate("componentsBase.Alerts.deleteSuccessMessage"));
+    
+            this.getDataFromAPI(this.apiUrl);
+          })
         });
-
-        this.selectedItems = [];
-
-        alert(this.translocoService.translate("componentsBase.Alerts.deleteSuccessMessage"));
-
-        this.getDataFromAPI(this.apiUrl);
       }
 
     });

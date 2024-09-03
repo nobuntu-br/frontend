@@ -163,8 +163,8 @@ export class CallbackComponent implements OnInit {
 
   createUserObject(user: any): UserModel {
     return {
-      firstName: user.profile.given_name,
-      lastName: user.profile.family_name,
+      firstname: user.profile.given_name,
+      lastname: user.profile.family_name,
       username: user.profile.name,
       UID: user.profile.sub,
       isAdministrator: false,
