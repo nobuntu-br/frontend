@@ -5,7 +5,6 @@ import { UserManager, UserManagerSettings, User, WebStorageStateStore } from 'oi
 import { environment } from 'environments/environment';
 import { SessionService } from './session.service';
 import { Session } from './session.model';
-import { HighContrastModeDetector } from '@angular/cdk/a11y';
 import { Router } from '@angular/router';
 import { UserService } from './user.service';
 import { UserModel } from './user.model';
@@ -146,8 +145,8 @@ export class AuthService {
         UID: user.profile.sub,
         TenantUID: environment.tenant_id, // Altere conforme necessário para obter o TenantUID
         username: user.profile.name,
-        firstName: user.profile.given_name,
-        lastName: user.profile.family_name,
+        firstname: user.profile.given_name,
+        lastname: user.profile.family_name,
         isAdministrator: true, //user.profile.role === 'admin' , // Supondo que a role é um atributo do perfil
         memberType: 'member', // Defina conforme necessário
         tenants: [] // Defina conforme necessário
@@ -445,9 +444,7 @@ export class AuthService {
     if (AuthUtils.isTokenExpired(accessToken)) {
       console.log('Token expirado, renovando...');
       await this.refreshAccessToken();
-    } else {
-      console.log('Token ainda é válido.');
-    }
+    } 
   }
 
   async refreshAccessToken() {

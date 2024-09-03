@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { catchError, from, Observable, switchMap, throwError } from 'rxjs';
 import { AuthService } from './auth.service';
@@ -6,7 +6,9 @@ import { AuthUtils } from 'app/core/auth/auth.utils';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-    constructor(private _tokenService: TokenService, private _authService: AuthService ) {}
+    constructor(private injector: Injector) {}
+
+    private _authService: AuthService;
 
 
   /**
@@ -16,6 +18,10 @@ export class AuthInterceptor implements HttpInterceptor {
    * @param next
    */
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    if (!this._authService) {
+      this._authService = this.injector.get(AuthService);
+    }    
+
     return from(this._authService.handleTokenExpiration()).pipe(
       switchMap(() => {
         // Clone the request object

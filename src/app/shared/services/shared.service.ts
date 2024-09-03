@@ -68,7 +68,7 @@ export abstract class BaseResourceService<T extends BaseResourceModel> {
 
     const url = `${this.apiPath}/${id}`;
 
-    return this.http.patch(url, resource).pipe(
+    return this.http.put(url, resource).pipe(
       map(() => resource),
       catchError(this.handleError)
     );
@@ -84,7 +84,7 @@ export abstract class BaseResourceService<T extends BaseResourceModel> {
     }
 
     const url = `${this.apiPath}/${id}`;
-
+    console.log("DELETE =>", url);
     return this.http.delete(url).pipe(
       map(() => null),
       catchError(this.handleError)
