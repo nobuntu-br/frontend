@@ -22,7 +22,7 @@ export class ApplicationService {
     throw new Error('Method not implemented.');
   }
   private apiUrl = environment.backendUrl+'/api/token'; // URL do seu servidor Node.js
-  private apiUrlApplication = environment.backendUrl+"api/application"
+  private apiUrlApplication = environment.backendUrl+"/api/application"
 
   constructor(private http: HttpClient) { }
 
