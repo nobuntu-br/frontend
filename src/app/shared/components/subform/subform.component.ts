@@ -273,7 +273,7 @@ export class SubformComponent implements AfterViewInit {
     let reqPath = environment.backendUrl + '/' + JSONDictionary.config.apiUrl + '/' + item.id;
     let body = { ...item, ...itemEdited };
     body.id = item.id;
-    this.http.patch(reqPath, body).pipe(takeUntil(this.ngUnsubscribe)).subscribe((data: any) => {
+    this.http.put(reqPath, body).pipe(takeUntil(this.ngUnsubscribe)).subscribe((data: any) => {
       this.itemsDisplayed = this.itemsDisplayed.map((element) => {
         if (element.id === item.id) {
           return { ...element, ...itemEdited };
@@ -348,6 +348,7 @@ export class SubformComponent implements AfterViewInit {
 
   createSubFormOnline(JSONDictionary: IPageStructure, item: any) {
     let reqPath = environment.backendUrl + '/' + JSONDictionary.config.apiUrl;
+    item = this.objectTratament(item);
       this.http.post(reqPath, item).pipe(takeUntil(this.ngUnsubscribe)).subscribe((data: any) => {
         this.itemsDisplayed.push(data);
         this.createItemsOnList(this.itemsDisplayed);
@@ -357,6 +358,26 @@ export class SubformComponent implements AfterViewInit {
         alert("Erro ao realizar operação");
       });
     }
+
+  /**
+   * Realizar uma alteração nos dados do formulário, removendo objetos e substituindo somente pelos IDs
+   * @param item Formulário
+   */
+  objectTratament(item){
+    for(let field in item){
+      if(item[field] instanceof Object){
+        if(item[field] instanceof Array){
+          item[field] = item[field].map((value) => value.id == undefined || value.id == null ? value : value.id);
+        } else {
+          if(item[field].id == undefined || item[field].id == null){
+            continue;
+          }
+          item[field] = item[field].id;
+        }
+      }
+    }
+    return item;
+  }
 
   createSubFormOffline(JSONDictionary: IPageStructure, item: any) {
     this.itemsDisplayed.push(item);
