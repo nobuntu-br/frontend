@@ -30,6 +30,9 @@ export class DynamicFormFieldFactory implements FormFactory {
       case 'date': {
         return new DateField();
       }
+      case 'selector': {
+        return new SelectorField();
+      }
       case 'subform': {
         return new SubFormField(dataToCreatePage);
       }
