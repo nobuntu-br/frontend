@@ -1,6 +1,8 @@
 import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild, ViewContainerRef } from '@angular/core';
 import { DateFieldComponent } from '../date-field/date-field.component';
 import { FieldComponent } from '../field/field.component';
+import { SelectorFieldComponent } from '../selector-field/selector-field.component';
+import { ISelectorValue } from '../selector-input-field/selector-input-field.component';
 
 @Component({
   selector: 'selectable-card',
@@ -30,6 +32,7 @@ export class SelectableCardComponent implements AfterViewInit, OnInit{
   @Input() userConfig: any;
   @Input() isCheckBox: boolean = true;
   @Input() isSingleOption: boolean = false;
+  @Input() attributes: any;
   @Input() isSelectable: boolean = true;
   @Input() isEditable: boolean = false;
   @Input() objectDisplayedValue: string | null;
@@ -61,12 +64,12 @@ export class SelectableCardComponent implements AfterViewInit, OnInit{
   createComponentsOnView(){
     setTimeout(() => {
       this.displayedfieldsName.forEach((fieldDisplayedName, index)=>{
-        this.createComponent(this.target, this.fieldsType[index], this.itemDisplayed[fieldDisplayedName], fieldDisplayedName, this.objectDisplayedValue[index]);
+        this.createComponent(this.target, this.fieldsType[index], this.itemDisplayed[fieldDisplayedName], fieldDisplayedName, this.objectDisplayedValue[index], index);
       });
     }, 0); 
   }
 
-  createComponent(target: ViewContainerRef , fieldType, value, labelTittle: string, objectDisplayedValue: string | null){
+  createComponent(target: ViewContainerRef , fieldType, value, labelTittle: string, objectDisplayedValue: string | null, index: number){
     
     if (target == null) {
       console.error("Target not renderized in DefaultCard");
@@ -92,6 +95,12 @@ export class SelectableCardComponent implements AfterViewInit, OnInit{
       }
       case 'subform':{
         componentCreated = this.createObjectField(objectDisplayedValue, value);
+        break;
+      }
+      case 'selector': {
+        componentCreated = this.target.createComponent(SelectorFieldComponent).instance;
+        componentCreated.valuesList = this.attributes[index].optionList;
+        componentCreated.value = value;
         break;
       }
       default: {

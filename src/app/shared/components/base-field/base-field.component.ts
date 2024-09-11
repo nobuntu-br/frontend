@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 
 @Directive()
 export abstract class BaseFieldComponent {
-  private translocoService: TranslocoService;
+  public translocoService: TranslocoService;
 
   constructor(protected injector: Injector){
     this.translocoService = this.injector.get(TranslocoService);
