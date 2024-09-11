@@ -64,6 +64,7 @@ import { UserSideNavComponent } from './components/user-side-nav/user-side-nav.c
 import { FormSpaceBuildComponent } from './components/form-space-build/form-space-build.component';
 import { CreateUserComponent } from './components/create-user/create-user.component';
 import { SelectorFieldComponent } from './components/selector-field/selector-field.component';
+import { EditProfileComponent } from './components/edit-profile/edit-profile.component';
 
 @NgModule({
     imports: [
@@ -159,6 +160,7 @@ import { SelectorFieldComponent } from './components/selector-field/selector-fie
         FormSpaceBuildComponent,
         CreateUserComponent,
         SelectorFieldComponent,
+        EditProfileComponent
     ],
 })
 export class SharedModule { }
