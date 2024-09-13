@@ -145,8 +145,8 @@ export class AuthService {
         UID: user.profile.sub,
         TenantUID: environment.tenant_id, // Altere conforme necessário para obter o TenantUID
         username: user.profile.name,
-        firstname: user.profile.given_name,
-        lastname: user.profile.family_name,
+        firstName: user.profile.given_name,
+        lastName: user.profile.family_name,
         isAdministrator: true, //user.profile.role === 'admin' , // Supondo que a role é um atributo do perfil
         memberType: 'member', // Defina conforme necessário
         tenants: [] // Defina conforme necessário

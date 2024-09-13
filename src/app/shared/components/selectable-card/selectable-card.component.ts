@@ -76,6 +76,7 @@ export class SelectableCardComponent implements AfterViewInit, OnInit{
       return;
     }
 
+    console.log("labelTittle: ", labelTittle, "objectDisplayedValue: ", objectDisplayedValue);
     let componentCreated;
     switch (fieldType) {
 
@@ -95,6 +96,11 @@ export class SelectableCardComponent implements AfterViewInit, OnInit{
       }
       case 'subform':{
         componentCreated = this.createObjectField(objectDisplayedValue, value);
+        break;
+      }
+      case 'boolean': {
+        componentCreated = this.target.createComponent(FieldComponent).instance;
+        componentCreated.value = value;
         break;
       }
       case 'selector': {
