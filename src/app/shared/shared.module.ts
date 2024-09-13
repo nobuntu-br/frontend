@@ -162,7 +162,8 @@ import { CheckboxFieldComponent } from './components/checkbox-field/checkbox-fie
         CreateUserComponent,
         SelectorFieldComponent,
         EditProfileComponent,
-        CheckboxFieldComponent
+        CheckboxFieldComponent,
+        EditProfileComponent
     ],
 })
 export class SharedModule { }
