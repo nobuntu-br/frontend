@@ -19,7 +19,7 @@ COPY --from=builder /app/dist/frontend /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY mime.types /etc/nginx/mime.types
 #Disponibiliza o serviço na porta 80
-EXPOSE 80
+EXPOSE 8081
 CMD ["nginx", "-g", "daemon off;"]
 
 #Comando usado para criar o projeto no Docker:
