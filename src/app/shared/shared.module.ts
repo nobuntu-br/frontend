@@ -65,6 +65,7 @@ import { FormSpaceBuildComponent } from './components/form-space-build/form-spac
 import { CreateUserComponent } from './components/create-user/create-user.component';
 import { SelectorFieldComponent } from './components/selector-field/selector-field.component';
 import { EditProfileComponent } from './components/edit-profile/edit-profile.component';
+import { CheckboxFieldComponent } from './components/checkbox-field/checkbox-field.component';
 
 @NgModule({
     imports: [
@@ -160,6 +161,8 @@ import { EditProfileComponent } from './components/edit-profile/edit-profile.com
         FormSpaceBuildComponent,
         CreateUserComponent,
         SelectorFieldComponent,
+        EditProfileComponent,
+        CheckboxFieldComponent,
         EditProfileComponent
     ],
 })

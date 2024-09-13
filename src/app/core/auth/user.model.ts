@@ -4,8 +4,8 @@ export class UserModel extends BaseResourceModel {
     UID: string;
     TenantUID: string;
     username: string;
-    firstname: string;
-    lastname: string;
+    firstName: string;
+    lastName: string;
     isAdministrator: boolean;
     memberType: string;
     Roles?: string[];
