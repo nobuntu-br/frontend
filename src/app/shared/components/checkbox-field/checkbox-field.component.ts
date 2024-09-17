@@ -1,7 +1,7 @@
 import { Component, Injector, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
-import { BaseFieldComponent } from '../base-field/base-field.component';
+import { BaseFieldComponent } from '../components/base-field/base-field.component';
 
 @Component({
   selector: 'app-checkbox-field',

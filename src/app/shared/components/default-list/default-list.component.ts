@@ -289,11 +289,11 @@ export class DefaultListComponent implements AfterViewInit, OnDestroy, IDefaultL
       componentCreated.columnsQuantity = this.columnsQuantity;
       componentCreated.userConfig = this.userConfig;
       componentCreated.itemDisplayed = itemsDisplayed[index];
+
       componentCreated.displayedfieldsName = this.displayedfieldsName;
 
       componentCreated.fieldsType = this.fieldsType;
       componentCreated.objectDisplayedValue = this.objectDisplayedValue;
-      componentCreated.attributes = this.dataToCreatePage.attributes;
 
       componentCreated.className = this.className;
 
@@ -516,7 +516,7 @@ export class DefaultListComponent implements AfterViewInit, OnDestroy, IDefaultL
     this.ngUnsubscribe.complete();
   }
 
-    /**
+  /**
    * Função que removerá os itens selecionados na API e atualizará os itens da lista com os itens da API.
    */
   deleteSelectedItens(): any[] {
@@ -533,13 +533,8 @@ export class DefaultListComponent implements AfterViewInit, OnDestroy, IDefaultL
 
         this.selectedItems.forEach((item) => {
           this.http.delete(environment.backendUrl + "/" + this.apiUrl + '/' + item.id).subscribe({
-            next: () => {
-              // console.log("Item deletado: ", item);
-            },
-            error: (error) => {
-              console.error("Erro ao deletar item: ", item, error);
-            }
-          });
+            error: (error) => alert(this.translocoService.translate("componentsBase.Alerts.deleteErrorMessage")),
+          }).unsubscribe();
         });
 
         this.selectedItems = [];

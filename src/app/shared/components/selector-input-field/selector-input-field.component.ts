@@ -1,13 +1,7 @@
+import { HttpClient } from '@angular/common/http';
 import { AfterViewInit, Component,Input } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { TranslocoService } from '@ngneat/transloco';
 import { take } from 'rxjs';
-
-export interface ISelectorValue {
-  pt: string;
-  en: string;
-  id: string;
-}
 
 @Component({
   selector: 'app-selector-input-field',
@@ -19,58 +13,46 @@ export class SelectorInputFieldComponent implements AfterViewInit{
    * Título que será apresentado no componente
    */
   @Input() label: string;
-  @Input() valuesList: ISelectorValue[];
+  /**
+   * Url da API para obter dados da classe que será apresentada pelo componente
+   */
+  @Input() apiUrl: string;
+  @Input() valuesList: object[];
+  /**
+   * Nome da variável que será apresentada no input field ao ser selecionado
+   */
+  @Input() displayedSelectedVariableOnInputField: string;
+  @Input() returnedVariable: string | null;
   /**
    * Quantidade limite de itens que podem ser selecionados
    */
-  @Input() selectItemsLimit: number;
+  @Input() selectItemsLimit: number = 1;
   
   public inputValue = new FormControl<object[]>([]);
   
   constructor(
-    private translocoService: TranslocoService
-  ){}
-
-  ngAfterViewInit(): void {
-    this.limitSelectedItems();
-    this.getDisplayedItens();
+    private httpClient: HttpClient
+  ){
   }
 
-  /**
-   * Limita a quantidade de itens selecionados
-   */
-  private limitSelectedItems(): void {
-    this.inputValue.valueChanges.subscribe((values) => {
-      if (values.length > this.selectItemsLimit && this.selectItemsLimit > 1) {
-        this.inputValue.setValue(values.slice(0, this.selectItemsLimit));
-      }
-    });
-  }  
+  ngAfterViewInit(): void {
+    if(this.apiUrl != null){
+      this.getItemsFromAPI(this.apiUrl);
+    }
 
-  /**
-   * Retorna os itens selecionados
-   */
-  private getDisplayedItens(): void {
-    this.inputValue.valueChanges
-    .pipe(take(1)) // Executa o subscribe apenas uma vez
-    .subscribe((values) => {
-      if(!values) return;
-      if(!Array.isArray(values)){
-        values = [values];
+    //TODO ao entrar no formulário, não aparece as opções selecionadas
+  }
+
+   
+  getItemsFromAPI(apiUrl: string){
+    this.httpClient.get<object[]>(apiUrl).pipe(take(1)).subscribe({
+      next: (returnedData) =>{
+        this.valuesList = returnedData;
+      },
+      error: (error) => {
+        console.error("Error to get items on Selector "+error);
       }
-      let itens = [];
-      values.forEach((value) => {
-        itens.push(this.valuesList.find((item) => item.id === value.toString()));
-      });
-      if (itens.length === 1) { 
-        let input = itens[0];
-        this.inputValue.setValue(input, { emitEvent: false });
-      }
-      if (itens.length > 1) {
-        // Impede que o setValue dispare um novo evento de mudança
-        this.inputValue.setValue(itens, { emitEvent: false });
-      }
-    });
+    })
   }
 
 }

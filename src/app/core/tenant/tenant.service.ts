@@ -1,10 +1,9 @@
 import { Injectable, Injector } from '@angular/core';
 import { BaseResourceService } from 'app/shared/services/shared.service';
 import { environment } from 'environments/environment';
-import { Tenant } from './tenant.model';
+import { ITenant, Tenant } from './tenant.model';
 import { Observable } from 'rxjs/internal/Observable';
 import { map, catchError, lastValueFrom, take } from 'rxjs';
-
 
 /**
  * Serviço que será responsável pelo controle do Tenant
@@ -52,7 +51,6 @@ export class TenantService extends BaseResourceService<any> {
     console.log("obter os tenants e salvar no localstoragE: ", userUID)
     const tenants = await lastValueFrom(this.getByUserUID(userUID));
     this.setTenantsInLocalStore(tenants);
- 
     return tenants;
   }
 
@@ -78,6 +76,13 @@ export class TenantService extends BaseResourceService<any> {
     }
 
     return Tenant.fromJson(storedTenants[0]);
+  }
+
+  getTenantsUserIsAdmin(userUID: string): Observable<Tenant[]>{
+    return this.http.get(this.url + "/isAdmin/uid/" + userUID).pipe(
+      map(this.jsonDataToResources.bind(this)),
+      catchError(this.handleError)
+    )
   }
 
   setTenantsInLocalStore(tenants: Tenant[]) {

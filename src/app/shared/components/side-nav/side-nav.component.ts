@@ -54,6 +54,10 @@ export class SideNavComponent implements OnInit, OnDestroy {
    * Define se pose ser apresentado o botão do logOut (sair do acesso a conta)
    */
   canShowLogOutButton: boolean = false;
+  /**
+   * Define se o usuário atual pode ter controle para qual Tenant ele usará nas suas operações com a API
+   */
+  canUserControlTenant: boolean = true;
 
   private ngUnsubscribe = new Subject<void>();
   
@@ -137,7 +141,6 @@ export class SideNavComponent implements OnInit, OnDestroy {
           });
 
           resolve(navListOptions);
-3
 
         },
         error: (error) => {
@@ -173,7 +176,7 @@ export class SideNavComponent implements OnInit, OnDestroy {
   }
 
   switchAccount(): void {
-    this.authService.switchAccount();
+    // this.authService.switchAccount();
   }
   ngOnDestroy() {
     this.ngUnsubscribe.next();

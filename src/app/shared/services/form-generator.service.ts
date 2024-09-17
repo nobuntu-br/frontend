@@ -6,7 +6,6 @@ import { HttpClient } from '@angular/common/http';
 import { FormField } from '../models/form-field';
 import { DynamicFormFieldFactory } from '../models/dinamic-form-factory';
 import { IPageStructure, PageStructure } from '../models/pageStructure';
-import { ISelectorValue } from '../components/selector-input-field/selector-input-field.component';
 
 
 /**
@@ -35,8 +34,6 @@ export interface ICreateComponentParams {
   fieldDisplayedInLabel: string,
   valuesList: any[],
   index: number,
-  selectItemsLimit?: number,
-  optionList?: ISelectorValue,
   dataType?: string,
   language?: string,
 }
@@ -76,6 +73,7 @@ export class FormGeneratorService {
 
     const formField: FormField = this.formFieldFactory.createFormField(createComponentData, createComponentData.dataToCreatePage);
     createComponentData.resourceForm.addControl(createComponentData.fieldName,formField.createFormField(createComponentData, createComponentData.dataToCreatePage));
+    console.log("Criando campo: ", createComponentData.resourceForm);
   }
 
   //TODO remover essa função
@@ -115,7 +113,6 @@ export class FormGeneratorService {
         dataToCreatePage: null,
         fieldDisplayedInLabel: attribute.fieldDisplayedInLabel,
         valuesList: null,
-        optionList: attribute.optionList,
         dataType: attribute.type,
         index: index
       });
