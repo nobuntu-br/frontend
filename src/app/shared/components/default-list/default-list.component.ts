@@ -570,7 +570,7 @@ export class DefaultListComponent
    * @returns Retorna um observador que irá observar os dados que serão retornados da API.
    */
   requestAllValuesFromAPI(apiUrl: string): Observable<any> {
-    return this.http.get('https://jsonplaceholder.typicode.com/users');
+    return this.http.get(environment.backendUrl + '/' + apiUrl);
   }
 
   ngOnDestroy(): void {
