@@ -67,7 +67,6 @@ import { CreateUserComponent } from './components/create-user/create-user.compon
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 import { EditProfileComponent } from './components/edit-profile/edit-profile.component';
 import { CheckboxFieldComponent } from './components/checkbox-field/checkbox-field.component';
-import { CardListComponent } from './components/card-list/card-list.component';
 import { ViewToggleComponent } from './components/view-toggle/view-toggle.component';
 
 @NgModule({
@@ -169,7 +168,6 @@ import { ViewToggleComponent } from './components/view-toggle/view-toggle.compon
         EditProfileComponent,
         CheckboxFieldComponent,
         EditProfileComponent,
-        CardListComponent,
         ViewToggleComponent
     ],
 })
