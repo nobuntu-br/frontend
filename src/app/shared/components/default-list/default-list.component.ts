@@ -1,109 +1,136 @@
-import { AfterViewInit, Component, EventEmitter, Inject, Injector, Input, OnDestroy, Optional, Output, ViewChild, ViewContainerRef } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
+import {
+  AfterViewInit,
+  Component,
+  EventEmitter,
+  Inject,
+  Injector,
+  Input,
+  OnDestroy,
+  Optional,
+  Output,
+  ViewChild,
+  ViewContainerRef,
+} from '@angular/core';
+import {
+  MAT_DIALOG_DATA,
+  MatDialog,
+  MatDialogRef,
+} from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { finalize, Observable, Subject, take, takeUntil, tap } from 'rxjs';
 import { SelectableCardComponent } from '../selectable-card/selectable-card.component';
 import { HttpClient } from '@angular/common/http';
 import { DefaultCardComponent } from '../default-card/default-card.component';
 import { TranslocoService } from '@ngneat/transloco';
-import { ConfirmationDialogComponent, IConfirmationDialog } from '../confirmation-dialog/confirmation-dialog.component';
-import { DinamicBaseResourceFormComponent, IDinamicBaseResourceFormComponent } from '../dinamic-base-resource-form/dinamic-base-resource-form.component';
+import {
+  ConfirmationDialogComponent,
+  IConfirmationDialog,
+} from '../confirmation-dialog/confirmation-dialog.component';
+import {
+  DinamicBaseResourceFormComponent,
+  IDinamicBaseResourceFormComponent,
+} from '../dinamic-base-resource-form/dinamic-base-resource-form.component';
 import { environment } from 'environments/environment';
 import { ISearchableField } from '../search-input-field/search-input-field.component';
 import { IPageStructure } from 'app/shared/models/pageStructure';
+import { ViewToggleService } from 'app/shared/services/view-toggle.service';
 
 export interface IDefaultListComponentDialogConfig {
   /**
    * Campo com os dados dos itens que serÃo apresenados na lista.
    * @example ['nome':'Maria', 'idade':'44'].
    */
-  itemsDisplayed: any,
+  itemsDisplayed: any;
   /**
    * Quantidade de colunas que tenha cada Card da lista.
    * @example "3"
    * Por padrão quando se está em dispositivos móveis a quantidade de colunas será 1.
    */
-  columnsQuantity: number,
+  columnsQuantity: number;
   /**
    * Nomes dos campos que serão apresentados.
    * @example ['nome', 'idade'].
    */
-  displayedfieldsName: string[],
+  displayedfieldsName: string[];
   /**
    * Tipos das variáveis da classe.
    * @example ['string', 'number'].
    */
-  fieldsType: string[],
+  fieldsType: string[];
   /**
-   * Caso o conter um campo do tipo objeto, será o nome do campo que está dentro do que será exibido. 
+   * Caso o conter um campo do tipo objeto, será o nome do campo que está dentro do que será exibido.
    * [Exemplo]: O campo tem um objeto, esse objeto tem "id", "name" e "age". O campo apresentado poderá ser o "name", assim aparecerá o valor do campo "name" no componente.
    * @example ['', '', 'id']
    */
-  objectDisplayedValue: string[]
-  userConfig: any,
+  objectDisplayedValue: string[];
+  userConfig: any;
   /**
    * Limite de itens que podem ser selecionados na lista
    */
-  selectedItemsLimit: number,
+  selectedItemsLimit: number;
   /**
    * Link no qual é capaz de obter as instâncias dessa classe no banco de dados.\
    * @example "api/carros"
    */
-  apiUrl: string,
+  apiUrl: string;
   /**
    * Campos pelo qual será realizada a busca no campo de buscas.\
    * @example ['name','phone'].
    */
-  searchableFields: ISearchableField[] | null,
+  searchableFields: ISearchableField[] | null;
   /**
    * Essa lista será uma lista que tu seleciona os itens?
    * @example true;
    */
-  isSelectable: boolean,
+  isSelectable: boolean;
   /**
    * Nome da classe na qual o formulário pertence
    */
-  className: string,
+  className: string;
   /**
    * Indica se a lista terá botão que direcionará para criação de novos itens.
    * @example "true" ou "false"
    */
-  isAbleToCreate: boolean,
+  isAbleToCreate: boolean;
   /**
    * Indica que cada card da lista terá um botão que direcionará para editar cada item.
    * @example "true" ou "false"
    */
-  isAbleToEdit: boolean,
+  isAbleToEdit: boolean;
   /**
    * Indica que cada item da lista poderá ser removido.
    * @example "true" ou "false"
    */
-  isAbleToDelete: boolean,
+  isAbleToDelete: boolean;
   /**
    * Dados que orienta na criação das paginas.
    */
-  dataToCreatePage: IPageStructure,
+  dataToCreatePage: IPageStructure;
   /**
    * Define se o formulários que serão abertos a partir dessa lista serão abertos por dialog ou indo na página
    */
-  useFormOnDialog: boolean,
+  useFormOnDialog: boolean;
   /**
    * Define se a lista irá obter os dados da API para apresentar para o usuário.
    */
-  isEnabledToGetDataFromAPI: boolean
+  isEnabledToGetDataFromAPI: boolean;
 }
 
 @Component({
   selector: 'default-list',
   templateUrl: './default-list.component.html',
-  styleUrls: ['./default-list.component.scss']
+  styleUrls: ['./default-list.component.scss'],
 })
-export class DefaultListComponent implements AfterViewInit, OnDestroy, IDefaultListComponentDialogConfig {
+export class DefaultListComponent
+  implements AfterViewInit, OnDestroy, IDefaultListComponentDialogConfig
+{
+  viewMode: string = 'list'; // Definindo o modo padrão como 'list'
+  @Input() currentView: string; // Valor padrão é 'card'
   @Input() itemsDisplayed: any[] = [];
   @Input() columnsQuantity: number = 1;
   @Input() displayedfieldsName: string[] | null;
   @Input() fieldsType: string[];
-  @Input() objectDisplayedValue: string[]
+  @Input() objectDisplayedValue: string[];
   @Input() userConfig: any;
   @Input() isSelectable: boolean = true;
   @Input() selectedItemsLimit: number | null = null;
@@ -114,9 +141,9 @@ export class DefaultListComponent implements AfterViewInit, OnDestroy, IDefaultL
   @Input() apiUrl!: string;
   @Input() searchableFields: ISearchableField[] | null = null;
   /**
-  * Número máximo de itens que serão renderizados na lista.\
-  * @example 3
-  */
+   * Número máximo de itens que serão renderizados na lista.\
+   * @example 3
+   */
   @Input() maxDisplayedItems: number = 25;
   @Input() className!: string;
   @Input() isAbleToCreate: boolean = true;
@@ -159,7 +186,8 @@ export class DefaultListComponent implements AfterViewInit, OnDestroy, IDefaultL
 
   isLoading: boolean = true;
 
-  @ViewChild('placeToRender', { read: ViewContainerRef }) target!: ViewContainerRef;
+  @ViewChild('placeToRender', { read: ViewContainerRef })
+  target!: ViewContainerRef;
 
   protected router: Router;
   private http: HttpClient;
@@ -168,11 +196,13 @@ export class DefaultListComponent implements AfterViewInit, OnDestroy, IDefaultL
 
   constructor(
     protected injector: Injector,
-    @Optional() @Inject(MAT_DIALOG_DATA) public dialogInjectorData: IDefaultListComponentDialogConfig,
-    @Optional() private matDialogComponentRef: MatDialogRef<DefaultListComponent>,
-
+    @Optional()
+    @Inject(MAT_DIALOG_DATA)
+    public dialogInjectorData: IDefaultListComponentDialogConfig,
+    @Optional()
+    private matDialogComponentRef: MatDialogRef<DefaultListComponent>,
+    private viewToggleService: ViewToggleService
   ) {
-
     this.router = this.injector.get(Router);
     this.http = this.injector.get(HttpClient);
     this.translocoService = this.injector.get(TranslocoService);
@@ -183,7 +213,6 @@ export class DefaultListComponent implements AfterViewInit, OnDestroy, IDefaultL
     }
 
     if (dialogInjectorData != null) {
-
       this.itemsDisplayed = dialogInjectorData.itemsDisplayed;
       this.columnsQuantity = dialogInjectorData.columnsQuantity;
       this.displayedfieldsName = dialogInjectorData.displayedfieldsName;
@@ -201,12 +230,16 @@ export class DefaultListComponent implements AfterViewInit, OnDestroy, IDefaultL
       this.isAbleToEdit = dialogInjectorData.isAbleToEdit;
       this.dataToCreatePage = dialogInjectorData.dataToCreatePage;
       this.useFormOnDialog = dialogInjectorData.useFormOnDialog;
-      this.isEnabledToGetDataFromAPI = dialogInjectorData.isEnabledToGetDataFromAPI;
+      this.isEnabledToGetDataFromAPI =
+        dialogInjectorData.isEnabledToGetDataFromAPI;
     }
-
   }
 
   ngAfterViewInit(): void {
+    // Inscreve-se no serviço para ouvir as mudanças no modo de exibição
+    this.viewToggleService.viewMode$.subscribe((mode) => {
+      this.viewMode = mode;
+    });
     setTimeout(() => {
       if (this.isEnabledToGetDataFromAPI == true) {
         this.getDataFromAPI(this.apiUrl);
@@ -221,38 +254,41 @@ export class DefaultListComponent implements AfterViewInit, OnDestroy, IDefaultL
    * @param apiURL Campos pelo qual será realizada a busca no campo de buscas. @example "api/carros"
    */
   getDataFromAPI(apiURL: string) {
+    this.requestAllValuesFromAPI(apiURL)
+      .pipe(
+        take(1),
+        //Enquanto o observable está mandando os dados, fará oque tem na função
+        tap(() => {
+          this.isLoading = true;
+        }),
+        //Quando o observable completa ou encontra um erro
+        finalize(() => {
+          this.isLoading = false;
+        })
+      )
+      .subscribe({
+        next: (itemsDisplayed) => {
+          this.itemsDisplayed = itemsDisplayed;
 
-    this.requestAllValuesFromAPI(apiURL).pipe(
-      take(1),
-      //Enquanto o observable está mandando os dados, fará oque tem na função
-      tap(() => {
-        this.isLoading = true;
-      }),
-      //Quando o observable completa ou encontra um erro
-      finalize(() => {
-        this.isLoading = false;
-      }),
-    ).subscribe({
-      next: (itemsDisplayed) => {
-        this.itemsDisplayed = itemsDisplayed;
+          if (itemsDisplayed.length == 0) return;
+          // console.log("Itens obtidos na requisição: ", itemsDisplayed);
 
-        if (itemsDisplayed.length == 0) return;
-        // console.log("Itens obtidos na requisição: ", itemsDisplayed);
+          if (this.maxDisplayedItems > this.itemsDisplayed.length)
+            this.maxDisplayedItems = this.itemsDisplayed.length;
 
-        if (this.maxDisplayedItems > this.itemsDisplayed.length) this.maxDisplayedItems = this.itemsDisplayed.length;
+          const itemsToDisplay = this.itemsDisplayed.slice(
+            0,
+            this.maxDisplayedItems
+          );
 
-        const itemsToDisplay = this.itemsDisplayed.slice(0, this.maxDisplayedItems);
-
-        this.createItemsOnList(itemsToDisplay);
-      },
-      error(error) {
-
-        if(error.status != null){
-          // alert(this.translocoService.translate("componentsBase.requestError.error-401"))
-        }
-
-      }
-    });
+          this.createItemsOnList(itemsToDisplay);
+        },
+        error(error) {
+          if (error.status != null) {
+            // alert(this.translocoService.translate("componentsBase.requestError.error-401"))
+          }
+        },
+      });
   }
 
   getData(itemsDisplayed: Object[]) {
@@ -260,7 +296,8 @@ export class DefaultListComponent implements AfterViewInit, OnDestroy, IDefaultL
 
     this.isLoading = false;
 
-    if (this.maxDisplayedItems > itemsDisplayed.length) this.maxDisplayedItems = itemsDisplayed.length;
+    if (this.maxDisplayedItems > itemsDisplayed.length)
+      this.maxDisplayedItems = itemsDisplayed.length;
 
     const itemsToDisplay = itemsDisplayed.slice(0, this.maxDisplayedItems);
 
@@ -276,12 +313,14 @@ export class DefaultListComponent implements AfterViewInit, OnDestroy, IDefaultL
     this.removeAllComponentsOnView();
 
     for (let index = 0; index < itemsDisplayed.length; index++) {
-
       let componentCreated;
       if (this.isSelectable == true) {
-        componentCreated = this.target.createComponent(SelectableCardComponent).instance;
+        componentCreated = this.target.createComponent(
+          SelectableCardComponent
+        ).instance;
       } else {
-        componentCreated = this.target.createComponent(DefaultCardComponent).instance;
+        componentCreated =
+          this.target.createComponent(DefaultCardComponent).instance;
       }
 
       this.componentsCreatedList.push(componentCreated);
@@ -300,12 +339,19 @@ export class DefaultListComponent implements AfterViewInit, OnDestroy, IDefaultL
       if (this.isSelectable == true) {
         this.selectableFieldController(componentCreated);
         componentCreated.isEditable = this.isAbleToEdit;
-        componentCreated.eventClickToEdit.pipe(takeUntil(this.ngUnsubscribe)).subscribe((data) => { this.editItem(data) });
+        componentCreated.eventClickToEdit
+          .pipe(takeUntil(this.ngUnsubscribe))
+          .subscribe((data) => {
+            this.editItem(data);
+          });
       } else {
-        componentCreated.eventClick.pipe(takeUntil(this.ngUnsubscribe)).subscribe((data) => { this.editItem(data) });
+        componentCreated.eventClick
+          .pipe(takeUntil(this.ngUnsubscribe))
+          .subscribe((data) => {
+            this.editItem(data);
+          });
       }
     }
-
   }
 
   /**
@@ -315,23 +361,23 @@ export class DefaultListComponent implements AfterViewInit, OnDestroy, IDefaultL
   editItem(item: Object) {
     // console.log("Objeto que será alterado: ",item)
     if (this.useFormOnDialog == true) {
-      this.openFormOnDialog("edit", item["id"]);
+      this.openFormOnDialog('edit', item['id']);
     } else {
-      this.goToEditPage(item["id"]);
+      this.goToEditPage(item['id']);
     }
   }
 
   /**
    * Redirecina para pagina de alteração do item
-   * @param itemId ID do item que será alterado. 
-   * @returns 
+   * @param itemId ID do item que será alterado.
+   * @returns
    */
   goToEditPage(itemId: string) {
     if (this.route == undefined || this.route == null) {
       console.warn("O valor de 'route' não foi passado corretamente");
       return;
     }
-    this.router.navigate([this.route + "/" + itemId + "/edit"]);
+    this.router.navigate([this.route + '/' + itemId + '/edit']);
   }
 
   /**
@@ -340,17 +386,20 @@ export class DefaultListComponent implements AfterViewInit, OnDestroy, IDefaultL
    * @param _itemId Id do item que será editado. Se for criado então pode ser "null" o valor preenchido no campo
    */
   openFormOnDialog(action: string, _itemId: string | null) {
-    if (action !== "edit" && action !== "new") return;
+    if (action !== 'edit' && action !== 'new') return;
     if (this.useFormOnDialog == false) return;
 
-    console.log("Dados para criação do form através da lista: ", this.dataToCreatePage)
+    console.log(
+      'Dados para criação do form através da lista: ',
+      this.dataToCreatePage
+    );
 
     const config: IDinamicBaseResourceFormComponent = {
       dataToCreatePage: this.dataToCreatePage,
       className: this.className,
       currentAction: action,
-      itemId: action === "edit" && _itemId ? _itemId : null
-    }
+      itemId: action === 'edit' && _itemId ? _itemId : null,
+    };
 
     const dialogRef = this.matDialog.open(DinamicBaseResourceFormComponent, {
       width: '100%',
@@ -358,17 +407,19 @@ export class DefaultListComponent implements AfterViewInit, OnDestroy, IDefaultL
       maxWidth: '100vw',
       maxHeight: '100vh',
       panelClass: 'full-screen-dialog',
-      data: config
+      data: config,
     });
 
-    dialogRef.afterClosed().pipe(take(1)).subscribe(item => {
-      if (item == null) return;
+    dialogRef
+      .afterClosed()
+      .pipe(take(1))
+      .subscribe((item) => {
+        if (item == null) return;
 
-      if ('action' in item) {
-        return;
-      }
-
-    });
+        if ('action' in item) {
+          return;
+        }
+      });
   }
 
   /**
@@ -378,14 +429,14 @@ export class DefaultListComponent implements AfterViewInit, OnDestroy, IDefaultL
     if (this.isAbleToCreate == false) return;
 
     if (this.useFormOnDialog == true) {
-      this.openFormOnDialog("new", null);
+      this.openFormOnDialog('new', null);
     } else {
       this.gotToCreationPage();
     }
   }
 
   /**
-   * Redirecina para pagina de criação do item 
+   * Redirecina para pagina de criação do item
    */
   gotToCreationPage() {
     if (this.route == undefined || this.route == null) {
@@ -393,7 +444,7 @@ export class DefaultListComponent implements AfterViewInit, OnDestroy, IDefaultL
       return;
     }
 
-    this.router.navigate([this.route + "/new"]);
+    this.router.navigate([this.route + '/new']);
   }
 
   selectableFieldController(componentCreated: SelectableCardComponent) {
@@ -401,13 +452,21 @@ export class DefaultListComponent implements AfterViewInit, OnDestroy, IDefaultL
       this.selectedItemsLimit = this.itemsDisplayed.length;
     }
 
-    componentCreated.eventOnSelect.pipe(takeUntil(this.ngUnsubscribe)).subscribe((data) => {
-      this.checkItem(this.selectedItemsLimit, componentCreated, data);
-    });
+    componentCreated.eventOnSelect
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((data) => {
+        this.checkItem(this.selectedItemsLimit, componentCreated, data);
+      });
   }
 
-  checkItem(selectedItemsLimit: number, componentCreated: SelectableCardComponent, data) {
-    const dataIsSelected: boolean = this.selectedItems.some(item => item === data);
+  checkItem(
+    selectedItemsLimit: number,
+    componentCreated: SelectableCardComponent,
+    data
+  ) {
+    const dataIsSelected: boolean = this.selectedItems.some(
+      (item) => item === data
+    );
 
     if (this.selectedItems.length == this.itemsDisplayed.length - 1) {
       this.selectAllCheckBox = true;
@@ -415,41 +474,45 @@ export class DefaultListComponent implements AfterViewInit, OnDestroy, IDefaultL
 
     //Se o componente não foi selencionado
     if (dataIsSelected == false) {
-
       if (selectedItemsLimit != null) {
         //Se o limite de itens selecionados não foi ultrapassado
         if (this.selectedItems.length < selectedItemsLimit) {
-          this.selectedItems.push(data);//Seleciona o item
+          this.selectedItems.push(data); //Seleciona o item
           componentCreated.isSelected = true;
         }
       } else {
         this.selectedItems.push(data);
         componentCreated.isSelected = true;
       }
-
     } else {
       if (this.selectAllCheckBox == true) {
         this.selectAllCheckBox = false;
       }
-      this.selectedItems = this.selectedItems.filter(item => item !== data);
+      this.selectedItems = this.selectedItems.filter((item) => item !== data);
       componentCreated.isSelected = false;
     }
   }
 
   handlePageEvent($event) {
+    let firstlItemToDisplayIndex: number = $event.pageIndex * $event.pageSize; //0
+    let lastItemToDisplayIndex: number =
+      firstlItemToDisplayIndex + $event.pageSize; //10 + 25 = 35
 
-    let firstlItemToDisplayIndex: number = $event.pageIndex * $event.pageSize;//0
-    let lastItemToDisplayIndex: number = firstlItemToDisplayIndex + $event.pageSize;//10 + 25 = 35
+    if (lastItemToDisplayIndex > this.itemsDisplayed.length)
+      lastItemToDisplayIndex = this.itemsDisplayed.length;
 
-    if (lastItemToDisplayIndex > this.itemsDisplayed.length) lastItemToDisplayIndex = this.itemsDisplayed.length;
-
-    const itemsToDisplay = this.itemsDisplayed.slice(firstlItemToDisplayIndex, lastItemToDisplayIndex);
+    const itemsToDisplay = this.itemsDisplayed.slice(
+      firstlItemToDisplayIndex,
+      lastItemToDisplayIndex
+    );
     this.createItemsOnList(itemsToDisplay);
 
     //Regra para após de instanciar os cards pra nova pagina, verifique se os cards foram selecionados, para marcar eles
     if (this.isSelectable == true) {
       itemsToDisplay.forEach((item, index) => {
-        const dataIsSelected: boolean = this.selectedItems.some(_item => _item === item);
+        const dataIsSelected: boolean = this.selectedItems.some(
+          (_item) => _item === item
+        );
         if (dataIsSelected == true) {
           this.componentsCreatedList[index].isSelected = true;
         }
@@ -458,14 +521,13 @@ export class DefaultListComponent implements AfterViewInit, OnDestroy, IDefaultL
   }
 
   removeAllComponentsOnView() {
-    if (this.target == null) console.warn("target é null");
+    if (this.target == null) console.warn('target é null');
     this.target.clear();
   }
 
   getInstanceVariableValue(instance, variableName: string) {
-    return instance[variableName]
+    return instance[variableName];
   }
-
 
   onSelectedItemsCheckBoxChange(event) {
     this.selectAllCheckBox = event.checked;
@@ -489,17 +551,17 @@ export class DefaultListComponent implements AfterViewInit, OnDestroy, IDefaultL
   checkAllItems() {
     if (this.componentsCreatedList == null) return;
 
-    this.componentsCreatedList.forEach(component => {
+    this.componentsCreatedList.forEach((component) => {
       component.isSelected = true;
-    })
+    });
   }
 
   unCheckAllItems() {
     if (this.componentsCreatedList == null) return;
 
-    this.componentsCreatedList.forEach(component => {
+    this.componentsCreatedList.forEach((component) => {
       component.isSelected = false;
-    })
+    });
   }
 
   /**
@@ -520,32 +582,46 @@ export class DefaultListComponent implements AfterViewInit, OnDestroy, IDefaultL
    * Função que removerá os itens selecionados na API e atualizará os itens da lista com os itens da API.
    */
   deleteSelectedItens(): any[] {
-
     if (this.selectedItems.length <= 0) {
       return;
     }
 
-    let dialogMessage: string = this.translocoService.translate("componentsBase.confirmation-dialog.messageToConfirmDelete");
+    let dialogMessage: string = this.translocoService.translate(
+      'componentsBase.confirmation-dialog.messageToConfirmDelete'
+    );
 
     //Irá abrir o dialog para perguntar para o usuário se ele tem certeza se quer remover os itens e depois dará continuidade com base na resposta selecionada pelo usuário.
-    this.openConfirmationDialog(dialogMessage).afterClosed().pipe(take(1)).subscribe((result: boolean) => {
-      if (result == true) {
+    this.openConfirmationDialog(dialogMessage)
+      .afterClosed()
+      .pipe(take(1))
+      .subscribe((result: boolean) => {
+        if (result == true) {
+          this.selectedItems.forEach((item) => {
+            this.http
+              .delete(
+                environment.backendUrl + '/' + this.apiUrl + '/' + item.id
+              )
+              .subscribe({
+                next: () => {
+                  // console.log("Item deletado: ", item);
+                },
+                error: (error) => {
+                  console.error('Erro ao deletar item: ', item, error);
+                },
+              });
+          });
 
-        this.selectedItems.forEach((item) => {
-          this.http.delete(environment.backendUrl + "/" + this.apiUrl + '/' + item.id).subscribe({
-            error: (error) => alert(this.translocoService.translate("componentsBase.Alerts.deleteErrorMessage")),
-          }).unsubscribe();
-        });
+          this.selectedItems = [];
 
-        this.selectedItems = [];
+          alert(
+            this.translocoService.translate(
+              'componentsBase.Alerts.deleteSuccessMessage'
+            )
+          );
 
-        alert(this.translocoService.translate("componentsBase.Alerts.deleteSuccessMessage"));
-
-        this.getDataFromAPI(this.apiUrl);
-      }
-
-    });
-
+          this.getDataFromAPI(this.apiUrl);
+        }
+      });
   }
 
   /**
@@ -571,11 +647,15 @@ export class DefaultListComponent implements AfterViewInit, OnDestroy, IDefaultL
    * @param message Mensagem que será apresentada no componente de confirmação.
    * @returns Retorna uma referência do componente de confirmação que foi aberto na página atual.
    */
-  openConfirmationDialog(message: string): MatDialogRef<ConfirmationDialogComponent> {
+  openConfirmationDialog(
+    message: string
+  ): MatDialogRef<ConfirmationDialogComponent> {
     const confirmationDialog: IConfirmationDialog = {
-      message: message
-    }
+      message: message,
+    };
     // console.log(message);
-    return this.matDialog.open(ConfirmationDialogComponent, { data: confirmationDialog });
+    return this.matDialog.open(ConfirmationDialogComponent, {
+      data: confirmationDialog,
+    });
   }
 }

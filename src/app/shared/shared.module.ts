@@ -66,7 +66,9 @@ import { FormSpaceBuildComponent } from './components/form-space-build/form-spac
 import { CreateUserComponent } from './components/create-user/create-user.component';
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 import { EditProfileComponent } from './components/edit-profile/edit-profile.component';
-import { TenantMenuComponent } from './components/tenant-menu/tenant-menu.component';
+import { CheckboxFieldComponent } from './components/checkbox-field/checkbox-field.component';
+import { CardListComponent } from './components/card-list/card-list.component';
+import { ViewToggleComponent } from './components/view-toggle/view-toggle.component';
 
 @NgModule({
     imports: [
@@ -165,7 +167,10 @@ import { TenantMenuComponent } from './components/tenant-menu/tenant-menu.compon
         CreateUserComponent,
         ResetPasswordComponent,
         EditProfileComponent,
-        TenantMenuComponent,
+        CheckboxFieldComponent,
+        EditProfileComponent,
+        CardListComponent,
+        ViewToggleComponent
     ],
 })
 export class SharedModule { }
