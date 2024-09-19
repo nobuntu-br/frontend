@@ -66,6 +66,8 @@ import { CreateUserComponent } from './components/create-user/create-user.compon
 import { SelectorFieldComponent } from './components/selector-field/selector-field.component';
 import { EditProfileComponent } from './components/edit-profile/edit-profile.component';
 import { CheckboxFieldComponent } from './components/checkbox-field/checkbox-field.component';
+import { CardListComponent } from './components/card-list/card-list.component';
+import { ViewToggleComponent } from './components/view-toggle/view-toggle.component';
 
 @NgModule({
     imports: [
@@ -163,7 +165,9 @@ import { CheckboxFieldComponent } from './components/checkbox-field/checkbox-fie
         SelectorFieldComponent,
         EditProfileComponent,
         CheckboxFieldComponent,
-        EditProfileComponent
+        EditProfileComponent,
+        CardListComponent,
+        ViewToggleComponent
     ],
 })
 export class SharedModule { }

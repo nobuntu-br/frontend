@@ -1,15 +1,36 @@
-<div style="display: flex; flex-direction: column; width: 100%; height: 100%;">
-  <search-input-field [displayedfieldsName]="displayedfieldsName" [fieldsType]="fieldsType" [apiUrl]="apiUrl"
-    style="padding: 10px;" (removeAllComponentsOnViewFunction)="removeAllComponentsOnView()"
-    (returnedItemsToCreate)="createItemsOnList($event)" [searchableFields]="searchableFields">
+<div style="display: flex; flex-direction: column; width: 100%; height: 100%">
+  <search-input-field
+    [displayedfieldsName]="displayedfieldsName"
+    [fieldsType]="fieldsType"
+    [apiUrl]="apiUrl"
+    style="padding: 10px"
+    (removeAllComponentsOnViewFunction)="removeAllComponentsOnView()"
+    (returnedItemsToCreate)="createItemsOnList($event)"
+    [searchableFields]="searchableFields"
+  >
   </search-input-field>
 
-  <div *ngIf="isSelectable == true"
-    style="display: flex; flex-direction: row; width: 100%; background-color: white; border-radius: 5px; margin-bottom: 5px;">
-    <mat-checkbox [checked]="selectAllCheckBox" *ngIf="selectedItemsLimit == itemsDisplayed?.length"
-      (change)="onSelectedItemsCheckBoxChange($event)"></mat-checkbox>
-    <p style="margin: auto;">{{selectedItems.length}}
-      <ng-container *transloco='let t; read:"componentsBase"'>{{t('selector-list.selectedValues') }}</ng-container>
+  <div
+    *ngIf="isSelectable == true"
+    style="
+      display: flex;
+      flex-direction: row;
+      width: 100%;
+      background-color: white;
+      border-radius: 5px;
+      margin-bottom: 5px;
+    "
+  >
+    <mat-checkbox
+      [checked]="selectAllCheckBox"
+      *ngIf="selectedItemsLimit == itemsDisplayed?.length"
+      (change)="onSelectedItemsCheckBoxChange($event)"
+    ></mat-checkbox>
+    <p style="margin: auto">
+      {{ selectedItems.length }}
+      <ng-container *transloco="let t; read: 'componentsBase'">{{
+        t("selector-list.selectedValues")
+      }}</ng-container>
     </p>
     <!-- <mat-icon svgIcon="list" style="margin: auto;"></mat-icon> -->
     <!-- TODO adicionar a opção de vizualizar com tabela -->
@@ -17,46 +38,82 @@
   </div>
 
   <!-- Cards criados -->
-  <div style="flex:1; overflow-y: auto; overflow-x: auto;">
+  <div [ngClass]="viewMode" style="flex: 1; overflow-y: auto; overflow-x: auto">
     <ng-container #placeToRender></ng-container>
   </div>
 
-  <div *ngIf="isLoading == true" style="margin: auto;">
+  <div *ngIf="isLoading == true" style="margin: auto">
     <mat-spinner></mat-spinner>
   </div>
 
   <!-- Mensagem caso não tenha nada apresentado na lista -->
-  <div *ngIf="isLoading == false && itemsDisplayed.length == 0" style="margin: auto;">
-    <p>{{ 'componentsBase.default-list.noData' | transloco }}</p>
+  <div
+    *ngIf="isLoading == false && itemsDisplayed.length == 0"
+    style="margin: auto"
+  >
+    <p>{{ "componentsBase.default-list.noData" | transloco }}</p>
   </div>
 
   <!-- Menu fixado -->
-  <div [id]="menuIsFixedOnScreen == true ? 'fixedButtons':''">
-    <button *ngIf="isOpenedOnDialog == true" mat-fab class="px-6 ml-3" (click)="return()">
+  <div [id]="menuIsFixedOnScreen == true ? 'fixedButtons' : ''">
+    <button
+      *ngIf="isOpenedOnDialog == true"
+      mat-fab
+      class="px-6 ml-3"
+      (click)="return()"
+    >
       <mat-icon svgIcon="mat_solid:keyboard_backspace"></mat-icon>
     </button>
-    <button *ngIf="selectedItems.length > 0 && isOpenedOnDialog == true" mat-fab class="px-6 ml-3"
-      (click)="returnWithSelectedItems()">
+    <button
+      *ngIf="selectedItems.length > 0 && isOpenedOnDialog == true"
+      mat-fab
+      class="px-6 ml-3"
+      (click)="returnWithSelectedItems()"
+    >
       <mat-icon svgIcon="mat_solid:check"></mat-icon>
     </button>
-    <button *ngIf="selectedItems.length > 0 && isAbleToDelete == true" (click)="deleteSelectedItens()" mat-fab class="">
+    <button
+      *ngIf="selectedItems.length > 0 && isAbleToDelete == true"
+      (click)="deleteSelectedItens()"
+      mat-fab
+      class=""
+    >
       <mat-icon svgIcon="mat_solid:delete"></mat-icon>
     </button>
     <!-- <a *ngIf="isAbleToCreate == true" mat-fab matTooltip="Add" routerLink="new">
       <mat-icon svgIcon="heroicons_solid:plus"></mat-icon>
     </a> -->
-    <a *ngIf="isAbleToCreate == true" mat-fab matTooltip="Add" (click)="createItem()">
+    <a
+      *ngIf="isAbleToCreate == true"
+      mat-fab
+      matTooltip="Add"
+      (click)="createItem()"
+    >
       <mat-icon svgIcon="heroicons_solid:plus"></mat-icon>
     </a>
   </div>
 
   <!-- TODO colocar o transoco nesse componente, ler a documentacao dele pra ver como fazer -->
-  <div style="display: flex; justify-content: center; width: 100%; background-color: white;">
-    <mat-paginator #paginator (page)="handlePageEvent($event)"
-      [length]="itemsDisplayed != null ? itemsDisplayed.length : 0" [pageSize]="maxDisplayedItems" [disabled]="false"
-      [showFirstLastButtons]="true" [pageSizeOptions]="[5,10,25,50,100]" [hidePageSize]="false" [pageIndex]="0"
-      aria-label="Select page">
+  <div
+    style="
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      background-color: white;
+    "
+  >
+    <mat-paginator
+      #paginator
+      (page)="handlePageEvent($event)"
+      [length]="itemsDisplayed != null ? itemsDisplayed.length : 0"
+      [pageSize]="maxDisplayedItems"
+      [disabled]="false"
+      [showFirstLastButtons]="true"
+      [pageSizeOptions]="[5, 10, 25, 50, 100]"
+      [hidePageSize]="false"
+      [pageIndex]="0"
+      aria-label="Select page"
+    >
     </mat-paginator>
   </div>
-
 </div>
