@@ -12,6 +12,7 @@ export class UserService extends BaseResourceService<User> {
 
   protected http: HttpClient;
   protected usersLocalStorageKey: string = "users";
+  protected currentUserLocalStorageKey: string = "currentUser";
 
   constructor(protected override injector: Injector) { 
     var url = environment.backendUrl+"/api/user"; 
@@ -27,15 +28,31 @@ export class UserService extends BaseResourceService<User> {
     )
   }
 
-  addUserOnLocalStorage(user: IUser): void {
+  async addUserOnLocalStorage(user: IUser): Promise<void> {
+    // Recupera o CurrentUser do localStorage
+    const userString = localStorage.getItem(this.currentUserLocalStorageKey);
+    const currentUser = userString ? JSON.parse(userString) : [];
+
     // Recupera o array de usuários do localStorage
     const usersString = localStorage.getItem(this.usersLocalStorageKey);
     const users = usersString ? JSON.parse(usersString) : [];
+    
+    // Verifica se o usuário já existe no array de usuários
+    const currentUserExists = currentUser.email === user.email;
 
     // Verifica se o usuário já existe no array de usuários
     const userExists = users.some((usuario: any) => usuario.email === user.email);
-
+    console.log(userExists)
     if (!userExists) {
+      // Armazena o currentUser no localStorage
+      localStorage.setItem(this.currentUserLocalStorageKey, JSON.stringify(currentUser));
+      console.log('Usuário adicionado a CurrentUser.');
+    } else {
+      localStorage.setItem(this.currentUserLocalStorageKey, JSON.stringify(user));
+      console.log('Usuário já é currentUser');
+    }
+
+    if (!currentUserExists) {
       // Adiciona o novo usuário ao array se não existir
       users.push(user);
 

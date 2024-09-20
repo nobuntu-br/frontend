@@ -8,7 +8,11 @@ import { FieldComponent } from '../field/field.component';
   styleUrls: ['./selectable-card.component.scss'],
 })
 export class SelectableCardComponent implements AfterViewInit, OnInit{
-
+  /**
+   * Tipo de exibição
+   * @example "card,list,table".
+   */
+  @Input() viewMode: string = 'card'; 
   /**
    * Campo com os dados do item que será apresenados na lista.
    * @example ['nome':'Maria', 'idade':'44'].

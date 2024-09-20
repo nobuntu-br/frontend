@@ -45,7 +45,7 @@ export class AuthInterceptor implements HttpInterceptor {
         if (error instanceof HttpErrorResponse && error.status === 401) {
           // TODO Decidir como tratar casos que o usuário não tem autorização para fazer a requisição na API
           // this._authService.logout();
-
+           this._authService.refreshAccessToken();
           // Recarregar página
           // location.reload();
         }

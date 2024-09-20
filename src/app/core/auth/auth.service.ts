@@ -304,7 +304,8 @@ export class AuthService {
       currentUser.accessInfo.refresh_token = data.refresh_token;
     }
     // Salve o currentUser atualizado no localStorage
-    this.userService.addUserOnLocalStorage(currentUser);
+    await this.userService.addUserOnLocalStorage(currentUser);
     this._authenticated = true;
+    window.location.reload();
   }
 }
