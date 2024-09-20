@@ -9,6 +9,7 @@ import { SelectorField } from "../components/selector-input-field/selector-field
 import { SubFormField } from "../components/subform/subform-field";
 import { FormField } from "./form-field";
 import { IPageStructure } from "./pageStructure";
+import { CheckboxField } from "../components/checkbox-field/checkbox-field";
 
 @Injectable({
   providedIn: 'root'
@@ -30,11 +31,20 @@ export class DynamicFormFieldFactory implements FormFactory {
       case 'date': {
         return new DateField();
       }
+      case 'selector': {
+        return new SelectorField();
+      }
       case 'subform': {
         return new SubFormField(dataToCreatePage);
       }
+      case 'boolean': {
+        return new CheckboxField();
+      }
       case 'object': {
         return new SelectorField();
+      }
+      case 'manyToOne': {
+          return null;
       }
 
       default:
