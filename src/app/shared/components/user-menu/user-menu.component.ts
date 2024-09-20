@@ -20,12 +20,12 @@ export class UserMenuComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    const user = this.authService.getUser();
+    const user = this.authService.currentUser;
     if (user) {
-      this.userInitial = user.profile.given_name.charAt(0).toUpperCase();
-      this.selectedUser = user;
+      // this.userInitial = user.profile.given_name.charAt(0).toUpperCase();
+      // this.selectedUser = user;
     }
-    this.users = this.authService.getUsers();
+    // this.users = this.authService.getUsers();
   }
 
   toggleMenu() {
@@ -38,24 +38,24 @@ export class UserMenuComponent implements OnInit {
   }
 
   addAccount() {
-    this.authService.loginWithPrompt();
+    // this.authService.loginWithPrompt();
   }
 
   logoutSelectedUser() {
     if (this.selectedUser) {
-      this.authService.logoutUserById(this.selectedUser.profile.sub);
-      this.users = this.authService.getUsers(); // Atualizar a lista de usuários
+      this.authService.logoutUserByUID(this.selectedUser.profile.sub);
+      // this.users = this.user.getUsers(); // Atualizar a lista de usuários
       this.router.navigate(['/']); // Redirecionar para a página inicial
     }
   }
   async logoutAllUsers() {
-      await this.authService.logoutAll();
+      await this.authService.logoutAllAccounts();
       this.router.navigate(['/']); // Redirecionar para a página inicial
   }
 
   selectUser(userId: string) {
     this.authService.switchUser(userId);
-    this.selectedUser = this.authService.getUser();
+    // this.selectedUser = this.authService.getUser();
     if (this.selectedUser) {
       this.userInitial = this.selectedUser.profile.given_name.charAt(0).toUpperCase();
     }
@@ -64,6 +64,6 @@ export class UserMenuComponent implements OnInit {
 
   logout(){
     console.log("Logout");
-    this.authService.logout();
+    // this.authService.logout();
   }
 }

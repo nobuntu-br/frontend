@@ -1,18 +1,40 @@
 import { BaseResourceModel } from "app/shared/models/base-resource.model";
 
-export class UserModel extends BaseResourceModel {
-    UID: string;
-    TenantUID: string;
-    username: string;
-    firstName: string;
-    lastName: string;
-    isAdministrator: boolean;
-    memberType: string;
-    Roles?: string[];
-    tenants?: string[];
+export interface IUserAccessInfo {
+  access_token: string;
+  refresh_token: string;
+  token_type: string;
+  expires_at: number
+}
 
-    static fromJson(jsonData: any): UserModel {
-        return Object.assign(new UserModel(), jsonData);
-    }
+export interface IUser {
+  id?: string;
+  UID: string;
+  TenantUID: string;
+  userName: string;
+  firstName: string;
+  lastName: string;
+  isAdministrator: boolean;
+  memberType: string;
+  Roles ?: string[];
+  tenants ?: string[];
+  email?: string;
+  accessInfo?: IUserAccessInfo;
+}
+
+export class User extends BaseResourceModel implements IUser {
+  UID: string;
+  TenantUID: string;
+  userName: string;
+  firstName: string;
+  lastName: string;
+  isAdministrator: boolean;
+  memberType: string;
+  Roles?: string[];
+  tenants?: string[];
+
+  static fromJson(jsonData: any): User {
+    return Object.assign(new User(), jsonData);
+  }
 }
 

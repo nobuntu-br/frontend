@@ -1,11 +1,16 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from 'app/core/auth/auth.service';
-import { ApplicationService } from 'app/shared/services/application.service';
+import { UserService } from 'app/core/auth/user.service';
+import { finalize, lastValueFrom, take, tap } from 'rxjs';
 
 enum SignInPageState {
   Redirecting,
   Error,
+  EmailVerification,
+  PasswordVerification,
+  CreatingAccount
 }
 
 @Component({
@@ -14,53 +19,77 @@ enum SignInPageState {
   styleUrls: ['./signin.component.scss']
 })
 export class SigninComponent implements OnInit {
-  pageState: SignInPageState;
-  email: string = '';
-  password: string = '';
-  userPrincipalName: string = '';
-  step: number = 1; // Controla o passo atual (1: Email, 2: Senha, 3: Criar Conta)
 
+  signInUserFormGroup: FormGroup = this._formBuilder.group({
+    email: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(60)]],
+    password: ['', [Validators.required]],
+    userPrincipalName: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(60)]],
+  });
+
+  pageState: SignInPageState = SignInPageState.EmailVerification;
   // Expondo o enum para o template
-  SignInPageState = SignInPageState;
+  signInPageStates: typeof SignInPageState = SignInPageState;
+
+  isLoading: boolean = false;
 
   constructor(
     public authService: AuthService,
     private router: Router,
-    private applicationService: ApplicationService
+    private userService: UserService,
+    private _formBuilder: FormBuilder,
   ) {
-    this.pageState = SignInPageState.Redirecting;
   }
 
   ngOnInit(): void {
-    // Você pode iniciar verificações automáticas aqui, se necessário
+
   }
 
   async onEmailSubmit() {
     try {
-      // const response = await this.applicationService.checkEmail(this.email).toPromise();
-      // if (response.exists) {
-        this.step = 2; // Se o email existe, vai para a etapa de senha
-      // } else {
-        // this.step = 3; // Se o email não existe, oferece criar uma conta
-      // }
+      this.isLoading = true;
+
+      this.userService.checkEmailExist(this.signInUserFormGroup.value.email).pipe(
+        take(1),
+        //Quando o observable completa ou encontra um erro
+        finalize(() => {
+          this.isLoading = false;
+        }),
+      ).subscribe({
+        next: (_isValidEmail: boolean) => {
+          if (_isValidEmail == true) {
+            this.pageState = SignInPageState.PasswordVerification; // Se o email existe, vai para a etapa de senha
+          } else {
+            this.pageState = SignInPageState.CreatingAccount; // Se o email não existe, oferece criar uma conta
+          }
+        },
+        error(error) {
+          this.pageState = SignInPageState.Error;
+          // if (error.status != null) {
+          //   // alert(this.translocoService.translate("componentsBase.requestError.error-401"))
+          // }
+
+        }
+      });
     } catch (error) {
-      console.error('Erro ao verificar email:', error);
       this.pageState = SignInPageState.Error;
     }
   }
 
   async login() {
     try {
-      await this.authService.loginCredential(this.email, this.password, this.email);
-      this.router.navigate(['/']);
+      this.isLoading = true;
+      await this.authService.loginCredential(this.signInUserFormGroup.value.email,this.signInUserFormGroup.value.password, this.signInUserFormGroup.value.email);
     } catch (error) {
+      this.isLoading = false;
       console.error('Erro ao realizar login:', error);
       this.pageState = SignInPageState.Error;
+    } finally {
+      this.router.navigate(['/']);
     }
   }
 
   logout() {
-    this.authService.logout();
+    // this.authService.logout();
   }
 
   createUser() {
@@ -70,8 +99,9 @@ export class SigninComponent implements OnInit {
   resetPassword() {
     this.router.navigate(['resetPassword']);
   }
+
   goBackToLogin() {
-    this.step = 1; // Volta para a etapa de inserção do email
+    this.pageState = SignInPageState.EmailVerification;
   }
 
 }

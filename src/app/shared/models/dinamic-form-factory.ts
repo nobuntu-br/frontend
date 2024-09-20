@@ -43,6 +43,9 @@ export class DynamicFormFieldFactory implements FormFactory {
       case 'object': {
         return new SelectorField();
       }
+      case 'manyToOne': {
+          return null;
+      }
 
       default:
         throw new Error('Unsupported field type');
