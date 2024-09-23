@@ -170,7 +170,7 @@ import { SelectorFieldComponent } from './components/selector-field/selector-fie
         CheckboxFieldComponent,
         EditProfileComponent,
         ViewToggleComponent,
-        SelectorFieldComponent
+        SelectorFieldComponent,
     ],
 })
 export class SharedModule { }
