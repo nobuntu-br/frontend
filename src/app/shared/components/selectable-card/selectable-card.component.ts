@@ -2,7 +2,6 @@ import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChil
 import { DateFieldComponent } from '../date-field/date-field.component';
 import { FieldComponent } from '../field/field.component';
 import { SelectorFieldComponent } from '../selector-field/selector-field.component';
-import { ISelectorValue } from '../selector-input-field/selector-input-field.component';
 
 @Component({
   selector: 'selectable-card',
@@ -46,6 +45,7 @@ export class SelectableCardComponent implements AfterViewInit, OnInit{
   @Input() isSelected: boolean = false;
   
   @ViewChild('placeToRender', {read: ViewContainerRef}) target!: ViewContainerRef;
+viewMode: any;
 
   constructor(){
   }
@@ -54,6 +54,7 @@ export class SelectableCardComponent implements AfterViewInit, OnInit{
   }
 
   ngAfterViewInit(): void {
+    console.log("ItemDisplayed", this.itemDisplayed);
     this.createComponentsOnView();
   }
 
@@ -109,8 +110,13 @@ export class SelectableCardComponent implements AfterViewInit, OnInit{
         break;
       }
       case 'selector': {
-        componentCreated = this.target.createComponent(SelectorFieldComponent).instance;
-        componentCreated.valuesList = this.attributes[index].optionList;
+        //TODO: Implementar o selector field
+        // console.log("OptionList", this.attributes[index].optionList);
+        // componentCreated = this.target.createComponent(SelectorFieldComponent).instance;
+        // componentCreated.valuesList = this.attributes[index].optionList;
+        // componentCreated.value = value;
+        // break;
+        componentCreated = this.target.createComponent(FieldComponent).instance;
         componentCreated.value = value;
         break;
       }

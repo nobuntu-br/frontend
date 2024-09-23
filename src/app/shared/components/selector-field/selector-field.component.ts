@@ -47,6 +47,7 @@ export class SelectorFieldComponent extends BaseFieldComponent implements OnInit
   }
 
   ngOnInit(): void {
+    console.log(this.valuesList);
     this.setLabel();
     this.getDisplayedItens();
   }
@@ -72,6 +73,8 @@ export class SelectorFieldComponent extends BaseFieldComponent implements OnInit
    */
     private getDisplayedItens(): void {
       let itens = [];
+      if(!this.valuesList) return;
+      if (!this.value) return;
       this.valuesList.forEach((value) => {
         if (value.id === this.value) {
           itens.push(value);

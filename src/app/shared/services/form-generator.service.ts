@@ -34,6 +34,8 @@ export interface ICreateComponentParams {
   fieldDisplayedInLabel: string,
   valuesList: any[],
   index: number,
+  optionList?: any[],
+  selectItemsLimit?: number,
   dataType?: string,
   language?: string,
 }
@@ -72,6 +74,11 @@ export class FormGeneratorService {
     }
 
     const formField: FormField = this.formFieldFactory.createFormField(createComponentData, createComponentData.dataToCreatePage);
+
+    if (formField == null) {
+      return null;
+    }
+
     createComponentData.resourceForm.addControl(createComponentData.fieldName,formField.createFormField(createComponentData, createComponentData.dataToCreatePage));
     console.log("Criando campo: ", createComponentData.resourceForm);
   }
