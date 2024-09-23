@@ -1,6 +1,8 @@
 import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild, ViewContainerRef } from '@angular/core';
 import { DateFieldComponent } from '../date-field/date-field.component';
 import { FieldComponent } from '../field/field.component';
+import { SelectorFieldComponent } from '../selector-field/selector-field.component';
+import { ISelectorValue } from '../selector-input-field/selector-input-field.component';
 
 @Component({
   selector: 'selectable-card',
@@ -8,11 +10,7 @@ import { FieldComponent } from '../field/field.component';
   styleUrls: ['./selectable-card.component.scss'],
 })
 export class SelectableCardComponent implements AfterViewInit, OnInit{
-  /**
-   * Tipo de exibição
-   * @example "card,list,table".
-   */
-  @Input() viewMode: string = 'card'; 
+
   /**
    * Campo com os dados do item que será apresenados na lista.
    * @example ['nome':'Maria', 'idade':'44'].
@@ -34,8 +32,11 @@ export class SelectableCardComponent implements AfterViewInit, OnInit{
   @Input() userConfig: any;
   @Input() isCheckBox: boolean = true;
   @Input() isSingleOption: boolean = false;
+  @Input() attributes: any;
   @Input() isSelectable: boolean = true;
   @Input() isEditable: boolean = false;
+  @Input() classFather: string;
+  @Input() isSubForm: boolean = false;
   @Input() objectDisplayedValue: string | null;
   @Output() eventClick = new EventEmitter<void>();
   @Output() eventOnSelect = new EventEmitter<void>();
@@ -65,15 +66,19 @@ export class SelectableCardComponent implements AfterViewInit, OnInit{
   createComponentsOnView(){
     setTimeout(() => {
       this.displayedfieldsName.forEach((fieldDisplayedName, index)=>{
-        this.createComponent(this.target, this.fieldsType[index], this.itemDisplayed[fieldDisplayedName], fieldDisplayedName, this.objectDisplayedValue[index]);
+        this.createComponent(this.target, this.fieldsType[index], this.itemDisplayed[fieldDisplayedName], fieldDisplayedName, this.objectDisplayedValue[index], index);
       });
     }, 0); 
   }
 
-  createComponent(target: ViewContainerRef , fieldType, value, labelTittle: string, objectDisplayedValue: string | null){
+  createComponent(target: ViewContainerRef , fieldType, value, labelTittle: string, objectDisplayedValue: string | null, index: number){
     
     if (target == null) {
       console.error("Target not renderized in DefaultCard");
+      return;
+    }
+
+    if(this.isSubForm && this.classFather.toLowerCase() == labelTittle.toLowerCase()){
       return;
     }
 
@@ -98,13 +103,24 @@ export class SelectableCardComponent implements AfterViewInit, OnInit{
         componentCreated = this.createObjectField(objectDisplayedValue, value);
         break;
       }
+      case 'boolean': {
+        componentCreated = this.target.createComponent(FieldComponent).instance;
+        componentCreated.value = value;
+        break;
+      }
+      case 'selector': {
+        componentCreated = this.target.createComponent(SelectorFieldComponent).instance;
+        componentCreated.valuesList = this.attributes[index].optionList;
+        componentCreated.value = value;
+        break;
+      }
       default: {
         componentCreated = this.target.createComponent(FieldComponent).instance;
         componentCreated.value = value;
         break;
       }
     }
-
+    
     componentCreated.label = labelTittle;
     componentCreated.className = this.className;
   }
