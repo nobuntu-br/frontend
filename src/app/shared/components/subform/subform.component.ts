@@ -1,320 +1,419 @@
 import { HttpClient } from '@angular/common/http';
-import { OnInit, AfterContentChecked, Injector, Directive, OnDestroy } from '@angular/core';
-import { FormBuilder, FormGroup } from "@angular/forms";
-import { ActivatedRoute, Router } from "@angular/router";
+import { AfterViewInit, Component, EventEmitter, Inject, Injector, Input, OnInit, Optional, Output, ViewChild, ViewContainerRef } from '@angular/core';
+import { MatDialog, MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TranslocoService } from '@ngneat/transloco';
-import { Estabelecimento } from 'app/modules/estabelecimento/shared/estabelecimento.model';
-import { EstabelecimentoService } from 'app/modules/estabelecimento/shared/estabelecimento.service';
-import { BaseResourceModel } from 'app/shared/models/base-resource.model';
-import { LocalStorageFormService } from 'app/shared/services/local-storage-form.service';
-import { BaseResourceService } from 'app/shared/services/shared.service';
+import { IPageStructure } from 'app/shared/models/pageStructure';
 import { environment } from 'environments/environment';
-import { Subject } from 'rxjs';
-import { switchMap, takeUntil } from "rxjs/operators";
+import { Subject, take, takeUntil } from 'rxjs';
+import { IDefaultListComponentDialogConfig, DefaultListComponent } from '../default-list/default-list.component';
+import { ISearchableField } from '../search-input-field/search-input-field.component';
+import { FormGeneratorService } from 'app/shared/services/form-generator.service';
+import { FormSpaceBuildComponent } from '../form-space-build/form-space-build.component';
+import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { SelectableCardComponent } from '../selectable-card/selectable-card.component';
+import { OnlineOfflineService } from 'app/shared/services/online-offline.service';
 
-@Directive()
-export abstract class BaseResourceFormComponent<T extends BaseResourceModel> implements OnInit, AfterContentChecked, OnDestroy {
-
+@Component({
+  selector: 'app-subform',
+  templateUrl: './subform.component.html',
+  styleUrls: ['./subform.component.scss']
+})
+export class SubformComponent implements AfterViewInit {
+  @Input() itemsDisplayed: any[] = [];
+  @Input() columnsQuantity: number = 1;
+  @Input() displayedfieldsName: string[] | null;
+  @Input() fieldsType: string[];
+  @Input() objectDisplayedValue: string[]
+  @Input() userConfig: any;
+  @Input() isSelectable: boolean = true;
+  @Input() selectedItemsLimit: number | null = null;
+  @Input() index: number;
   /**
-   * Ação atual que o formulário está fazendo, seja alterando algo ou criando.
-   * @example "new" ou "edit"
+   * Campo que saída para os valores que foram selecionados.
    */
-  currentAction: string;
+  @Output() eventSelectedValues = new EventEmitter<any[]>();
+  @Input() apiUrl!: string;
+  @Input() searchableFields: ISearchableField[] | null = null;
   /**
-   * formuário que armazenará os dados.
-   */
-  resourceForm: FormGroup;
-  /**
-   * Título da pagina.
-   * @example "Caixas"
-   */
-  pageTitle: string;
-  serverErrorMessages: string[] = null;
-
-  submittingForm: boolean = false;
-  /**
-   * O localStorage será usado para armazenar dados do formulário enquanto estiver sendo preenchido.
-   * @example "true" ou "false"
-   */
-  localStorageIsEnabled: boolean = false;
-  /**
-   * Indica se os dados do formulário foram alterados
-   * @example "true" ou "false"
-   */
-  formSaved: boolean = false;
+  * Número máximo de itens que serão renderizados na lista.\
+  * @example 3
+  */
+  @Input() maxDisplayedItems: number = 25;
+  @Input() className!: string;
+  @Input() isAbleToCreate: boolean = true;
+  @Input() isAbleToEdit: boolean = true;
+  @Input() isAbleToDelete: boolean = true;
   /**
    * Subject responsável por remover os observadores que estão rodando na pagina no momento do componente ser deletado.
    */
-  ngUnsubscribe = new Subject();
+  private ngUnsubscribe = new Subject();
 
-  protected route: ActivatedRoute;
-  protected router: Router;
-  protected formBuilder: FormBuilder;
-  protected http: HttpClient;
   /**
-   * Service que opera as funções de armazenamento de dados do formuário no local storage
+   * Itens da lista selecionados
+   * @example [{'id':'1', 'nome':'aba'}, {'id':'2', 'nome':'Carlos'}]
    */
-  protected localStorageFormService: LocalStorageFormService;
+  selectedItems: any[] = [];
+  /**
+   * Lista com os componentes que estão sendo renderizados na lista.
+   */
+  private componentsCreatedList: any[] = [];
+  /**
+   * Estado do checkBox que seleciona todos os itens da lista.
+   */
+  selectAllCheckBox: boolean = false;
+  /**
+   * Estado que informa se o componente atual foi aberto por meio de um Dialog.
+   * @example "true" ou "false"
+   */
+  isOpenedOnDialog: boolean = false;
+  @Input() dataToCreatePage: IPageStructure;
+  /**
+   * Rota que levará para pagina da classe
+   */
+  @Input() route: string;
+  @Input() isEnabledToGetDataFromAPI: boolean = true;
+  /**
+   * Define se o menu é fixado na tela
+   */
+  @Input() menuIsFixedOnScreen: boolean = true;
+  @Input() useFormOnDialog: boolean = true;
+
+  isLoading: boolean = true;
+
+  @ViewChild('placeToRender', { read: ViewContainerRef }) target!: ViewContainerRef;
+
+  protected router: Router;
+  private http: HttpClient;
   private translocoService: TranslocoService;
+  private matDialog: MatDialog;
+  protected activatedRoute: ActivatedRoute;
+  currentAction: string;
+  protected formBuilder: FormBuilder;
+  createdSubClass: any[] = [];
+  resourceForm: any;
+  public inputValue: FormControl<object[]> = new FormControl<object[]>([]);
+  private isOnline: boolean;  
 
   constructor(
     protected injector: Injector,
-    public resource: T,
-    protected resourceService: BaseResourceService<T>,
-    protected jsonDataToResourceFn: (jsonData) => T,
+    private formGeneratorService: FormGeneratorService,
+    @Optional() @Inject(MAT_DIALOG_DATA) public dialogInjectorData: IDefaultListComponentDialogConfig,
+    private onlineOfflineService: OnlineOfflineService,
+    @Optional() private matDialogComponentRef: MatDialogRef<DefaultListComponent>
   ) {
-    this.route = this.injector.get(ActivatedRoute);
+    this.activatedRoute = this.injector.get(ActivatedRoute);
     this.router = this.injector.get(Router);
-    this.formBuilder = this.injector.get(FormBuilder);
     this.http = this.injector.get(HttpClient);
-
-    this.localStorageFormService = this.injector.get(LocalStorageFormService);
     this.translocoService = this.injector.get(TranslocoService);
-  }
+    this.matDialog = this.injector.get(MatDialog);
 
-  ngOnInit() {
-    this.setCurrentAction();
-
-    // TODO a funcionalidade de carregar dados do localstorage precisa ser atualizado
-    // if (this.localStorageIsEnabled) {
-    //   this.loadResorceWithLocalStorage();
-    // } else {
-    //   this.loadResource();
-    // }
-
-    this.verifyFormValueChanges();
-
-  }
-
-  ngAfterContentChecked() {
-    this.setPageTitle();
-  }
-
-  submitForm() {
-    this.submittingForm = true;
-    console.log("Formulário enviado: ", this.resourceForm.value);
-    if (this.currentAction == "new"){
-      //TODO: achar uma forma de encontrar o filho
-      this.submitFormWithChild();
-      // this.createResource();
+    if (matDialogComponentRef != null) {
+      this.isOpenedOnDialog = true;
     }
-    else // currentAction == "edit"
-      this.updateResource();
-  }
 
-  /** 
-   * Envia os dados do formulário para a API e salva os dados dos filhos no banco de dados
-   * @param childrenData Dados dos filhos que serão salvos no banco de dados
-   */
-  submitFormWithChild() {
-    let childrenData = [];
-    this.submittingForm = true;
-    for(let field in this.resourceForm.value){
-      if(this.resourceForm.value[field] instanceof Array){
-        for(let i = 0; i < this.resourceForm.value[field].length; i++){
-          if(this.resourceForm.value[field][i].fatherName){
-            childrenData.push({item: this.resourceForm.value[field][i].item, apiUrl: this.resourceForm.value[field][i].apiUrl, fatherName: this.resourceForm.value[field][i].fatherName});
-          }
-        }
+    if (dialogInjectorData != null) {
+
+      this.itemsDisplayed = dialogInjectorData.itemsDisplayed;
+      this.columnsQuantity = dialogInjectorData.columnsQuantity;
+      this.displayedfieldsName = dialogInjectorData.displayedfieldsName;
+      this.fieldsType = dialogInjectorData.fieldsType;
+      this.objectDisplayedValue = dialogInjectorData.objectDisplayedValue;
+      this.userConfig = dialogInjectorData.userConfig;
+      this.searchableFields = dialogInjectorData.searchableFields;
+      if (dialogInjectorData.selectedItemsLimit >= 0) {
+        this.selectedItemsLimit = dialogInjectorData.selectedItemsLimit;
       }
+      this.apiUrl = dialogInjectorData.apiUrl;
+      this.isSelectable = dialogInjectorData.isSelectable;
+      this.className = dialogInjectorData.className;
+      this.isAbleToCreate = dialogInjectorData.isAbleToCreate;
+      this.isAbleToEdit = dialogInjectorData.isAbleToEdit;
+      this.dataToCreatePage = dialogInjectorData.dataToCreatePage;
+      this.useFormOnDialog = dialogInjectorData.useFormOnDialog;
+      this.isEnabledToGetDataFromAPI = dialogInjectorData.isEnabledToGetDataFromAPI;
     }
-    if (this.currentAction == "new"){
-      this.objectTratament(this.resourceForm.value);
-    
-      const resource: T = this.jsonDataToResourceFn(this.resourceForm.value);
-  
-      this.resourceService.create(resource).subscribe({
-        next: (response) => {
-          const className = (this.resource.constructor as any).name;
-          this.localStorageFormService.remove("new"+className);
-          if(childrenData.length == 0){
-            this.actionsForSuccess(response);
-            return;
-          }
-          //salvar os childrenData no banco de dados usando o id da entidade pai que foi salva antes
-          for(let i = 0; i < childrenData.length; i++){
-            childrenData[i].item[className] = response.id;
-            let url = environment.backendUrl + '/' + childrenData[i].apiUrl;
-            this.objectTratament(childrenData[i].item);
-            this.http.post(url, childrenData[i].item).subscribe({
-              next: (response) => {
-                console.log("Response: ", response);
-              },
-              error: (error) => console.log("Error: ", error)
-            });
-          }
-          this.actionsForSuccess(response);
-        },
-        error: (error) => this.actionsForError(error)
-      });
-    }
-    else // currentAction == "edit"
-      this.updateResource();
+
   }
 
-
-  // PRIVATE METHODS
-
-  protected setCurrentAction() {
-    if (this.route.snapshot.url[0].path == "new")
-      this.currentAction = "new"
-    else
-      this.currentAction = "edit"
-  }
-
-  private loadResorceWithLocalStorage() {
-    const resourceId = this.route.snapshot.params['id'];
-    const className = (this.resource.constructor as any).name;
-
-    const dataStoredInLocalStore = this.localStorageFormService.getDataFromLocalStorage(resourceId, className, this.currentAction);
-
-    if (dataStoredInLocalStore != null) {
-      this.resourceForm.patchValue(dataStoredInLocalStore);
-    } else {
-      this.loadResource();
-    }
-    this.localStorageFormService.saveInLocalStorageOnEachChange(resourceId, className, this.resourceForm, this.currentAction);
+  ngAfterViewInit(): void {
+    this.setCurrentConnection();
+    this.setCurrentAction();
+    this.isLoading = false;
   }
 
   /**
-   * Realiza a requisição para obter o objeto da API.
-   * Em caso no qual a pagina irá editar (currentAction == "edit"), será obtido o objeto da API para o formulário  
+   * Função que irá instanciar os components Card na tela, com os dados dos itens.
+   * @param itemsDisplayed Array com os itens que serão apresentados. @example [{"name":"Marie", "age":22}, {"name":"Josef", "age":32}]
    */
-  protected loadResource(): any {
-    if (this.currentAction == "edit") {
-      this.route.paramMap.pipe(
-        switchMap(params => this.resourceService.getById(params.get("id")))
-      )
-        .subscribe({
-          next: (resource) => {
-            this.resource = resource;
-            //TODO usar transloco nessas mensagens
-            if (this.resourceForm == null) { console.error("ResourceForm não foi instanciado") }
-            this.resourceForm.addControl("updatedAt", this.formBuilder.control(null));
-            // console.log("Dados do recurso obtidos da API: ", resource);
-            this.resourceForm.patchValue(resource); // binds loaded resource data to resourceForm
+  createItemsOnList(itemsDisplayed: any[], itemDisplayedOnSubFormType: string[], objectDisplayedValue: string[], attributesOnSubForm: any[] = []) {
+    this.componentsCreatedList = [];
+    this.target.clear();
+
+    for (let index = 0; index < itemsDisplayed.length; index++) {
+
+      let componentCreated;
+
+      componentCreated = this.target.createComponent(SelectableCardComponent).instance;
+      this.componentsCreatedList.push(componentCreated);
+
+      componentCreated.columnsQuantity = this.columnsQuantity;
+      componentCreated.userConfig = this.userConfig;
+      componentCreated.itemDisplayed = itemsDisplayed[index];
+
+      componentCreated.displayedfieldsName = this.displayedfieldsName;
+      componentCreated.fieldsType = itemDisplayedOnSubFormType;
+      componentCreated.objectDisplayedValue = objectDisplayedValue;
+      componentCreated.attributes = attributesOnSubForm;
+      componentCreated.classFather = this.className;
+      componentCreated.isSubForm = true;
+
+      componentCreated.className = this.className;
+
+      componentCreated.isEditable = this.isAbleToEdit;
+      componentCreated.eventClickToEdit.pipe(takeUntil(this.ngUnsubscribe)).subscribe((data) => { this.editItem(data) });
+      this.selectItem(componentCreated);
+
+    }
+
+  }
+
+  selectItem(componentCreated: SelectableCardComponent) {
+    componentCreated.eventOnSelect.pipe(takeUntil(this.ngUnsubscribe)).subscribe((data) => {
+      this.checkItem(this.selectedItemsLimit, componentCreated, data);
+    });
+  }
+
+  checkItem(selectedItemsLimit: number, componentCreated: SelectableCardComponent, data) {
+    const dataIsSelected: boolean = this.selectedItems.some(item => item === data);
+
+    if (this.selectedItems.length == this.itemsDisplayed.length - 1) {
+      this.selectAllCheckBox = true;
+    }
+
+    //Se o componente não foi selencionado
+    if (dataIsSelected == false) {
+
+      if (selectedItemsLimit != null) {
+        //Se o limite de itens selecionados não foi ultrapassado
+        if (this.selectedItems.length < selectedItemsLimit) {
+          this.selectedItems.push(data);//Seleciona o item
+          componentCreated.isSelected = true;
+        }
+      } else {
+        this.selectedItems.push(data);
+        componentCreated.isSelected = true;
+      }
+
+    } else {
+      if (this.selectAllCheckBox == true) {
+        this.selectAllCheckBox = false;
+      }
+      this.selectedItems = this.selectedItems.filter(item => item !== data);
+      componentCreated.isSelected = false;
+    }
+  }
+
+  /**
+   * Encaminha para pagina de edição.
+   * @param item Dados do item que será alterado. @example [{"name":"Marie", "age":22}.
+   */
+  editItem(item: any) {
+    let nameClass = this.dataToCreatePage.attributes[this.index].className;
+    nameClass = nameClass.charAt(0).toLowerCase() + nameClass.slice(1);
+
+    let jsonPath = environment.jsonPath + nameClass + ".json";
+
+    this.formGeneratorService.getJSONFromDicionario(jsonPath).pipe(takeUntil(this.ngUnsubscribe)).subscribe((JSONDictionary: any) => {
+
+      const dialogRef = this.matDialog.open(FormSpaceBuildComponent, {
+        data: {
+          dataToCreatePage: JSONDictionary,
+          currentFormAction: 'edit',
+          submitFormFunction: this.submitEditForm.bind(this),
+          itemToEdit: item,
+          deleteFormFunction: (item: any) => {
+            this.itemsDisplayed = this.itemsDisplayed.filter((element) => element.id != item.id);
+            // this.createItemsOnList(this.itemsDisplayed);
           },
-          error: (error) => alert(this.translocoService.translate("componentsBase.Alerts.readErrorMessage"))
-        })
-    }
+          returnFormFunction: () => {
+            dialogRef.close();
+          },
+          //Ele normalmente recebe o resorceForm para pode preencher com cada campo de inserção com base no JSON
+          //Ele ainda tem o emissõr que o terminou de preencher cada campo do resourceForm
+        }
+      })
+
+      const instance = dialogRef.componentInstance as FormSpaceBuildComponent;
+
+      instance.formIsReady.subscribe((isReady: boolean) => {
+        if (isReady) {
+          for(const key in item) {
+            if(instance.resourceForm.controls[key]) {
+              instance.resourceForm.controls[key].setValue(item[key]);
+            } else {
+              instance.resourceForm.addControl(key, new FormControl(item[key]));
+            }
+          }
+        }
+      });      
+    }); 
   }
 
-  protected setPageTitle() {
-    if (this.currentAction == 'new')
-      this.pageTitle = this.creationPageTitle();
-    else {
-      this.pageTitle = this.editionPageTitle();
-    }
+  submitEditForm(JSONDictionary: IPageStructure, item: any, itemEdited: any) {
+    if (itemEdited == null) return;
+    this.editSubFormOffline(JSONDictionary, item, itemEdited);
   }
 
-  protected creationPageTitle(): string {
-    return "Novo"
+  //TODO: Selector buga se nao selecionar ao editar
+  editSubFormOffline(JSONDictionary: IPageStructure, item: any, itemEdited: any) {
+    this.itemsDisplayed = this.itemsDisplayed.map((element) => {
+      if (element === item) {
+        return { ...element, ...itemEdited };
+      }
+      return element;
+    });
+    // this.createItemsOnList(this.itemsDisplayed);
+    let valueToInput = {apiUrl: JSONDictionary.config.apiUrl, item: item};
+
+    const currentValue = this.inputValue.value || [];
+    this.inputValue.setValue([...currentValue, valueToInput]);
+    let { itemDisplayedOnSubFormType, objectDisplayedValueOnSubForm, attributesOnSubForm } = this.getAttributesToSubForm(JSONDictionary);
+    this.createItemsOnList(this.itemsDisplayed, itemDisplayedOnSubFormType, objectDisplayedValueOnSubForm, attributesOnSubForm);
+    this.matDialog.closeAll();
+  }
+  
+  /**
+   * Abre o formulário em popUp/dialog tanto para criação.
+   */
+  openFormOnDialog() {
+    let nameClass = this.dataToCreatePage.attributes[this.index].className;
+    nameClass = nameClass.charAt(0).toLowerCase() + nameClass.slice(1);
+
+    let jsonPath = environment.jsonPath + nameClass + ".json";
+
+    this.formGeneratorService.getJSONFromDicionario(jsonPath).pipe(takeUntil(this.ngUnsubscribe)).subscribe((JSONDictionary: any) => {
+
+      const dialogRef = this.matDialog.open(FormSpaceBuildComponent, {
+        // width: '100vh',
+        // height: '100vh',
+        data: {
+          dataToCreatePage: JSONDictionary,
+          currentFormAction: 'new',
+          submitFormFunction: this.submitForm.bind(this),
+          formBuilder: this.resourceForm,
+          deleteFormFunction: (item: any) => {
+            this.itemsDisplayed = this.itemsDisplayed.filter((element) => element.id != item.id);
+            // this.createItemsOnList(this.itemsDisplayed);
+            this.inputValue.setValue(this.itemsDisplayed);
+          },
+          returnFormFunction: () => {
+            dialogRef.close();
+          }
+        }
+      })      
+    }); 
   }
 
-  protected editionPageTitle(): string {
-    return "Edição"
+  submitForm(JSONDictionary: IPageStructure, item: any) {
+    if (item == null) return;
+    this.createSubFormOffline(JSONDictionary, item);
   }
-
-  protected createResource() {
-    this.objectTratament(this.resourceForm.value);
     
-    const resource: T = this.jsonDataToResourceFn(this.resourceForm.value);
-
-    this.resourceService.create(resource).subscribe({
-      next: (response) => {
-        this.actionsForSuccess(response);
-        const className = (this.resource.constructor as any).name;
-        this.localStorageFormService.remove("new"+className);
-      },
-      error: (error) => this.actionsForError(error)
-    });
-  }
-
-  protected updateResource() {
-
-    this.objectTratament(this.resourceForm.value);
-
-    const resource: T = this.jsonDataToResourceFn(this.resourceForm.value);
-
-    this.resourceService.update(resource.id, resource).subscribe({
-      next: (response) => this.actionsForSuccess(response),
-      error: (error) => this.actionsForError(error)
-    });
-  }
-
   /**
    * Realizar uma alteração nos dados do formulário, removendo objetos e substituindo somente pelos IDs
-   * @param resourceForm Formulário
+   * @param item Formulário
    */
-  objectTratament(resourceForm){
-    for(let field in resourceForm){
-      if(resourceForm[field] instanceof Object){
-        // console.log("é um objeto o campo: ", resourceForm[field]);
-        if(resourceForm[field] instanceof Array){
-          resourceForm[field] = resourceForm[field].map((value) => value.id == undefined || value.id == null ? value : value.id);
+  objectTratament(item){
+    for(let field in item){
+      if(item[field] instanceof Object){
+        if(item[field] instanceof Array){
+          item[field] = item[field].map((value) => value.id == undefined || value.id == null ? value : value.id);
         } else {
-          if(resourceForm[field].id == undefined || resourceForm[field].id == null){
+          if(item[field].id == undefined || item[field].id == null){
             continue;
           }
-          resourceForm[field] = resourceForm[field].id;
+          item[field] = item[field].id;
         }
       }
     }
+    return item;
   }
 
-  protected deleteResource() {
-    const resource: T = this.jsonDataToResourceFn(this.resourceForm.value);
+  createSubFormOffline(JSONDictionary: IPageStructure, item: any) {
+    this.itemsDisplayed.push(item);
+    let { itemDisplayedOnSubFormType, objectDisplayedValueOnSubForm, attributesOnSubForm } = this.getAttributesToSubForm(JSONDictionary);
+    this.createItemsOnList(this.itemsDisplayed, itemDisplayedOnSubFormType, objectDisplayedValueOnSubForm, attributesOnSubForm);
+    let valueToInput = {item: item, apiUrl: JSONDictionary.config.apiUrl, fatherName: this.getFatherReferenceName(JSONDictionary)};
 
-    this.resourceService.delete(resource.id).subscribe({
-      next: (response) => this.actionsForSuccess(response),
-      error: (error) => this.actionsForError(error)
+    const currentValue = this.inputValue.value || [];
+    this.inputValue.setValue([...currentValue, valueToInput]);
+    this.matDialog.closeAll();
+  }
+
+  deleteSubForm(items: any[]) {
+    let confirmation = confirm("Deseja realmente deletar os itens selecionados?");
+    if (!confirmation) return;
+    items.forEach((item) => {
+      let nameClass = this.dataToCreatePage.attributes[this.index].className;
+      nameClass = nameClass.charAt(0).toLowerCase() + nameClass.slice(1);
+
+      let jsonPath = environment.jsonPath + nameClass + ".json";
+
+      this.formGeneratorService.getJSONFromDicionario(jsonPath).pipe(takeUntil(this.ngUnsubscribe)).subscribe((JSONDictionary: IPageStructure) => {
+          this.deleteSubFormOffline(JSONDictionary, item);
+      });
     });
   }
 
-  protected actionsForSuccess(resource: T) {
-    const baseComponentPath: string = this.route.snapshot.parent.url[0].path;
-
-    alert(this.translocoService.translate("componentsBase.Alerts.defaultSuccessMessage"));
-
-    // redirect/reload component page
-    this.router.navigateByUrl(baseComponentPath, { skipLocationChange: false }).then(
-      // () => this.router.navigate([baseComponentPath, resource.id, "edit"]) //Nesse caso, ao criar ou editar ele ficará na mesma pagina
-      () => this.router.navigate([baseComponentPath])
-    )
+  deleteSubFormOffline(JSONDictionary: IPageStructure, item: any) {
+    //TODO: Pode dar erro se tiverem dois itens iguais
+    this.itemsDisplayed = this.itemsDisplayed.filter((element) => element != item);
+    let { itemDisplayedOnSubFormType, objectDisplayedValueOnSubForm, attributesOnSubForm } = this.getAttributesToSubForm(JSONDictionary);
+    this.createItemsOnList(this.itemsDisplayed, itemDisplayedOnSubFormType, objectDisplayedValueOnSubForm, attributesOnSubForm);
   }
 
-  protected actionsForError(error) {
-
-    this.submittingForm = false;
-    alert(this.translocoService.translate("componentsBase.Alerts.defaultErrorMessage"));
-
-    if (error.status === 422)
-      this.serverErrorMessages = JSON.parse(error._body).errors;
-    else
-      this.serverErrorMessages = ["Falha na comunicação com o servidor. Por favor, tente mais tarde."]
-  }
-
-  protected abstract buildResourceForm(): void;
-
-  protected verifyFormValueChanges(){
-    this.resourceForm.valueChanges.pipe(takeUntil(this.ngUnsubscribe)).subscribe({
-      next:(data) => this.formSaved = false, 
-    });
-  }
-
-  returnFormFunction(){
-    this.alertToReturn();
+  private getAttributesToSubForm(JSONDictionary: IPageStructure) {
+    let itemDisplayedOnSubFormType = [];
+    let objectDisplayedValueOnSubForm = [];
+    let attributesOnSubForm = [];
     
+    JSONDictionary.attributes.forEach((element) => {
+      itemDisplayedOnSubFormType.push(element.type);
+      objectDisplayedValueOnSubForm.push(element.fieldDisplayedInLabel);
+      attributesOnSubForm.push(element);
+    });
+
+    return { itemDisplayedOnSubFormType, objectDisplayedValueOnSubForm, attributesOnSubForm };
   }
 
-  alertToReturn(){
-    if(this.formSaved == true) return;
-
-    alert(this.translocoService.translate("componentsBase.Alerts.rememberToSave"));
+  
+  private setCurrentAction() {
+    if (this.activatedRoute.snapshot.url[0].path == "new")
+      this.currentAction = "new"
+    else{
+      this.currentAction = "edit";
+      this.inputValue.valueChanges.pipe(takeUntil(this.ngUnsubscribe)).subscribe((data) => {
+        this.itemsDisplayed = data;
+        // this.createItemsOnList(this.itemsDisplayed);
+        this.eventSelectedValues.emit(data);
+      });
+    }
   }
 
-  ngOnDestroy(): void {
-    this.ngUnsubscribe.next(null);
-    this.ngUnsubscribe.complete();
+  private setCurrentConnection() {
+    this.isOnline = this.onlineOfflineService.isOnline;
+
+    this.onlineOfflineService.onlineStatus$.subscribe((status: boolean) => {
+      this.isOnline = status;
+    });
+  }
+
+  private getFatherReferenceName(JSONDictionary: IPageStructure) {
+    for(let attribute of JSONDictionary.attributes){
+      if(attribute.className == this.className){
+        return attribute.name;
+      }
+    }
   }
 }
