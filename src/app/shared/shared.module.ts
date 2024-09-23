@@ -68,6 +68,7 @@ import { ResetPasswordComponent } from './components/reset-password/reset-passwo
 import { EditProfileComponent } from './components/edit-profile/edit-profile.component';
 import { CheckboxFieldComponent } from './components/checkbox-field/checkbox-field.component';
 import { ViewToggleComponent } from './components/view-toggle/view-toggle.component';
+import { SelectorFieldComponent } from './components/selector-field/selector-field.component';
 
 @NgModule({
     imports: [
@@ -168,7 +169,8 @@ import { ViewToggleComponent } from './components/view-toggle/view-toggle.compon
         EditProfileComponent,
         CheckboxFieldComponent,
         EditProfileComponent,
-        ViewToggleComponent
+        ViewToggleComponent,
+        SelectorFieldComponent
     ],
 })
 export class SharedModule { }
