@@ -159,7 +159,7 @@ export class SubformComponent implements AfterViewInit {
 
       componentCreated.columnsQuantity = this.columnsQuantity;
       componentCreated.userConfig = this.userConfig;
-      componentCreated.itemDisplayed = itemsDisplayed[index];
+      componentCreated.itemDisplayed = this.objectTratament(itemsDisplayed[index]);
 
       componentCreated.displayedfieldsName = this.displayedfieldsName;
       componentCreated.fieldsType = itemDisplayedOnSubFormType;
