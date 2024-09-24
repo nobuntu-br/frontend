@@ -340,6 +340,7 @@ export class DefaultListComponent
       componentCreated.displayedfieldsName = this.displayedfieldsName;
 
       componentCreated.fieldsType = this.fieldsType;
+      componentCreated.attributes = this.dataToCreatePage.attributes;
       componentCreated.objectDisplayedValue = this.objectDisplayedValue;
 
       componentCreated.className = this.className;

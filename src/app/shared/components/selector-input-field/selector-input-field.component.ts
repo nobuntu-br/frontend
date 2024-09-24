@@ -33,7 +33,6 @@ export class SelectorInputFieldComponent implements AfterViewInit{
 
   ngAfterViewInit(): void {
     this.limitSelectedItems();
-    this.getDisplayedItens();
   }
 
   /**
@@ -46,31 +45,4 @@ export class SelectorInputFieldComponent implements AfterViewInit{
       }
     });
   }  
-
-  /**
-   * Retorna os itens selecionados
-   */
-  private getDisplayedItens(): void {
-    this.inputValue.valueChanges
-    .pipe(take(1)) // Executa o subscribe apenas uma vez
-    .subscribe((values) => {
-      if(!values) return;
-      if(!Array.isArray(values)){
-        values = [values];
-      }
-      let itens = [];
-      values.forEach((value) => {
-        itens.push(this.valuesList.find((item) => item.id === value.toString()));
-      });
-      if (itens.length === 1) { 
-        let input = itens[0];
-        this.inputValue.setValue(input, { emitEvent: false });
-      }
-      if (itens.length > 1) {
-        // Impede que o setValue dispare um novo evento de mudança
-        this.inputValue.setValue(itens, { emitEvent: false });
-      }
-    });
-  }
-
 }

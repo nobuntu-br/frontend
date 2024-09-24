@@ -45,37 +45,34 @@ export class SigninComponent implements OnInit {
   }
 
   async onEmailSubmit() {
+    try {
+      this.isLoading = true;
 
-    this.pageState = SignInPageState.PasswordVerification; // Se o email existe, vai para a etapa de senha
+      this.userService.checkEmailExist(this.signInUserFormGroup.value.email).pipe(
+        take(1),
+        //Quando o observable completa ou encontra um erro
+        finalize(() => {
+          this.isLoading = false;
+        }),
+      ).subscribe({
+        next: (_isValidEmail: boolean) => {
+          if (_isValidEmail == true) {
+            this.pageState = SignInPageState.PasswordVerification; // Se o email existe, vai para a etapa de senha
+          } else {
+            this.pageState = SignInPageState.CreatingAccount; // Se o email não existe, oferece criar uma conta
+          }
+        },
+        error(error) {
+          this.pageState = SignInPageState.Error;
+          // if (error.status != null) {
+          //   // alert(this.translocoService.translate("componentsBase.requestError.error-401"))
+          // }
 
-    // try {
-    //   this.isLoading = true;
-
-    //   this.userService.checkEmailExist(this.signInUserFormGroup.value.email).pipe(
-    //     take(1),
-    //     //Quando o observable completa ou encontra um erro
-    //     finalize(() => {
-    //       this.isLoading = false;
-    //     }),
-    //   ).subscribe({
-    //     next: (_isValidEmail: boolean) => {
-    //       if (_isValidEmail == true) {
-    //         this.pageState = SignInPageState.PasswordVerification; // Se o email existe, vai para a etapa de senha
-    //       } else {
-    //         this.pageState = SignInPageState.CreatingAccount; // Se o email não existe, oferece criar uma conta
-    //       }
-    //     },
-    //     error(error) {
-    //       this.pageState = SignInPageState.Error;
-    //       // if (error.status != null) {
-    //       //   // alert(this.translocoService.translate("componentsBase.requestError.error-401"))
-    //       // }
-
-    //     }
-    //   });
-    // } catch (error) {
-    //   this.pageState = SignInPageState.Error;
-    // }
+        }
+      });
+    } catch (error) {
+      this.pageState = SignInPageState.Error;
+    }
   }
 
   async login() {
