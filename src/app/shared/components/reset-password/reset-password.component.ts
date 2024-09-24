@@ -1,8 +1,7 @@
 import { Component } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { ApplicationService } from 'app/shared/services/application.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Router } from '@angular/router';
+import { UserService } from 'app/core/auth/user.service';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'app-reset-password',
@@ -14,47 +13,46 @@ export class ResetPasswordComponent {
   verificationCode: string = '';
   password: string = '';
   confirmPassword: string = '';
-  
+
   codeSent: boolean = false;
   codeVerified: boolean = false;
 
-  constructor(private http: HttpClient,
-              private applicationService: ApplicationService,
-              private snackBar: MatSnackBar,
-              private router: Router) {}
+  constructor(
+    private userService: UserService,
+    private snackBar: MatSnackBar,
+  ) { }
 
   onEmailSubmit() {
-    this.applicationService.sendVerificationCode(this.email)
-      .subscribe(
-        (response: any) => {
-          console.log(response.message);
-          this.codeSent = true;
-        },
-        (error) => {
-          console.error('Erro ao enviar código:', error.error.message);
-          this.snackBar.open('Erro ao enviar o código de verificação', 'Close', {
-            duration: 3000,
-            panelClass: ['custom-snackbar']
-          });
-        }
-      );
+    this.userService.sendVerificationEmailCodeToEmail(this.email).pipe(take(1)).subscribe({
+      next(response: any) {
+        console.log(response.message);
+        this.codeSent = true;
+      },
+      error(error) {
+        console.error('Erro ao enviar código:', error.error.message);
+        this.snackBar.open('Erro ao enviar o código de verificação', 'Close', {
+          duration: 3000,
+          panelClass: ['custom-snackbar']
+        });
+      },
+    })
+
   }
 
   onCodeSubmit() {
-    this.applicationService.verifyCode(this.email, this.verificationCode)
-      .subscribe(
-        (response: any) => {
-          console.log(response.message);
-          this.codeVerified = true;
-        },
-        (error) => {
-          console.error('Erro ao verificar código:', error.error.message);
-          this.snackBar.open('Erro ao verificar o código', 'Close', {
-            duration: 3000,
-            panelClass: ['custom-snackbar']
-          });
-        }
-      );
+    this.userService.verifyCodeSentToEmail(this.email, this.verificationCode).pipe(take(1)).subscribe({
+      next(response: any) {
+        console.log(response.message);
+        this.codeVerified = true;
+      },
+      error(error) {
+        console.error('Erro ao verificar código:', error.error.message);
+        this.snackBar.open('Erro ao verificar o código', 'Close', {
+          duration: 3000,
+          panelClass: ['custom-snackbar']
+        });
+      },
+    });
   }
 
   onResetSubmit() {

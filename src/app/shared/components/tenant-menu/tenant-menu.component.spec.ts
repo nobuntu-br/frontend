@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ThreeDotMenuComponent } from './three-dot-menu.component';
+import { TenantMenuComponent } from './tenant-menu.component';
 
-describe('ThreeDotMenuComponent', () => {
-  let component: ThreeDotMenuComponent;
-  let fixture: ComponentFixture<ThreeDotMenuComponent>;
+describe('TenantMenuComponent', () => {
+  let component: TenantMenuComponent;
+  let fixture: ComponentFixture<TenantMenuComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ThreeDotMenuComponent ]
+      declarations: [ TenantMenuComponent ]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(ThreeDotMenuComponent);
+    fixture = TestBed.createComponent(TenantMenuComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
