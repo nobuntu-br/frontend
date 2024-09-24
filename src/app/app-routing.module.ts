@@ -2,76 +2,50 @@ import { Route } from '@angular/router';
 import { AuthGuard } from 'app/core/auth/guards/auth.guard'; 
 import { NoAuthGuard } from 'app/core/auth/guards/noAuth.guard'; 
 import { SideNavComponent } from './shared/components/side-nav/side-nav.component'; 
-import { CreateUserComponent } from './shared/components/create-user/create-user.component';
-import { ResetPasswordComponent } from './shared/components/reset-password/reset-password.component';
 import { EditProfileComponent } from './shared/components/edit-profile/edit-profile.component';
+import { ResetPasswordComponent } from './shared/components/reset-password/reset-password.component';
+import { CreateUserComponent } from './shared/components/create-user/create-user.component'; 
 import { SigninComponent } from './core/pages/signin/signin.component';
 
 
 export const appRoutes: Route[] = [ 
 
     // Redirect empty path to '/example' 
-    {path: '', pathMatch: 'full', component: SideNavComponent}, 
-    {path: 'createuser', pathMatch: 'full', component: CreateUserComponent},
-	{path: 'resetPassword', pathMatch: 'full', component: ResetPasswordComponent},
+    {path: 'signin', pathMatch: 'full', component: SigninComponent}, 
+
+    {path: 'createuser', pathMatch: 'full', component: CreateUserComponent}, 
+    {path: 'resetPassword', pathMatch: 'full', component: ResetPasswordComponent}, 
     // Auth routes for guests 
-    // { 
-    //     path: '', 
-    //     canMatch: [NoAuthGuard], 
-    //     component: SigninComponent, 
-    //     children: [ 
-    //         {path: 'signin', loadChildren: () => import('app/core/pages/signin/signin.module').then(m => m.SigninModule)}, 
-    //     ] 
-    // }, 
-	{ 
-		path: 'signin', 
-		loadChildren: () => import('app/core/pages/signin/signin.module').then(m => m.SigninModule) 
-	  },
+        {path: 'signin', loadChildren: () => import('app/core/pages/signin/signin.module').then(m => m.SigninModule)},
         {path: '404-not-found', loadChildren: () => import('app/core/pages/error/error-404/error-404.module').then(m => m.Error404Module)}, 
 
                     {path: '500', loadChildren: () => import('app/core/pages/error/error-500/error-500.module').then(m => m.Error500Module)}, 
-            {path: 'callback', loadChildren: () => import('app/core/pages/callback/callback.module').then(m => m.CallbackModule)}, 
-			// {path: 'callback/:user',loadChildren: () => import('app/core/pages/callback/callback.module').then(m => m.CallbackModule)},
-			// {path: 'silent-renew',loadChildren: () => import('app/core/pages/silent-renew/silent-renew.module').then(m => m.SilentRenewModule)},  
 
-	
-	// Admin routes 
+    // Admin routes 
     { 
         path: '', 
         canMatch: [AuthGuard], 
         component: SideNavComponent, 
         children: [ 
-	{ path: 'customers', loadChildren: () => import('./modules/customers/customers.module' ).then(m => m.CustomersModule) },
-	{ path: 'employees ', loadChildren: () => import('./modules/employees/employees.module' ).then(m => m.EmployeesModule) },
-	{ path: 'inventoryTransactionTypes  ', loadChildren: () => import('./modules/inventory-transaction-types/inventory-transaction-types.module' ).then(m => m.InventoryTransactionTypesModule) },
-	{ path: 'inventoryTransaction', loadChildren: () => import('./modules/inventory-transactions/inventory-transactions.module' ).then(m => m.InventoryTransactionsModule) },
-	{ path: 'invoices', loadChildren: () => import('./modules/invoices/invoices.module' ).then(m => m.InvoicesModule) },
-	{ path: 'orderDetails', loadChildren: () => import('./modules/order-details/order-details.module' ).then(m => m.OrderDetailsModule) },
-	{ path: 'orderDetailsStatus', loadChildren: () => import('./modules/order-details-status/order-details-status.module' ).then(m => m.OrderDetailsStatusModule) },
-	{ path: 'orders', loadChildren: () => import('./modules/orders/orders.module' ).then(m => m.OrdersModule) },
-	{ path: 'ordersStatus', loadChildren: () => import('./modules/orders-status/orders-status.module' ).then(m => m.OrdersStatusModule) },
-	{ path: 'ordersTaxStatus', loadChildren: () => import('./modules/orders-tax-status/orders-tax-status.module' ).then(m => m.OrdersTaxStatusModule) },
-	{ path: 'salesReports', loadChildren: () => import('./modules/sales-reports/sales-reports.module' ).then(m => m.SalesReportsModule) },
-	{ path: 'shippers', loadChildren: () => import('./modules/shippers/shippers.module' ).then(m => m.ShippersModule) },
-	{ path: 'products', loadChildren: () => import('./modules/products/products.module' ).then(m => m.ProductsModule) },
-	{ path: 'purchaseOrderDetails', loadChildren: () => import('./modules/purchase-order-details/purchase-order-details.module' ).then(m => m.PurchaseOrderDetailsModule) },
-	{ path: 'purchaseOrderStatus', loadChildren: () => import('./modules/purchase-order-status/purchase-order-status.module' ).then(m => m.PurchaseOrderStatusModule) },
-	{ path: 'purchaseOrders', loadChildren: () => import('./modules/purchase-orders/purchase-orders.module' ).then(m => m.PurchaseOrdersModule) },
-	{ path: 'suppliers', loadChildren: () => import('./modules/suppliers/suppliers.module' ).then(m => m.SuppliersModule) },
-	{ path: 'strings', loadChildren: () => import('./modules/strings/strings.module' ).then(m => m.StringsModule) },
-	{ path: 'company', loadChildren: () => import('./modules/company/company.module' ).then(m => m.CompanyModule) },
-	{ path: 'application', loadChildren: () => import('./modules/application/application.module' ).then(m => m.ApplicationModule) },
-	{ path: 'companyApplicationToken', loadChildren: () => import('./modules/company-application-token/company-application-token.module' ).then(m => m.CompanyApplicationTokenModule) },
-	{ path: 'devices', loadChildren: () => import('./modules/devices/devices.module' ).then(m => m.DevicesModule) },
-	{ path: 'session', loadChildren: () => import('./modules/session/session.module' ).then(m => m.SessionModule) },
-	{ path: 'users', loadChildren: () => import('./modules/users/users.module' ).then(m => m.UsersModule) },
-	{ path: 'roles', loadChildren: () => import('./modules/roles/roles.module' ).then(m => m.RolesModule) },
-	{ path: 'functionssystem', loadChildren: () => import('./modules/functions-system/functions-system.module' ).then(m => m.FunctionsSystemModule) },
-	{ path: 'functionssystemroles', loadChildren: () => import('./modules/functions-system-roles/functions-system-roles.module' ).then(m => m.FunctionsSystemRolesModule) },
-	{path: 'tenant', loadChildren: () => import('app/core/tenant/tenant.module').then(m => m.TenantModule)},
-	{path: 'editProfile', pathMatch: 'full', component: EditProfileComponent},		
-          {path: '**', redirectTo: '/404-not-found'}, 
+	{ path: 'empreendimentos', loadChildren: () => import('./modules/empreendimento/empreendimento.module' ).then(m => m.EmpreendimentoModule) },
+	{ path: 'estabelecimentos', loadChildren: () => import('./modules/estabelecimento/estabelecimento.module' ).then(m => m.EstabelecimentoModule) },
+	{ path: 'areas-de-negocio', loadChildren: () => import('./modules/area-de-negocio/area-de-negocio.module' ).then(m => m.AreaDeNegocioModule) },
+	{ path: 'plano-de-contas', loadChildren: () => import('./modules/plano-de-contas/plano-de-contas.module' ).then(m => m.PlanoDeContasModule) },
+	{ path: 'centros-de-custos', loadChildren: () => import('./modules/centro-de-custo/centro-de-custo.module' ).then(m => m.CentroDeCustoModule) },
+	{ path: 'projetos', loadChildren: () => import('./modules/projeto/projeto.module' ).then(m => m.ProjetoModule) },
+	{ path: 'historicos-padrao', loadChildren: () => import('./modules/historico-padrao/historico-padrao.module' ).then(m => m.HistoricoPadraoModule) },
+	{ path: 'planilha-de-orcamento', loadChildren: () => import('./modules/planilha-do-orcamento/planilha-do-orcamento.module' ).then(m => m.PlanilhaDoOrcamentoModule) },
+	{ path: 'estrutura-orcamento', loadChildren: () => import('./modules/estrutura-do-orcamento/estrutura-do-orcamento.module' ).then(m => m.EstruturaDoOrcamentoModule) },
+	{ path: 'funcoes-de-previsao', loadChildren: () => import('./modules/funcao-de-previsao/funcao-de-previsao.module' ).then(m => m.FuncaoDePrevisaoModule) },
+	{ path: 'indicadores', loadChildren: () => import('./modules/indicador/indicador.module' ).then(m => m.IndicadorModule) },
+	{ path: 'registros-de-indicadores', loadChildren: () => import('./modules/registro-de-indicador/registro-de-indicador.module' ).then(m => m.RegistroDeIndicadorModule) },
+	{ path: 'lancamentos-contabeis', loadChildren: () => import('./modules/lancamento-contabil/lancamento-contabil.module' ).then(m => m.LancamentoContabilModule) },
+	{ path: 'partida-do-lancamento', loadChildren: () => import('./modules/partida-do-lancamento/partida-do-lancamento.module' ).then(m => m.PartidaDoLancamentoModule) },
+	{ path: 'usuarios-do-estabelecimento', loadChildren: () => import('./modules/usuario-do-estabelecimento/usuario-do-estabelecimento.module' ).then(m => m.UsuarioDoEstabelecimentoModule) },
+	{ path: 'tabela-moedas', loadChildren: () => import('./modules/tabela-moeda/tabela-moeda.module' ).then(m => m.TabelaMoedaModule) },
+	{ path: 'cotacao-moeda', loadChildren: () => import('./modules/cotacao-moeda/cotacao-moeda.module' ).then(m => m.CotacaoMoedaModule) },
+          {path: 'editProfile', pathMatch: 'full', component: EditProfileComponent},  
+        //   {path: '**', redirectTo: '/404-not-found'}, 
         ] 
     }, 
-
 ]; 
