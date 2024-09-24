@@ -146,7 +146,7 @@ export class SubformComponent implements AfterViewInit {
    * Função que irá instanciar os components Card na tela, com os dados dos itens.
    * @param itemsDisplayed Array com os itens que serão apresentados. @example [{"name":"Marie", "age":22}, {"name":"Josef", "age":32}]
    */
-  createItemsOnList(itemsDisplayed: any[]) {
+  createItemsOnList(itemsDisplayed: any[], itemDisplayedOnSubFormType: string[], objectDisplayedValue: string[], attributesOnSubForm: any[] = []) {
     this.componentsCreatedList = [];
     this.target.clear();
 
@@ -159,12 +159,14 @@ export class SubformComponent implements AfterViewInit {
 
       componentCreated.columnsQuantity = this.columnsQuantity;
       componentCreated.userConfig = this.userConfig;
-      componentCreated.itemDisplayed = itemsDisplayed[index];
+      componentCreated.itemDisplayed = this.objectTratament(itemsDisplayed[index]);
 
       componentCreated.displayedfieldsName = this.displayedfieldsName;
-
-      componentCreated.fieldsType = this.fieldsType;
-      componentCreated.objectDisplayedValue = this.objectDisplayedValue;
+      componentCreated.fieldsType = itemDisplayedOnSubFormType;
+      componentCreated.objectDisplayedValue = objectDisplayedValue;
+      componentCreated.attributes = attributesOnSubForm;
+      componentCreated.classFather = this.className;
+      componentCreated.isSubForm = true;
 
       componentCreated.className = this.className;
 
@@ -232,7 +234,7 @@ export class SubformComponent implements AfterViewInit {
           itemToEdit: item,
           deleteFormFunction: (item: any) => {
             this.itemsDisplayed = this.itemsDisplayed.filter((element) => element.id != item.id);
-            this.createItemsOnList(this.itemsDisplayed);
+            // this.createItemsOnList(this.itemsDisplayed);
           },
           returnFormFunction: () => {
             dialogRef.close();
@@ -260,46 +262,24 @@ export class SubformComponent implements AfterViewInit {
 
   submitEditForm(JSONDictionary: IPageStructure, item: any, itemEdited: any) {
     if (itemEdited == null) return;
-    if(this.isOnline){
-      this.editSubFormOnline(JSONDictionary, item, itemEdited);
-    }
-    if(!this.isOnline){
-      this.editSubFormOffline(JSONDictionary, item, itemEdited);
-    }
+    this.editSubFormOffline(JSONDictionary, item, itemEdited);
   }
 
-
-  editSubFormOnline(JSONDictionary: IPageStructure, item: any, itemEdited: any) {
-    let reqPath = environment.backendUrl + '/' + JSONDictionary.config.apiUrl + '/' + item.id;
-    let body = { ...item, ...itemEdited };
-    body.id = item.id;
-    this.http.put(reqPath, body).pipe(takeUntil(this.ngUnsubscribe)).subscribe((data: any) => {
-      this.itemsDisplayed = this.itemsDisplayed.map((element) => {
-        if (element.id === item.id) {
-          return { ...element, ...itemEdited };
-        }
-        return element;
-      });
-      this.createItemsOnList(this.itemsDisplayed);
-      this.inputValue.setValue(this.itemsDisplayed);
-      this.matDialog.closeAll();
-    }, (error) => {
-      alert("Erro ao realizar operação");
-    });
-  }
-
+  //TODO: Selector buga se nao selecionar ao editar
   editSubFormOffline(JSONDictionary: IPageStructure, item: any, itemEdited: any) {
     this.itemsDisplayed = this.itemsDisplayed.map((element) => {
-      if (element.id === item.id) {
+      if (element === item) {
         return { ...element, ...itemEdited };
       }
       return element;
     });
-    this.createItemsOnList(this.itemsDisplayed);
+    // this.createItemsOnList(this.itemsDisplayed);
     let valueToInput = {apiUrl: JSONDictionary.config.apiUrl, item: item};
 
     const currentValue = this.inputValue.value || [];
     this.inputValue.setValue([...currentValue, valueToInput]);
+    let { itemDisplayedOnSubFormType, objectDisplayedValueOnSubForm, attributesOnSubForm } = this.getAttributesToSubForm(JSONDictionary);
+    this.createItemsOnList(this.itemsDisplayed, itemDisplayedOnSubFormType, objectDisplayedValueOnSubForm, attributesOnSubForm);
     this.matDialog.closeAll();
   }
   
@@ -315,8 +295,8 @@ export class SubformComponent implements AfterViewInit {
     this.formGeneratorService.getJSONFromDicionario(jsonPath).pipe(takeUntil(this.ngUnsubscribe)).subscribe((JSONDictionary: any) => {
 
       const dialogRef = this.matDialog.open(FormSpaceBuildComponent, {
-        width: '100vh',
-        height: '100vh',
+        // width: '100vh',
+        // height: '100vh',
         data: {
           dataToCreatePage: JSONDictionary,
           currentFormAction: 'new',
@@ -324,7 +304,7 @@ export class SubformComponent implements AfterViewInit {
           formBuilder: this.resourceForm,
           deleteFormFunction: (item: any) => {
             this.itemsDisplayed = this.itemsDisplayed.filter((element) => element.id != item.id);
-            this.createItemsOnList(this.itemsDisplayed);
+            // this.createItemsOnList(this.itemsDisplayed);
             this.inputValue.setValue(this.itemsDisplayed);
           },
           returnFormFunction: () => {
@@ -337,28 +317,9 @@ export class SubformComponent implements AfterViewInit {
 
   submitForm(JSONDictionary: IPageStructure, item: any) {
     if (item == null) return;
-    if(this.isOnline){
-      this.createSubFormOnline(JSONDictionary, item);
-    } 
-    if(!this.isOnline){
-      this.createSubFormOffline(JSONDictionary, item);
-    }
+    this.createSubFormOffline(JSONDictionary, item);
   }
     
-
-  createSubFormOnline(JSONDictionary: IPageStructure, item: any) {
-    let reqPath = environment.backendUrl + '/' + JSONDictionary.config.apiUrl;
-    item = this.objectTratament(item);
-      this.http.post(reqPath, item).pipe(takeUntil(this.ngUnsubscribe)).subscribe((data: any) => {
-        this.itemsDisplayed.push(data);
-        this.createItemsOnList(this.itemsDisplayed);
-        this.inputValue.setValue(this.itemsDisplayed);
-        this.matDialog.closeAll();
-      }, (error) => {
-        alert("Erro ao realizar operação");
-      });
-    }
-
   /**
    * Realizar uma alteração nos dados do formulário, removendo objetos e substituindo somente pelos IDs
    * @param item Formulário
@@ -381,8 +342,9 @@ export class SubformComponent implements AfterViewInit {
 
   createSubFormOffline(JSONDictionary: IPageStructure, item: any) {
     this.itemsDisplayed.push(item);
-    this.createItemsOnList(this.itemsDisplayed);
-    let valueToInput = {apiUrl: JSONDictionary.config.apiUrl, item: item};
+    let { itemDisplayedOnSubFormType, objectDisplayedValueOnSubForm, attributesOnSubForm } = this.getAttributesToSubForm(JSONDictionary);
+    this.createItemsOnList(this.itemsDisplayed, itemDisplayedOnSubFormType, objectDisplayedValueOnSubForm, attributesOnSubForm);
+    let valueToInput = {item: item, apiUrl: JSONDictionary.config.apiUrl, fatherName: this.getFatherReferenceName(JSONDictionary)};
 
     const currentValue = this.inputValue.value || [];
     this.inputValue.setValue([...currentValue, valueToInput]);
@@ -399,31 +361,30 @@ export class SubformComponent implements AfterViewInit {
       let jsonPath = environment.jsonPath + nameClass + ".json";
 
       this.formGeneratorService.getJSONFromDicionario(jsonPath).pipe(takeUntil(this.ngUnsubscribe)).subscribe((JSONDictionary: IPageStructure) => {
-        if(this.isOnline){
-          this.deleteSubFormOnline(JSONDictionary, item);
-        }
-        if(!this.isOnline){
           this.deleteSubFormOffline(JSONDictionary, item);
-        }
       });
     });
   }
 
-  deleteSubFormOnline(JSONDictionary: IPageStructure, item: any) {
-    let reqPath = environment.backendUrl + '/' + JSONDictionary.config.apiUrl + '/' + item.id;
-    this.http.delete(reqPath).pipe(takeUntil(this.ngUnsubscribe)).subscribe((data: any) => {
-      this.itemsDisplayed = this.itemsDisplayed.filter((element) => element.id != item.id);
-      this.createItemsOnList(this.itemsDisplayed);
-      this.selectedItems = [];
-    });
+  deleteSubFormOffline(JSONDictionary: IPageStructure, item: any) {
+    //TODO: Pode dar erro se tiverem dois itens iguais
+    this.itemsDisplayed = this.itemsDisplayed.filter((element) => element != item);
+    let { itemDisplayedOnSubFormType, objectDisplayedValueOnSubForm, attributesOnSubForm } = this.getAttributesToSubForm(JSONDictionary);
+    this.createItemsOnList(this.itemsDisplayed, itemDisplayedOnSubFormType, objectDisplayedValueOnSubForm, attributesOnSubForm);
   }
 
-  deleteSubFormOffline(JSONDictionary: IPageStructure, item: any) {
-    this.itemsDisplayed = this.itemsDisplayed.filter((element) => element.id != item.id);
-    this.createItemsOnList(this.itemsDisplayed);
-    let itemName = JSONDictionary.config.name;
-    this.selectedItems = [];
-    localStorage.setItem('sub-delete-' + itemName, JSON.stringify(item));
+  private getAttributesToSubForm(JSONDictionary: IPageStructure) {
+    let itemDisplayedOnSubFormType = [];
+    let objectDisplayedValueOnSubForm = [];
+    let attributesOnSubForm = [];
+    
+    JSONDictionary.attributes.forEach((element) => {
+      itemDisplayedOnSubFormType.push(element.type);
+      objectDisplayedValueOnSubForm.push(element.fieldDisplayedInLabel);
+      attributesOnSubForm.push(element);
+    });
+
+    return { itemDisplayedOnSubFormType, objectDisplayedValueOnSubForm, attributesOnSubForm };
   }
 
   
@@ -432,13 +393,20 @@ export class SubformComponent implements AfterViewInit {
       this.currentAction = "new"
     else{
       this.currentAction = "edit";
-      this.inputValue.valueChanges.pipe(takeUntil(this.ngUnsubscribe)).subscribe((data) => {
-        this.itemsDisplayed = data;
-        this.createItemsOnList(this.itemsDisplayed);
-        this.eventSelectedValues.emit(data);
-      });
+      this.displayDataOnEdit();
     }
   }
+
+  private displayDataOnEdit() {
+    this.inputValue.valueChanges.pipe(takeUntil(this.ngUnsubscribe)).subscribe((data) => {
+      this.itemsDisplayed = data;
+      console.log("SUBFORM >", data);
+      const { itemDisplayedOnSubFormType, objectDisplayedValueOnSubForm, attributesOnSubForm } = this.getAttributesToSubForm(this.dataToCreatePage);
+      this.createItemsOnList(this.itemsDisplayed, itemDisplayedOnSubFormType, objectDisplayedValueOnSubForm, attributesOnSubForm);
+      this.eventSelectedValues.emit(data);
+    });
+  }
+
 
   private setCurrentConnection() {
     this.isOnline = this.onlineOfflineService.isOnline;
@@ -446,5 +414,13 @@ export class SubformComponent implements AfterViewInit {
     this.onlineOfflineService.onlineStatus$.subscribe((status: boolean) => {
       this.isOnline = status;
     });
+  }
+
+  private getFatherReferenceName(JSONDictionary: IPageStructure) {
+    for(let attribute of JSONDictionary.attributes){
+      if(attribute.className == this.className){
+        return attribute.name;
+      }
+    }
   }
 }

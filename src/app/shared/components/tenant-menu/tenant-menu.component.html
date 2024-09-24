@@ -1,0 +1,14 @@
+<div>
+  <button mat-icon-button [matMenuTriggerFor]="menu">
+      <mat-icon>account_tree</mat-icon>
+  </button>
+  <mat-menu #menu="matMenu">
+      <button mat-menu-item (click)="createTenant()" class="btn-add-tenant">Adicionar</button>
+      <ng-container *ngFor="let tenant of tenants">
+          <button mat-menu-item (click)="changeTenant(tenant.id)"
+          [disabled]="tenantEnable.id === tenant.id"
+          class="btn-tenant"
+          >{{tenant.name}}</button>
+      </ng-container>
+  </mat-menu>
+</div>

@@ -47,8 +47,8 @@ export interface IPageStructureAttribute {
   properties: IPageStructureAttributesProperties[];
   visibleForm: boolean;
   formTab: string;
-  optionList?: any;
   selectItemsLimit?: number;
+  optionList?: any[];
   step?: string;
 }
 

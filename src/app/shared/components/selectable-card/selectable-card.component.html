@@ -5,9 +5,13 @@
 
         <mat-checkbox  [checked]="isSelected" (change)="selectItem($event)" *ngIf="isSelectable == true && isCheckBox == true"></mat-checkbox>
 
-        <div id="cardData" [ngStyle]="customStyle">
-            <ng-container #placeToRender></ng-container>
-        </div>
+        <div [ngClass]="viewMode">
+            <div id="cardData" class="card-item" [ngStyle]="customStyle">
+              <ng-container #placeToRender></ng-container>
+            </div>
+          </div>
+          
+          
         
         <button mat-icon-button matSuffix  *ngIf="isEditable == true" (click)="onClickToEdit()" class="h-full flex flex-col">
             <mat-icon svgIcon="create"></mat-icon>
