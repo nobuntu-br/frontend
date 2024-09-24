@@ -112,7 +112,7 @@ export abstract class BaseResourceService<T extends BaseResourceModel> {
    * @returns retorna uma instância da classe T
    */
   protected jsonDataToResource(jsonData: any): T {
-    // console.log("jsonDataToResource => ", jsonData);
+    console.log("jsonDataToResource => ", jsonData);
     return this.jsonDataToResourceFn(jsonData);
   }
 

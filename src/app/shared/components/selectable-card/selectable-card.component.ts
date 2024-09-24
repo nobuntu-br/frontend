@@ -111,14 +111,14 @@ viewMode: any;
       }
       case 'selector': {
         //TODO: Implementar o selector field
-        // console.log("OptionList", this.attributes[index].optionList);
-        // componentCreated = this.target.createComponent(SelectorFieldComponent).instance;
-        // componentCreated.valuesList = this.attributes[index].optionList;
-        // componentCreated.value = value;
-        // break;
-        componentCreated = this.target.createComponent(FieldComponent).instance;
+        console.log("OptionList", this.attributes[index].optionList);
+        componentCreated = this.target.createComponent(SelectorFieldComponent).instance;
+        componentCreated.valuesList = this.attributes[index].optionList;
         componentCreated.value = value;
         break;
+        // componentCreated = this.target.createComponent(FieldComponent).instance;
+        // componentCreated.value = value;
+        // break;
       }
       default: {
         componentCreated = this.target.createComponent(FieldComponent).instance;

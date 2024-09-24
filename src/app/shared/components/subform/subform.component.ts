@@ -393,13 +393,20 @@ export class SubformComponent implements AfterViewInit {
       this.currentAction = "new"
     else{
       this.currentAction = "edit";
-      this.inputValue.valueChanges.pipe(takeUntil(this.ngUnsubscribe)).subscribe((data) => {
-        this.itemsDisplayed = data;
-        // this.createItemsOnList(this.itemsDisplayed);
-        this.eventSelectedValues.emit(data);
-      });
+      this.displayDataOnEdit();
     }
   }
+
+  private displayDataOnEdit() {
+    this.inputValue.valueChanges.pipe(takeUntil(this.ngUnsubscribe)).subscribe((data) => {
+      this.itemsDisplayed = data;
+      console.log("SUBFORM >", data);
+      const { itemDisplayedOnSubFormType, objectDisplayedValueOnSubForm, attributesOnSubForm } = this.getAttributesToSubForm(this.dataToCreatePage);
+      this.createItemsOnList(this.itemsDisplayed, itemDisplayedOnSubFormType, objectDisplayedValueOnSubForm, attributesOnSubForm);
+      this.eventSelectedValues.emit(data);
+    });
+  }
+
 
   private setCurrentConnection() {
     this.isOnline = this.onlineOfflineService.isOnline;
