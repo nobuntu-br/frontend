@@ -49,7 +49,7 @@ export class UserSideNavComponent implements OnInit {
   }
   async logoutAllUsers() {
     await this.authService.logoutAllAccounts();
-    this.router.navigate(['/']); // Redirecionar para a página inicial
+    this.router.navigate(['/signin']); // Redirecionar para a página inicial
   }
   openUserInNewTab(userId: string) {
     const url = `${window.location.origin}/?userId=${userId}`;
