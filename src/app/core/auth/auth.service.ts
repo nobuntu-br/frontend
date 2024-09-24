@@ -110,13 +110,16 @@ export class AuthService {
    * @param userUID UID do usuário
    */
   switchUser(userUID: string): IUser | null {
-    const users : IUser[] = this.userService.getUsersFromLocalstorage();
+    const users: IUser[] = this.userService.getUsersFromLocalstorage();
     this.currentUser = users.find(user => user.UID === userUID) || null;
-    
+  
     if (this.currentUser == null) {
       return null;
     }
-
+  
+    // Armazena o currentUser no localStorage
+    localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
+ 
     return this.currentUser;
   }
 

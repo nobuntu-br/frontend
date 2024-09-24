@@ -3,8 +3,11 @@
     margin-bottom: 5px;
   }
   
-  .current-user {
-    background-color: yellow; /* Ou qualquer cor que você deseja para destaque */
-    font-weight: bold;
-  }
-  
+.current-user {
+  border-left: 4px solid #1976d2; /* Borda azul na lateral esquerda */
+  background-color: #f0f0f0;     /* Cor de fundo para destaque */
+}
+
+mat-menu-item {
+  white-space: normal; /* Evita que os nomes sejam cortados */
+}

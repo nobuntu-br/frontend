@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from 'app/core/auth/auth.service';
-import { User } from 'oidc-client-ts';
+import { IUser } from 'app/core/auth/user.model';
 
 @Component({
   selector: 'app-user-side-nav',
@@ -12,20 +12,21 @@ export class UserSideNavComponent implements OnInit {
 
   isLoggedIn: boolean = false;
   userName: string = ''; // Inicial padrão do usuário
-  users: User[] = [];
-  currentUser: User;
+  users: IUser[] = [];
+  currentUser: IUser;
 
   constructor(private authService: AuthService, private router: Router) { }
 
   ngOnInit(): void {
     this.checkUser();
-    const user = this.authService.currentUser;
-    if (user) {
+    this.currentUser = JSON.parse(localStorage.getItem('currentUser') || '[]');
+
+    if (this.currentUser) {
       // this.userName = user.profile.given_name;
-      this.userName = user.firstName;
+      this.userName = this.currentUser.firstName;
       // this.currentUser = user;
     }
-    // this.users = this.authService.getUsers();
+    this.users = JSON.parse(localStorage.getItem('users') || '[]');
   }
 
   checkUser() {
@@ -61,7 +62,7 @@ export class UserSideNavComponent implements OnInit {
   createUser(): void {
     this.router.navigate(['createuser'])
   }
-  isCurrentUser(user: any): boolean {
-    return this.currentUser && user.profile.email === this.currentUser.profile.email;
+  isCurrentUser(user: IUser): boolean {
+    return this.currentUser && user.email === this.currentUser.email;
   }
 }
