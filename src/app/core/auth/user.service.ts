@@ -45,7 +45,7 @@ export class UserService extends BaseResourceService<User> {
     console.log(userExists)
     if (!userExists) {
       // Armazena o currentUser no localStorage
-      localStorage.setItem(this.currentUserLocalStorageKey, JSON.stringify(currentUser));
+      localStorage.setItem(this.currentUserLocalStorageKey, JSON.stringify(user));
       console.log('Usuário adicionado a CurrentUser.');
     } else {
       localStorage.setItem(this.currentUserLocalStorageKey, JSON.stringify(user));

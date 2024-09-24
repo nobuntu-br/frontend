@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { AuthService } from 'app/core/auth/auth.service';
 import { UserService } from 'app/core/auth/user.service';
@@ -37,6 +38,7 @@ export class SigninComponent implements OnInit {
     private router: Router,
     private userService: UserService,
     private _formBuilder: FormBuilder,
+    private snackBar: MatSnackBar,
   ) {
   }
 
@@ -79,10 +81,16 @@ export class SigninComponent implements OnInit {
     try {
       this.isLoading = true;
       await this.authService.loginCredential(this.signInUserFormGroup.value.email,this.signInUserFormGroup.value.password, this.signInUserFormGroup.value.email);
+      this.snackBar.open('Login bem-sucedido.', 'Fechar', {
+        duration: 3000,
+      });
     } catch (error) {
       this.isLoading = false;
-      console.error('Erro ao realizar login:', error);
+      this.snackBar.open('Login ou senha incorretos.', 'Fechar', {
+        duration: 3000,
+      });
       this.pageState = SignInPageState.Error;
+      console.error('Login ou senha incorretos', error);  
     } finally {
       this.router.navigate(['/']);
     }
