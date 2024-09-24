@@ -11,7 +11,6 @@ import { User } from 'oidc-client-ts';
 export class UserSideNavComponent implements OnInit {
 
   isLoggedIn: boolean = false;
-//   selectedUser: User | null = null;
   userName: string = ''; // Inicial padrão do usuário
   users: User[] = [];
   currentUser: User;
@@ -20,20 +19,19 @@ export class UserSideNavComponent implements OnInit {
 
   ngOnInit(): void {
     this.checkUser();
-    const user = this.authService.getUser();
+    const user = this.authService.currentUser;
     if (user) {
-      this.userName = user.profile.given_name
-      this.currentUser = user;
+      // this.userName = user.profile.given_name;
+      this.userName = user.firstName;
+      // this.currentUser = user;
     }
-    this.users = this.authService.getUsers();
+    // this.users = this.authService.getUsers();
   }
 
   checkUser() {
     this.authService.check().subscribe((res) => {
       if (res) {
         this.isLoggedIn = true;
-//         this.users = this.authService.getUsers();
-//         this.selectedUser = this.authService.getUser();
       }
     });
   }
@@ -50,17 +48,17 @@ export class UserSideNavComponent implements OnInit {
     this.router.navigate(['signin']);
   }
   async logoutAllUsers() {
-    await this.authService.logoutAll();
+    await this.authService.logoutAllAccounts();
     this.router.navigate(['/']); // Redirecionar para a página inicial
-}
-openUserInNewTab(userId: string) {
-  const url = `${window.location.origin}/?userId=${userId}`;
-  window.open(url, '_blank');
-}
+  }
+  openUserInNewTab(userId: string) {
+    const url = `${window.location.origin}/?userId=${userId}`;
+    window.open(url, '_blank');
+  }
   configurarUsuario(): void {
     this.router.navigate(['editProfile']);
   }
-  createUser(): void{
+  createUser(): void {
     this.router.navigate(['createuser'])
   }
   isCurrentUser(user: any): boolean {

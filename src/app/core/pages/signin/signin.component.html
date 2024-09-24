@@ -1,40 +1,38 @@
 <div class="container">
   <div class="panel">
-    <h2>{{ step === 1 ? 'Entre com seu Email' : 'Digite sua Senha' }}</h2>
-
     <!-- Formulário para inserção do email -->
-    <form *ngIf="step === 1" (ngSubmit)="onEmailSubmit()">
+    <form *ngIf="pageState == signInPageStates.EmailVerification" [formGroup]="signInUserFormGroup" (ngSubmit)="onEmailSubmit()">
+      <h2>Entre com seu Email</h2>
       <label for="email">Email</label>
-      <input type="email" id="email" [(ngModel)]="email" name="email" placeholder="Seu email" required>
-      <button type="submit">Next</button>
+      <input type="email" id="email" formControlName="email" name="email" placeholder="Seu email" required>
+      <button *ngIf="isLoading == false" type="submit">Next</button>
     </form>
 
-    <div *ngIf="step === 1" class="create-account">
-      <p>Não tem uma conta? <a (click)="createUser()">Crie uma agora</a></p>
-    </div>
-
     <!-- Formulário para inserção da senha -->
-    <form *ngIf="step === 2" (ngSubmit)="login()">
+    <form *ngIf="pageState == signInPageStates.PasswordVerification" [formGroup]="signInUserFormGroup" (ngSubmit)="login()">
+      <h2>Digite sua senha</h2>
       <label for="password">Senha</label>
-      <input type="password" id="password" [(ngModel)]="password" name="password" placeholder="Sua senha" required>
+      <input type="password" id="password" formControlName="password" name="password" placeholder="Sua senha" required>
 
-      <div class="forgot-password">
+      <div class="forgot-password" *ngIf="isLoading == false">
         <a (click)="resetPassword()">Esqueceu a senha?</a>
       </div>
 
-      <button type="submit">Entrar</button>
+      <button *ngIf="isLoading == false" type="submit">Entrar</button>
     </form>
 
     <!-- Mensagem para criar conta se o email não existir -->
-    <div *ngIf="step === 3">
+    <div *ngIf="pageState == signInPageStates.CreatingAccount">
       <p>Email não encontrado. Deseja criar uma conta?</p>
       <button (click)="createUser()">Criar Conta</button>
       <button class="back-button" (click)="goBackToLogin()">Voltar para Login</button>
     </div>
 
     <!-- Mostrar erro se estiver na página de erro -->
-    <div *ngIf="pageState === SignInPageState.Error">
+    <div *ngIf="pageState === signInPageStates.Error">
       <p>Ocorreu um erro. Tente novamente mais tarde.</p>
     </div>
+
+    <mat-spinner style="margin: auto;" *ngIf="isLoading == true"></mat-spinner>
   </div>
 </div>

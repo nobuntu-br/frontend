@@ -48,6 +48,7 @@ import { InputImageFieldComponent } from './components/input-image-field/input-i
 import { DefaultListComponent } from './components/default-list/default-list.component';
 import { DefaultCardComponent } from './components/default-card/default-card.component';
 import { GeneratedSimpleFormComponent } from './components/generated-simple-form/generated-simple-form.component';
+import { GeneratedStepperFormComponent } from './components/generated-stepper-form/generated-stepper-form.component';
 import { SelectedItemsListComponent } from './components/selected-items-list/selected-items-list.component';
 import { SearchInputFieldComponent } from './components/search-input-field/search-input-field.component';
 import { DefaultTableComponent } from './components/default-table/default-table.component';
@@ -57,17 +58,17 @@ import { LanguagesComponent } from './components/languages/languages.component';
 import { SubformComponent } from './components/subform/subform.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { ThreeDotMenuComponent } from './components/three-dot-menu/three-dot-menu.component';
 import { ListAppsComponent } from './components/list-apps/list-apps.component';
+import { UserMenuComponent } from './components/user-menu/user-menu.component';
 import { ConfirmChangeAppComponent } from './components/list-apps/confirm-change-app/confirm-change-app.component';
 import { UserSideNavComponent } from './components/user-side-nav/user-side-nav.component';
 import { FormSpaceBuildComponent } from './components/form-space-build/form-space-build.component';
 import { CreateUserComponent } from './components/create-user/create-user.component';
-import { SelectorFieldComponent } from './components/selector-field/selector-field.component';
+import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 import { EditProfileComponent } from './components/edit-profile/edit-profile.component';
 import { CheckboxFieldComponent } from './components/checkbox-field/checkbox-field.component';
-import { CardListComponent } from './components/card-list/card-list.component';
 import { ViewToggleComponent } from './components/view-toggle/view-toggle.component';
+import { SelectorFieldComponent } from './components/selector-field/selector-field.component';
 
 @NgModule({
     imports: [
@@ -124,6 +125,7 @@ import { ViewToggleComponent } from './components/view-toggle/view-toggle.compon
         MatButtonModule,
         GeneratedSimpleFormComponent,
         DefaultListComponent,
+        GeneratedStepperFormComponent,
         TranslocoModule,
         DinamicBaseResourceFormComponent,
         LanguagesComponent,
@@ -147,6 +149,7 @@ import { ViewToggleComponent } from './components/view-toggle/view-toggle.compon
         DefaultListComponent,
         DefaultCardComponent,
         GeneratedSimpleFormComponent,
+        GeneratedStepperFormComponent,
         SelectedItemsListComponent,
         SearchInputFieldComponent,
         DefaultTableComponent,
@@ -156,18 +159,18 @@ import { ViewToggleComponent } from './components/view-toggle/view-toggle.compon
         LayoutTestComponent,
         LanguagesComponent,
         SubformComponent,
-        ThreeDotMenuComponent,
         ListAppsComponent,
+        UserMenuComponent,
         ConfirmChangeAppComponent,
         UserSideNavComponent,
         FormSpaceBuildComponent,
         CreateUserComponent,
-        SelectorFieldComponent,
+        ResetPasswordComponent,
         EditProfileComponent,
         CheckboxFieldComponent,
         EditProfileComponent,
-        CardListComponent,
-        ViewToggleComponent
+        ViewToggleComponent,
+        SelectorFieldComponent,
     ],
 })
 export class SharedModule { }

@@ -1,10 +1,14 @@
+import { HttpClient } from '@angular/common/http';
 import { OnInit, AfterContentChecked, Injector, Directive, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
 import { TranslocoService } from '@ngneat/transloco';
+import { Estabelecimento } from 'app/modules/estabelecimento/shared/estabelecimento.model';
+import { EstabelecimentoService } from 'app/modules/estabelecimento/shared/estabelecimento.service';
 import { BaseResourceModel } from 'app/shared/models/base-resource.model';
 import { LocalStorageFormService } from 'app/shared/services/local-storage-form.service';
 import { BaseResourceService } from 'app/shared/services/shared.service';
+import { environment } from 'environments/environment';
 import { Subject } from 'rxjs';
 import { switchMap, takeUntil } from "rxjs/operators";
 
@@ -46,6 +50,7 @@ export abstract class BaseResourceFormComponent<T extends BaseResourceModel> imp
   protected route: ActivatedRoute;
   protected router: Router;
   protected formBuilder: FormBuilder;
+  protected http: HttpClient;
   /**
    * Service que opera as funções de armazenamento de dados do formuário no local storage
    */
@@ -61,6 +66,7 @@ export abstract class BaseResourceFormComponent<T extends BaseResourceModel> imp
     this.route = this.injector.get(ActivatedRoute);
     this.router = this.injector.get(Router);
     this.formBuilder = this.injector.get(FormBuilder);
+    this.http = this.injector.get(HttpClient);
 
     this.localStorageFormService = this.injector.get(LocalStorageFormService);
     this.translocoService = this.injector.get(TranslocoService);
@@ -86,9 +92,62 @@ export abstract class BaseResourceFormComponent<T extends BaseResourceModel> imp
 
   submitForm() {
     this.submittingForm = true;
+    console.log("Formulário enviado: ", this.resourceForm.value);
+    if (this.currentAction == "new"){
+      //TODO: achar uma forma de encontrar o filho
+      this.submitFormWithChild();
+      // this.createResource();
+    }
+    else // currentAction == "edit"
+      this.updateResource();
+  }
 
-    if (this.currentAction == "new")
-      this.createResource();
+  /** 
+   * Envia os dados do formulário para a API e salva os dados dos filhos no banco de dados
+   * @param childrenData Dados dos filhos que serão salvos no banco de dados
+   */
+  submitFormWithChild() {
+    let childrenData = [];
+    this.submittingForm = true;
+    for(let field in this.resourceForm.value){
+      if(this.resourceForm.value[field] instanceof Array){
+        for(let i = 0; i < this.resourceForm.value[field].length; i++){
+          if(this.resourceForm.value[field][i].fatherName){
+            childrenData.push({item: this.resourceForm.value[field][i].item, apiUrl: this.resourceForm.value[field][i].apiUrl, fatherName: this.resourceForm.value[field][i].fatherName});
+          }
+        }
+      }
+    }
+    if (this.currentAction == "new"){
+      this.objectTratament(this.resourceForm.value);
+    
+      const resource: T = this.jsonDataToResourceFn(this.resourceForm.value);
+  
+      this.resourceService.create(resource).subscribe({
+        next: (response) => {
+          const className = (this.resource.constructor as any).name;
+          this.localStorageFormService.remove("new"+className);
+          if(childrenData.length == 0){
+            this.actionsForSuccess(response);
+            return;
+          }
+          //salvar os childrenData no banco de dados usando o id da entidade pai que foi salva antes
+          for(let i = 0; i < childrenData.length; i++){
+            childrenData[i].item[className] = response.id;
+            let url = environment.backendUrl + '/' + childrenData[i].apiUrl;
+            this.objectTratament(childrenData[i].item);
+            this.http.post(url, childrenData[i].item).subscribe({
+              next: (response) => {
+                console.log("Response: ", response);
+              },
+              error: (error) => console.log("Error: ", error)
+            });
+          }
+          this.actionsForSuccess(response);
+        },
+        error: (error) => this.actionsForError(error)
+      });
+    }
     else // currentAction == "edit"
       this.updateResource();
   }

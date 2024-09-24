@@ -47,6 +47,7 @@ export class SelectorFieldComponent extends BaseFieldComponent implements OnInit
   }
 
   ngOnInit(): void {
+    console.log(this.valuesList);
     this.setLabel();
     this.getDisplayedItens();
   }
@@ -71,8 +72,9 @@ export class SelectorFieldComponent extends BaseFieldComponent implements OnInit
    * Retorna os itens selecionados
    */
     private getDisplayedItens(): void {
-      console.log(this.valuesList);
       let itens = [];
+      if(!this.valuesList) return;
+      if (!this.value) return;
       this.valuesList.forEach((value) => {
         if (value.id === this.value) {
           itens.push(value);
@@ -86,7 +88,6 @@ export class SelectorFieldComponent extends BaseFieldComponent implements OnInit
       if (itens.length > 1) {
         this.value = itens;
       }
-      console.log(this.value);
     }
 
   ngOnDestroy(): void {
