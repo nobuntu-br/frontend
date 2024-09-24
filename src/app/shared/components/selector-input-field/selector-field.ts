@@ -5,8 +5,6 @@ import { SelectorInputFieldComponent } from './selector-input-field.component';
 
 export class SelectorField implements FormField {
 	createFormField(createComponentData: ICreateComponentParams): FormControl {
-        console.log(createComponentData);
-        console.log(createComponentData.dataToCreatePage.attributes[createComponentData.index].optionList);
 		let createdComponent = createComponentData.target.createComponent(SelectorInputFieldComponent);
         const component = createdComponent.instance;
 

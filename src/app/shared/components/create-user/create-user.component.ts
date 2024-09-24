@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { ApplicationService } from 'app/shared/services/application.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthService } from 'app/core/auth/auth.service';
 import { Router } from '@angular/router';
+import { UserService } from 'app/core/auth/user.service';
 
 @Component({
   selector: 'app-create-user',
@@ -35,8 +35,9 @@ export class CreateUserComponent {
   
   codeSent: boolean = false;
   codeVerified: boolean = false;
-  constructor(private http: HttpClient,
+  constructor(
     private applicationService: ApplicationService,
+    private userService: UserService,
     private snackBar: MatSnackBar,
     private authService: AuthService,
     private router: Router
@@ -55,7 +56,8 @@ export class CreateUserComponent {
   }
   onEmailSubmit() {
     this.snackBar.dismiss(); // Limpa qualquer mensagem anterior
-    this.applicationService.sendVerificationCode(this.email)
+    this.userService.sendVerificationEmailCodeToEmail(this.email)
+    // this.applicationService.sendVerificationCode(this.email)
       .subscribe(
         (response: any) => {
           console.log(response.message);
@@ -75,7 +77,7 @@ export class CreateUserComponent {
 
   onCodeSubmit() {
     this.snackBar.dismiss(); // Limpa qualquer mensagem anterior
-    this.applicationService.verifyCode(this.email, this.verificationCode)
+    this.userService.verifyCodeSentToEmail(this.email, this.verificationCode)
       .subscribe(
         (response: any) => {
           console.log(response.message);
