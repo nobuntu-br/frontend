@@ -2,7 +2,6 @@ import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChil
 import { DateFieldComponent } from '../date-field/date-field.component';
 import { FieldComponent } from '../field/field.component';
 import { SelectorFieldComponent } from '../selector-field/selector-field.component';
-import { ISelectorValue } from '../selector-input-field/selector-input-field.component';
 
 @Component({
   selector: 'selectable-card',
@@ -35,6 +34,8 @@ export class SelectableCardComponent implements AfterViewInit, OnInit{
   @Input() attributes: any;
   @Input() isSelectable: boolean = true;
   @Input() isEditable: boolean = false;
+  @Input() classFather: string;
+  @Input() isSubForm: boolean = false;
   @Input() objectDisplayedValue: string | null;
   @Output() eventClick = new EventEmitter<void>();
   @Output() eventOnSelect = new EventEmitter<void>();
@@ -44,6 +45,7 @@ export class SelectableCardComponent implements AfterViewInit, OnInit{
   @Input() isSelected: boolean = false;
   
   @ViewChild('placeToRender', {read: ViewContainerRef}) target!: ViewContainerRef;
+viewMode: any;
 
   constructor(){
   }
@@ -52,6 +54,7 @@ export class SelectableCardComponent implements AfterViewInit, OnInit{
   }
 
   ngAfterViewInit(): void {
+    console.log("ItemDisplayed", this.itemDisplayed);
     this.createComponentsOnView();
   }
 
@@ -76,7 +79,10 @@ export class SelectableCardComponent implements AfterViewInit, OnInit{
       return;
     }
 
-    console.log("labelTittle: ", labelTittle, "objectDisplayedValue: ", objectDisplayedValue);
+    if(this.isSubForm && this.classFather.toLowerCase() == labelTittle.toLowerCase()){
+      return;
+    }
+
     let componentCreated;
     switch (fieldType) {
 
@@ -104,10 +110,15 @@ export class SelectableCardComponent implements AfterViewInit, OnInit{
         break;
       }
       case 'selector': {
+        //TODO: Implementar o selector field
+        console.log("OptionList", this.attributes[index].optionList);
         componentCreated = this.target.createComponent(SelectorFieldComponent).instance;
         componentCreated.valuesList = this.attributes[index].optionList;
         componentCreated.value = value;
         break;
+        // componentCreated = this.target.createComponent(FieldComponent).instance;
+        // componentCreated.value = value;
+        // break;
       }
       default: {
         componentCreated = this.target.createComponent(FieldComponent).instance;
@@ -115,7 +126,7 @@ export class SelectableCardComponent implements AfterViewInit, OnInit{
         break;
       }
     }
-
+    
     componentCreated.label = labelTittle;
     componentCreated.className = this.className;
   }

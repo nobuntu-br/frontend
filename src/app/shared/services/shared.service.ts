@@ -16,11 +16,11 @@ export abstract class BaseResourceService<T extends BaseResourceModel> {
   private offlineStorageService: OfflineStorageService;
 
   constructor(
-    protected apiPath: string, 
-    protected injector: Injector, 
+    protected apiPath: string,
+    protected injector: Injector,
     protected jsonDataToResourceFn: (jsonData: any) => T
-  ){
-    this.http = injector.get(HttpClient); 
+  ) {
+    this.http = injector.get(HttpClient);
     this.onlineOfflineService = injector.get(OnlineOfflineService);
     this.offlineStorageService = injector.get(OfflineStorageService);
     this.isOnline = this.onlineOfflineService.isOnline;
@@ -34,23 +34,23 @@ export abstract class BaseResourceService<T extends BaseResourceModel> {
   }
 
   getById(id: string): Observable<T> {
-     const url = `${this.apiPath}/${id}`;
+    const url = `${this.apiPath}/${id}`;
 
     return this.http.get(url).pipe(
       map(this.jsonDataToResource.bind(this)),
-      catchError(this.handleError)      
+      catchError(this.handleError)
     );
   }
 
   create(resource: T): Observable<T> {
-    if(!this.isOnline){
+    if (!this.isOnline) {
       this.offlineStorageService.saveCreateOperation(this.apiPath, resource);
       return new Observable(observer => {
         observer.next(resource);
         observer.complete();
       });
     }
-  
+
     return this.http.post(this.apiPath, resource).pipe(
       map(this.jsonDataToResource.bind(this)),
       catchError(this.handleError)
@@ -58,7 +58,7 @@ export abstract class BaseResourceService<T extends BaseResourceModel> {
   }
 
   update(id: string, resource: T): Observable<T> {
-    if(!this.isOnline){
+    if (!this.isOnline) {
       this.offlineStorageService.saveUpdateOperation(this.apiPath, id, resource);
       return new Observable(observer => {
         observer.next(resource);
@@ -75,7 +75,7 @@ export abstract class BaseResourceService<T extends BaseResourceModel> {
   }
 
   delete(id: string): Observable<any> {
-    if(!this.isOnline){
+    if (!this.isOnline) {
       this.offlineStorageService.saveDeleteOperation(this.apiPath, id);
       return new Observable(observer => {
         observer.next(null);
@@ -84,7 +84,7 @@ export abstract class BaseResourceService<T extends BaseResourceModel> {
     }
 
     const url = `${this.apiPath}/${id}`;
-    console.log("DELETE =>", url);
+
     return this.http.delete(url).pipe(
       map(() => null),
       catchError(this.handleError)
@@ -92,22 +92,31 @@ export abstract class BaseResourceService<T extends BaseResourceModel> {
   }
 
   // PROTECTED METHODS
-
+  /**
+   * Cria várias instancias da classe T com base nos valores do JSON
+   * @param jsonData Array de dados do JSON
+   * @returns retorna várias instância da classe T
+   */
   protected jsonDataToResources(jsonData: any[]): T[] {
-    console.log("jsonDataToResources => ", jsonData);
+    // console.log("jsonDataToResources => ", jsonData);
     const resources: T[] = [];
     jsonData.forEach(
-      element => resources.push( this.jsonDataToResourceFn(element) )
+      element => resources.push(this.jsonDataToResourceFn(element))
     );
     return resources;
   }
 
+  /**
+   * Instancia a classe T com base nos valores do JSON
+   * @param jsonData Dados do JSON
+   * @returns retorna uma instância da classe T
+   */
   protected jsonDataToResource(jsonData: any): T {
     console.log("jsonDataToResource => ", jsonData);
     return this.jsonDataToResourceFn(jsonData);
   }
 
-  protected handleError(error: any): Observable<any>{
+  protected handleError(error: any): Observable<any> {
     console.log("ERRO NA REQUISIÇÃO => ", error);
     // Aqui, você pode implementar notificações de erro ou estratégias de nova tentativa
     return throwError(error);

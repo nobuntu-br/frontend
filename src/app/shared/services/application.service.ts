@@ -22,8 +22,9 @@ export class ApplicationService {
     throw new Error('Method not implemented.');
   }
   private apiUrl = environment.backendUrl+'/api/token'; // URL do seu servidor Node.js
-  private apiUrlUserDirectory = environment.backendUrl+'/api/userDirectory'; // URL do seu servidor Node.js
   
+  private apiUrlUserDirectory = environment.backendUrl+'/api/userDirectory'; // URL do seu servidor Node.js
+
   constructor(private http: HttpClient) { }
 
   getApplications(): Observable<Application[]> {

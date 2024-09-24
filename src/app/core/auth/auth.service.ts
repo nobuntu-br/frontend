@@ -119,7 +119,7 @@ export class AuthService {
   
     // Armazena o currentUser no localStorage
     localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
-  
+ 
     return this.currentUser;
   }
 
