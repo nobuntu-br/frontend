@@ -22,6 +22,8 @@ export class ApplicationService {
     throw new Error('Method not implemented.');
   }
   private apiUrl = environment.backendUrl+'/api/token'; // URL do seu servidor Node.js
+  
+  private apiUrlUserDirectory = environment.backendUrl+'/api/userDirectory'; // URL do seu servidor Node.js
 
   constructor(private http: HttpClient) { }
 
@@ -50,7 +52,7 @@ export class ApplicationService {
   }
   
   updateUserProfile(user: any): Observable<any> {
-    return this.http.put<any>(`${this.apiUrl}/update-user-profile`, user);
+    return this.http.put<any>(`${this.apiUrlUserDirectory}/edit-user-details`, user);
   }
   
 }

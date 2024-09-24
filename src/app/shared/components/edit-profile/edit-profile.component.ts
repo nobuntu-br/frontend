@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { ApplicationService } from 'app/shared/services/application.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+import { IUser } from 'app/core/auth/user.model';
 
 @Component({
   selector: 'app-edit-profile',
@@ -10,13 +11,26 @@ import { Router } from '@angular/router';
   styleUrls: ['./edit-profile.component.scss']
 })
 export class EditProfileComponent implements OnInit {
+  currentUser: IUser = {
+    UID: '',
+    TenantUID: '',
+    userName: '',
+    firstName: '',
+    lastName: '',
+    isAdministrator: false,
+    memberType: ''
+  };
   user = {
     userId: '',
     displayName: '',
     givenName: '',
-    surname: ''
+    surname: '',
+    businessPhones: '',
+    jobTitle: '',
+    mobilePhone: '',
+    officeLocation: '',
+    preferredLanguage: '',
   };
-
   constructor(
     private http: HttpClient,
     private applicationService: ApplicationService,
@@ -25,14 +39,19 @@ export class EditProfileComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-    const profile = currentUser.profile || {};
-
+    this.currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    const profile = this.currentUser || {};
+    const user=this.currentUser
     this.user = {
-      userId: profile.sub || '',
-      displayName: profile.name || '',
-      givenName: profile.given_name || '',
-      surname: profile.family_name || ''
+      userId: user.UID || '',
+      displayName: user.userName || '',
+      givenName: user.firstName || '',
+      surname: user.lastName || '',
+      businessPhones: '',
+      jobTitle: '',
+      mobilePhone: '',
+      officeLocation: '',
+      preferredLanguage: '',
     };
   }
 
@@ -45,14 +64,14 @@ export class EditProfileComponent implements OnInit {
             duration: 3000,
           });
           // Atualizar o profile no currentUser no localStorage
-          const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-          currentUser.profile = {
-            ...currentUser.profile,
-            name: this.user.displayName,
-            given_name: this.user.givenName,
-            family_name: this.user.surname,
+          this.currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+          this.currentUser = {
+            ...this.currentUser,
+            userName: this.user.displayName,
+            firstName: this.user.givenName,
+            lastName: this.user.surname,
           };
-          localStorage.setItem('currentUser', JSON.stringify(currentUser));
+          localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
           this.router.navigate(['/']); // Navegar de volta ao perfil ou outra página
         },
         (error) => {
