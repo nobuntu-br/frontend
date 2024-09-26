@@ -8,7 +8,7 @@ import { CreateUserComponent } from './shared/components/create-user/create-user
 import { SigninComponent } from './core/pages/signin/signin.component';
 
 
-export const appRoutes: Route[] = [ 
+export const appRoutes: Route[] = [
 
     // Redirect empty path to '/example' 
     {path: 'signin', pathMatch: 'full', component: SigninComponent}, 

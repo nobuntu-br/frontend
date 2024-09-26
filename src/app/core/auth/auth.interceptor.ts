@@ -1,4 +1,4 @@
-import { Injectable, Injector } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { catchError, from, Observable, switchMap, throwError } from 'rxjs';
 import { AuthService } from './auth.service';
@@ -6,10 +6,11 @@ import { AuthUtils } from 'app/core/auth/auth.utils';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-    constructor(private injector: Injector) {}
-
-    private _authService: AuthService;
-
+  /**
+   * Constructor
+   */
+  constructor(private _authService: AuthService){
+  }
 
   /**
    * Intercept
@@ -18,36 +19,39 @@ export class AuthInterceptor implements HttpInterceptor {
    * @param next
    */
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    if (!this._authService) {
-      this._authService = this.injector.get(AuthService);
-    }    
+    // Clone the request object
+    let newReq = req.clone();
+    // Request
+    //
+    // If the access token didn't expire, add the Authorization header.
+    // We won't add the Authorization header if the access token expired.
+    // This will force the server to return a "401 Unauthorized" response
+    // for the protected API routes which our response interceptor will
+    // catch and delete the access token from the local storage while logging
+    // the user out from the app.
+    if (this._authService.accessToken && !AuthUtils.isTokenExpired(this._authService.accessToken)) {
+      newReq = req.clone({
+        headers: req.headers.set('Authorization', 'Bearer ' + this._authService.accessToken)
+      });
+    }
 
-    return from(this._authService.handleTokenExpiration()).pipe(
-      switchMap(() => {
-        // Clone the request object
-        let newReq = req.clone();
-
-        // Se o token não expirou, adiciona o cabeçalho Authorization
-        if (this._authService.accessToken && !AuthUtils.isTokenExpired(this._authService.accessToken)) {
-          newReq = req.clone({
-            headers: req.headers.set('Authorization', 'Bearer ' + this._authService.accessToken)
-          });
+    
+    // Resposta obtida após a requisição
+    return next.handle(newReq).pipe(
+      // Caso ocorreu algum erro
+      catchError((error) => {
+        console.log(error);
+        // Caso obter "401 Unauthorized" (status de não autorizado para fazer a requisição) como erro
+        if (error instanceof HttpErrorResponse && error.status === 401) {
+          // TODO Decidir como tratar casos que o usuário não tem autorização para fazer a requisição na API
+          // this._authService.logout();
+           this._authService.refreshAccessToken();
+          // Recarregar página
+          // location.reload();
         }
 
-        // Manipula a requisição e captura os erros
-        return next.handle(newReq).pipe(
-          catchError((error) => {
-            // Se o status for 401 Unauthorized, faça o tratamento necessário
-            if (error instanceof HttpErrorResponse && error.status === 401) {
-              // TODO: Decidir como tratar casos de 401 Unauthorized
-              // Exemplo: this._authService.logout();
-              // location.reload();
-            }
-
-            return throwError(error);
-          })
-        );
+        return throwError(error);
       })
     );
-}
+  }
 }

@@ -22,6 +22,19 @@ $breakpoint-extra-large: 1200px; // Exemplo: monitores grandes
     right: 30px;
   }
 }
+
+// Estilos para dispositivos médios (exemplo: tablets)
+@media screen and (min-width: $breakpoint-medium) and (max-width: $breakpoint-large) {
+}
+
+// Estilos para dispositivos grandes (exemplo: laptops/desktops)
+@media screen and (min-width: $breakpoint-large) and (max-width: $breakpoint-extra-large) {
+}
+
+// Estilos para dispositivos extra grandes (exemplo: monitores grandes)
+@media screen and (min-width: $breakpoint-extra-large) {
+}
+
 .list {
   display: block;
   overflow-x: auto;
@@ -29,9 +42,10 @@ $breakpoint-extra-large: 1200px; // Exemplo: monitores grandes
 .card {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 15px; /* Espaço entre os cards */
+  gap: 15px; /* Espaçamento entre os cards */
   padding: 10px;
-  overflow-y: auto;
+  box-sizing: border-box;
+  
 }
 .custom-table {
   width: 100%;
@@ -61,16 +75,4 @@ $breakpoint-extra-large: 1200px; // Exemplo: monitores grandes
       overflow-x: auto;
     }
   }
-}
-
-// Estilos para dispositivos médios (exemplo: tablets)
-@media screen and (min-width: $breakpoint-medium) and (max-width: $breakpoint-large) {
-}
-
-// Estilos para dispositivos grandes (exemplo: laptops/desktops)
-@media screen and (min-width: $breakpoint-large) and (max-width: $breakpoint-extra-large) {
-}
-
-// Estilos para dispositivos extra grandes (exemplo: monitores grandes)
-@media screen and (min-width: $breakpoint-extra-large) {
 }
