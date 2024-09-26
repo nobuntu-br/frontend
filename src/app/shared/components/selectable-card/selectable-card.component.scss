@@ -3,9 +3,19 @@ $breakpoint-small: 576px; // Exemplo: smartphones
 $breakpoint-medium: 768px; // Exemplo: tablets
 $breakpoint-large: 992px; // Exemplo: laptops/desktops
 $breakpoint-extra-large: 1200px; // Exemplo: monitores grandes
-
+// .list-card{
+//   display: flex; 
+//   flex-direction: row; 
+//   margin: auto; 
+//   width: 100%; 
+//   justify-content: space-between;
+// }
 // #cardData {
-//     display: grid; width: 100%; overflow: auto; align-content: space-evenly; margin: auto;
+//     display: grid; 
+//     width: 100%; 
+//     overflow: auto; 
+//     align-content: space-evenly; 
+//     margin: auto;
 // }
 .card-item {
     background-color: white;
@@ -19,6 +29,8 @@ $breakpoint-extra-large: 1200px; // Exemplo: monitores grandes
     min-height: 250px;
     max-height: 250px;
     box-sizing: border-box;
+    overflow: hidden;
+
   }
   
   .list .card-item {
