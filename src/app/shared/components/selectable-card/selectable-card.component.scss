@@ -3,11 +3,57 @@ $breakpoint-small: 576px; // Exemplo: smartphones
 $breakpoint-medium: 768px; // Exemplo: tablets
 $breakpoint-large: 992px; // Exemplo: laptops/desktops
 $breakpoint-extra-large: 1200px; // Exemplo: monitores grandes
+// .list-card{
+//   display: flex; 
+//   flex-direction: row; 
+//   margin: auto; 
+//   width: 100%; 
+//   justify-content: space-between;
+// }
+// #cardData {
+//     display: grid; 
+//     width: 100%; 
+//     overflow: auto; 
+//     align-content: space-evenly; 
+//     margin: auto;
+// }
+.card-item {
+    background-color: white;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+    min-height: 250px;
+    max-height: 250px;
+    box-sizing: border-box;
+    overflow: hidden;
 
-#cardData {
-    display: grid; width: 100%; overflow: auto; align-content: space-evenly; margin: auto;
-}
-
+  }
+  
+  .list .card-item {
+    background-color: transparent;
+    padding: 10px 0;
+    justify-content: flex-start;
+    align-items: flex-start;
+    text-align: left;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 20px;
+  }
+  
+  .card .card-item {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+  
 // Estilos para dispositivos pequenos (exemplo: smartphones)
 @media screen and (max-width: $breakpoint-small) {
     #cardData {
