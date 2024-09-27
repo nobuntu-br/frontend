@@ -26,12 +26,15 @@
       *ngIf="selectedItemsLimit == itemsDisplayed?.length"
       (change)="onSelectedItemsCheckBoxChange($event)"
     ></mat-checkbox>
+
     <p style="margin: auto">
       {{ selectedItems.length }}
       <ng-container *transloco="let t; read: 'componentsBase'">{{
         t("selector-list.selectedValues")
       }}</ng-container>
     </p>
+    <!-- mudança de card, list, grid -->
+    <app-view-toggle></app-view-toggle>
     <!-- <mat-icon svgIcon="list" style="margin: auto;"></mat-icon> -->
     <!-- TODO adicionar a opção de vizualizar com tabela -->
     <!-- <mat-icon svgIcon="table_view" style="margin: auto;" (click)="displayOnTable()"></mat-icon> -->
