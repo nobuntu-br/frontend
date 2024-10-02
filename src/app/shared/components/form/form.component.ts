@@ -286,6 +286,12 @@ export abstract class BaseResourceFormComponent<T extends BaseResourceModel> imp
   protected actionsForError(error) {
 
     this.submittingForm = false;
+
+     if(error.status === 400){
+        alert(error.error.errors);
+        return
+    }
+    
     alert(this.translocoService.translate("componentsBase.Alerts.defaultErrorMessage"));
 
     if (error.status === 422)
