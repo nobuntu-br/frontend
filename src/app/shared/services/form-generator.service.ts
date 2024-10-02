@@ -80,7 +80,6 @@ export class FormGeneratorService {
     }
 
     createComponentData.resourceForm.addControl(createComponentData.fieldName,formField.createFormField(createComponentData, createComponentData.dataToCreatePage));
-    console.log("Criando campo: ", createComponentData.resourceForm);
   }
 
   //TODO remover essa função

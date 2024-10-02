@@ -9,8 +9,8 @@ export class SelectorField implements FormField {
         const component = createdComponent.instance;
 
         component.label = createComponentData.labelTittle;
-        component.valuesList = createComponentData.dataToCreatePage.attributes[createComponentData.index].optionList;
-        component.selectItemsLimit = createComponentData.dataToCreatePage.attributes[createComponentData.index].selectItemsLimit;
+        component.valuesList = createComponentData.optionList;
+        component.selectItemsLimit = createComponentData.selectItemsLimit;
         component.ngAfterViewInit();
 		return createdComponent.instance.inputValue;
 	}
