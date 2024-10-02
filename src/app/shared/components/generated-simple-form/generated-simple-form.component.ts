@@ -63,6 +63,8 @@ export class GeneratedSimpleFormComponent implements AfterViewInit {
           fieldDisplayedInLabel: attribute.fieldDisplayedInLabel,
           valuesList: null,
           index: index,
+          optionList: attribute.optionList,
+          selectItemsLimit: attribute.selectItemsLimit,
         }
 
         this.formGenerator.createComponent(createComponentData)
