@@ -165,7 +165,7 @@ export class ForeignKeyInputFieldComponent implements OnDestroy, AfterViewInit {
       columnsQuantity: 3,
       displayedfieldsName: this.value.propertiesAttributes.map(attribute => attribute.name),
       fieldsType: this.value.propertiesAttributes.map(attribute => attribute.type),
-      objectDisplayedValue: this.value.propertiesAttributes.map(attribute => attribute.displayedfieldsName),//TODO ver se funciona
+      objectDisplayedValue: this.value.propertiesAttributes.map(attribute => attribute.fieldDisplayedInLabel),//TODO ver se funciona
       userConfig: null,
       selectedItemsLimit: this.selectedItemsLimit,
       apiUrl: this.value.apiUrl,
