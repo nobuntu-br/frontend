@@ -38,7 +38,7 @@ export class CheckboxFieldComponent extends BaseFieldComponent implements OnInit
    * Campo que retorna o valor do checkbox.
    * @example true
   */ 
-  public inputValue = new FormControl<boolean | null>(null);
+  public inputValue = new FormControl<boolean | null>(false);
 
 
   constructor(injector: Injector) {
