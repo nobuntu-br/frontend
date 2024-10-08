@@ -39,7 +39,7 @@ export class BaseResourceFilterComponent implements OnInit{
   
   constructor(private translocoService: TranslocoService, 
     private dialogBaseResourceFilterComponentRef: MatDialogRef<BaseResourceFilterComponent>,
-    @Optional() @Inject(DIALOG_DATA) private dialogData:{itemBaseStructure}){}
+    @Optional() @Inject(DIALOG_DATA) private dialogData:{itemBaseStructure, submitFindCustom: Function}){}
  
   ngOnInit(): void {
     this.variables = this.dialogData.itemBaseStructure;
@@ -95,6 +95,10 @@ export class BaseResourceFilterComponent implements OnInit{
     });
     
     return returned_values;
+  }
+
+  applyFilters(){
+    this.dialogData.submitFindCustom(this.getAllSearchParameters());
   }
 
   getChildData(filterIndex: number, newItem: string) {

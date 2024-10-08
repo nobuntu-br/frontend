@@ -4,6 +4,12 @@
     <input matInput type="text" [formControl]="searchInputValue" />
 
     <button mat-icon-button matSuffix class="h-full flex flex-col"
+        *ngIf="isFiltred"
+        (click)="clearSearchInput()">
+        <mat-icon>clear</mat-icon>
+    </button>
+
+    <button mat-icon-button matSuffix class="h-full flex flex-col"
         (click)="openFilter(apiUrl, displayedfieldsName, fieldsType)">
         <mat-icon svgIcon="filter_alt"></mat-icon>
     </button>

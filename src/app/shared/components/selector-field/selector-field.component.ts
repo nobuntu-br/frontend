@@ -47,7 +47,6 @@ export class SelectorFieldComponent extends BaseFieldComponent implements OnInit
   }
 
   ngOnInit(): void {
-    console.log(this.valuesList);
     this.setLabel();
     this.getDisplayedItens();
   }

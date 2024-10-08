@@ -317,6 +317,7 @@ export class DefaultListComponent
    * @param itemsDisplayed Array com os itens que serão apresentados. @example [{"name":"Marie", "age":22}, {"name":"Josef", "age":32}]
    */
   createItemsOnList(itemsDisplayed: any[]) {
+    this.itemsDisplayed = itemsDisplayed;
     this.componentsCreatedList = [];
     this.removeAllComponentsOnView();
 

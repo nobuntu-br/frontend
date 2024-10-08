@@ -54,7 +54,6 @@ viewMode: any;
   }
 
   ngAfterViewInit(): void {
-    console.log("ItemDisplayed", this.itemDisplayed);
     this.createComponentsOnView();
   }
 
@@ -110,8 +109,6 @@ viewMode: any;
         break;
       }
       case 'selector': {
-        //TODO: Implementar o selector field
-        console.log("OptionList", this.attributes[index].optionList);
         componentCreated = this.target.createComponent(SelectorFieldComponent).instance;
         componentCreated.valuesList = this.attributes[index].optionList;
         componentCreated.value = value;

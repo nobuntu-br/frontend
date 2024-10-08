@@ -51,6 +51,10 @@ export class SearchInputFieldComponent implements AfterViewInit, OnDestroy {
    * Subject responsável por remover os observadores que estão rodando na pagina no momento do componente ser deletado.
    */
   private ngUnsubscribe = new Subject();
+  /**
+   * Variável que indica se o filtro está vazio.
+   */
+  isFiltred: boolean = false;
 
   searchInputValue = new FormControl<string | null>(null);
 
@@ -102,22 +106,20 @@ export class SearchInputFieldComponent implements AfterViewInit, OnDestroy {
       height: '80vh',
       width: '80vw',
       data: {
-        itemBaseStructure: itemBaseStructure
+        itemBaseStructure: itemBaseStructure,
+        submitFindCustom: this.searchFindCustom.bind(this),
       }
     });
-
-    dialogRef.afterClosed().pipe(takeUntil(this.ngUnsubscribe)).subscribe(filterParameters => {
-      this.requestValuesFromAPIWithSearchParametersFromFilter(apiUrl, filterParameters).pipe(takeUntil(this.ngUnsubscribe)).subscribe((itemsReturned: any[]) => {
-        if (itemsReturned.length == 0) return null;
-
-        this.removeAllComponentsOnViewFunction.emit(true);
-        this.returnedItemsToCreate.emit(itemsReturned);
-      });
-
-    });
-
     dialogRef.disableClose = true;
 
+  }
+
+  searchFindCustom(filterParameters: any) {
+    this.isFiltred = true;
+    this.requestValuesFromAPIWithSearchParametersFromFilter(this.apiUrl, filterParameters).pipe(takeUntil(this.ngUnsubscribe)).subscribe((itemsReturned: any[]) => {
+      this.removeAllComponentsOnViewFunction.emit(true);
+      this.returnedItemsToCreate.emit(itemsReturned);
+    });
   }
 
   /**
@@ -138,9 +140,7 @@ export class SearchInputFieldComponent implements AfterViewInit, OnDestroy {
 
     this.requestValuesFromAPIWithSearchParametersFromFilter(apiUrl, filterParameters).pipe(takeUntil(this.ngUnsubscribe)).subscribe({
       next: (itemsReturned: object[]) => {
-        // console.log("Dados obtidos do filtro: ", itemsReturned);
-        if (itemsReturned.length == 0) return;
-  
+        this.isFiltred = true;
         this.removeAllComponentsOnViewFunction.emit(true);
         this.returnedItemsToCreate.emit(itemsReturned);
       },
@@ -194,6 +194,15 @@ export class SearchInputFieldComponent implements AfterViewInit, OnDestroy {
     const filteredWords: string[] = words.filter(word => word !== '');
 
     return filteredWords;
+  }
+
+  clearSearchInput() {
+    this.requestAllValuesFromAPI(this.apiUrl).pipe(takeUntil(this.ngUnsubscribe)).subscribe((itemsReturned) => {
+      this.removeAllComponentsOnViewFunction.emit(true);
+      this.returnedItemsToCreate.emit(itemsReturned);
+    });
+    this.searchInputValue.setValue(null);
+    this.isFiltred = false;
   }
 
   requestValuesFromAPIWithSearchParametersFromFilter(apiUrl: string, filterParameters): Observable<any> {
