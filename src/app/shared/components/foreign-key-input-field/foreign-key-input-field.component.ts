@@ -6,6 +6,11 @@ import { Subject, take, takeUntil } from 'rxjs';
 import { SelectedItemsListComponent } from '../selected-items-list/selected-items-list.component';
 import { DinamicBaseResourceFormComponent, IDinamicBaseResourceFormComponent } from '../dinamic-base-resource-form/dinamic-base-resource-form.component';
 import { IPageStructure } from 'app/shared/models/pageStructure';
+import { environment } from 'environments/environment';
+import { FormGeneratorService } from 'app/shared/services/form-generator.service';
+import { FormSpaceBuildComponent } from '../form-space-build/form-space-build.component';
+import { HttpClient } from '@angular/common/http';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 enum ISelectionOption {
   add,
@@ -63,9 +68,13 @@ export class ForeignKeyInputFieldComponent implements OnDestroy, AfterViewInit {
   @Input() dataToCreatePage: IPageStructure | null;
   @Input() value: any;
   /**
+   * Lista de itens que foram selecionados.
+   */
+  @Input()index: number;
+  /**
    * Campo no formulário que receberá os dados dos valores selecionados.
    */
-  public inputValue: FormControl<object[]> = new FormControl<object[]>([]);
+  public inputValue: FormControl<object[]> = new FormControl<object[]>(null);
   /**
    * Valor que será apresentado no campo de preenchimento.
    * Como é uma chave estrangeira, apresentar o ID do item não é algo apresentável para o usuário.
@@ -91,11 +100,18 @@ export class ForeignKeyInputFieldComponent implements OnDestroy, AfterViewInit {
    * Subject responsável por remover os observadores que estão rodando na pagina no momento do componente ser deletado.
    */
   private ngUnsubscribe = new Subject();
+  /**
+   * Lista de itens que foram selecionados.
+   */
+  resourceForm: any;
 
   enableToEdit: boolean = false;
 
   constructor(
     private matDialog: MatDialog,
+    private formGeneratorService: FormGeneratorService,
+    private http: HttpClient,
+    private matSnackBar: MatSnackBar
   ) { }
 
   ngAfterViewInit(): void {
@@ -248,44 +264,54 @@ export class ForeignKeyInputFieldComponent implements OnDestroy, AfterViewInit {
    * Função que irá remover os itens que foram selecionados.
    */
   removeItensOnInputField() {
-    this.inputValue.setValue([]);
-    this.displayedValue = [''];
+    this.inputValue.setValue(null);
+    this.displayedValue = [null];
   }
 
-
   /**
-   * Abre um dialog com um formuário que permite a edição do item;
-   * @param data Dados do item a ser criado ou editado. Se for null ele só criará.
+   * Abre o formulário em popUp/dialog tanto para criação.
    */
-  openFormDialogToCreateItem(currentAction: string, data?) {
+  openFormDialogToCreateItem() {
+    let nameClass = this.dataToCreatePage.attributes[this.index].className;
+    nameClass = nameClass.charAt(0).toLowerCase() + nameClass.slice(1);
 
-    const config: IDinamicBaseResourceFormComponent = {
-      dataToCreatePage: this.dataToCreatePage,
-      className: this.fieldName,
-      itemId: data?.id,
-      currentAction: currentAction,
-    }
+    let jsonPath = environment.jsonPath + nameClass + ".json";
 
-    const dialogRef = this.matDialog.open(DinamicBaseResourceFormComponent, {
-      width: '100%',
-      height: '100%',
-      maxWidth: '100vw',
-      maxHeight: '100vh',
-      panelClass: 'full-screen-dialog',
-      data: config,
+    this.formGeneratorService.getJSONFromDicionario(jsonPath).pipe(takeUntil(this.ngUnsubscribe)).subscribe((JSONDictionary: any) => {
 
+      const dialogRef = this.matDialog.open(FormSpaceBuildComponent, {
+        // width: '100vh',
+        // height: '100vh',
+        data: {
+          dataToCreatePage: JSONDictionary,
+          currentFormAction: 'new',
+          submitFormFunction: this.submitForm.bind(this),
+          formBuilder: this.resourceForm,
+          returnFormFunction: () => {
+            dialogRef.close();
+          }
+        }
+      })      
+    }); 
+  }
+
+  submitForm(JSONDictionary: IPageStructure, item: any) {
+    if (item == null) return;
+
+    const apiUrl = environment.backendUrl + '/' + JSONDictionary.config.apiUrl;
+
+    this.http.post(apiUrl, item).pipe(take(1)).subscribe((response: any) => {
+      this.inputValue.setValue(response);
+      this.matDialog.closeAll();
+      this.matSnackBar.open("Item criado com sucesso", "Fechar", {
+        duration: 5000
+      });
+    }, error => {
+      console.error("Erro ao criar item", error);
+      this.matSnackBar.open("Erro ao criar item", "Fechar", {
+        duration: 5000
+      });
     });
-
-    dialogRef.afterClosed().pipe(take(1)).subscribe(item => {
-      if (item == null) return;
-
-      if ('action' in item) {
-        return;
-      }
-
-      this.selectItems([item], ISelectionOption.set);
-    });
-
   }
 
   /**

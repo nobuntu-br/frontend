@@ -18,7 +18,7 @@
             <mat-icon svgIcon="create"></mat-icon>
             <ng-container *transloco='let t; read:"componentsBase"'>{{ t('foreign-key-input-field.edit') }}</ng-container>
         </button>
-        <button mat-menu-item (click)="openFormDialogToCreateItem('new', null)">
+        <button mat-menu-item (click)="openFormDialogToCreateItem()">
             <mat-icon svgIcon="feather:plus"></mat-icon>
             <ng-container *transloco='let t; read:"componentsBase"'>{{ t('foreign-key-input-field.add') }}</ng-container>
         </button>
