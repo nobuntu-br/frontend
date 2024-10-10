@@ -3,7 +3,7 @@
   <mat-select [formControl]="inputValue" multiple>
     <mat-select-trigger *ngIf="inputValue.value != null">
       <span *ngFor="let value of inputValue.value; let last = last" class="selected-item">
-        {{ value[this.translocoService.getActiveLang()] }}{{ !last ? ', ' : '' }}
+        {{ value }}{{ !last ? ', ' : '' }}
       </span>
     </mat-select-trigger>
     <mat-option *ngFor="let value of valuesList" [value]="value">
@@ -16,7 +16,7 @@
   <mat-label>{{ label }}</mat-label>
   <mat-select [formControl]="inputValue">
     <mat-select-trigger>
-      <span>
+      <span *ngIf="inputValue.value != null">
         {{ inputValue.value[this.translocoService.getActiveLang()] }}
       </span>
     </mat-select-trigger>

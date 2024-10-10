@@ -1,6 +1,7 @@
 import { AfterViewInit, Component,Input } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { TranslocoService } from '@ngneat/transloco';
+import { delay } from 'rxjs/operators';
 import { take } from 'rxjs';
 
 export interface ISelectorValue {
@@ -25,24 +26,59 @@ export class SelectorInputFieldComponent implements AfterViewInit{
    */
   @Input() selectItemsLimit: number;
   
-  public inputValue = new FormControl<object[]>([]);
-  
+  public inputValue = new FormControl<string | ISelectorValue | ISelectorValue[]>(null);
   constructor(
     private translocoService: TranslocoService
   ){}
 
   ngAfterViewInit(): void {
     this.limitSelectedItems();
+    this.inputValue.valueChanges.pipe(delay(0), take(1)).subscribe(() => {
+      this.getDataOnEdit();
+    });
+    // this.changeLanguage();
   }
+
+  // private changeLanguage(): void {
+  //   this.translocoService.langChanges$.subscribe(() => {
+  //     if(!this.valueObject) return;
+  //     this.inputValue.setValue(this.valueObject[this.translocoService.getActiveLang()]);
+  //   });
+  // }
 
   /**
    * Limita a quantidade de itens selecionados
    */
   private limitSelectedItems(): void {
     this.inputValue.valueChanges.subscribe((values) => {
-      if (values.length > this.selectItemsLimit && this.selectItemsLimit > 1) {
-        this.inputValue.setValue(values.slice(0, this.selectItemsLimit));
+      if(this.inputValue.value === null) return;
+
+      if(this.inputValue.value instanceof Array){
+        let selectedValues: Array<any> = this.inputValue.value;
+        if (selectedValues.length > this.selectItemsLimit && this.selectItemsLimit > 1) {
+          this.inputValue.setValue(selectedValues.slice(0, this.selectItemsLimit));
+        }
       }
     });
-  }  
+  } 
+
+
+  private getDataOnEdit(): void {
+    let itens = [];
+    if(!this.valuesList) return;
+    if (!this.inputValue.value) return;
+    this.valuesList.forEach((value) => {
+      if (value.id === this.inputValue.value) {
+        itens.push(value);
+      }
+    });
+
+    if (itens.length === 1) {
+      let input = itens[0];
+      this.inputValue.setValue(input);
+    }
+    if (itens.length > 1) {
+      this.inputValue.setValue(itens);
+    }
+  }
 }
