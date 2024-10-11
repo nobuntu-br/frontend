@@ -74,7 +74,7 @@ export class ForeignKeyInputFieldComponent implements OnDestroy, AfterViewInit {
   /**
    * Campo no formulário que receberá os dados dos valores selecionados.
    */
-  public inputValue: FormControl<object[]> = new FormControl<object[]>(null);
+  public inputValue: FormControl<object | object[]> = new FormControl<object | object[]>(null);
   /**
    * Valor que será apresentado no campo de preenchimento.
    * Como é uma chave estrangeira, apresentar o ID do item não é algo apresentável para o usuário.
@@ -217,7 +217,7 @@ export class ForeignKeyInputFieldComponent implements OnDestroy, AfterViewInit {
 
   openSelectableItemsListDialogToEditItems() {
 
-    var items : Object[];
+    var items : Object[] | object; 
     if(this.inputValue.value instanceof Array == false){
       items = [this.inputValue.value];
     } else {
@@ -328,7 +328,7 @@ export class ForeignKeyInputFieldComponent implements OnDestroy, AfterViewInit {
     if (this.inputValue.value == null) {
       currentSelectedItensQuantity = 0;
     } else {
-      currentSelectedItensQuantity = this.inputValue.value.length;
+      currentSelectedItensQuantity = Array.isArray(this.inputValue.value) ? this.inputValue.value.length : 0;
     }
 
     if (selectionOption == ISelectionOption.add) {
@@ -338,7 +338,7 @@ export class ForeignKeyInputFieldComponent implements OnDestroy, AfterViewInit {
       //Se já tiver item selecionado ele 
       if (currentSelectedItensQuantity > 0) {
         //Remove os itens duplicados
-        let remainingItems = newItems.filter(item => !this.inputValue.value.includes(item));
+        let remainingItems = newItems.filter(item => !Array.isArray(this.inputValue.value) || !this.inputValue.value.includes(item));
         newItems.push(...remainingItems);
       }
     } else if (selectionOption == ISelectionOption.set) {
@@ -366,6 +366,14 @@ export class ForeignKeyInputFieldComponent implements OnDestroy, AfterViewInit {
     } else {
       searchableProperty = this.getFirstNonIdKey(newItems[0]);
     }
+
+    if(newItems.length == 1){
+      this.inputValue.setValue(newItems[0]);
+      this.displayedValue = [newItems[0][searchableProperty]];
+      console.log("InputValue contém: ",this.inputValue.value);
+      return;
+    }
+
 
     for (const obj of newItems) {
 
