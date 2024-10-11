@@ -137,9 +137,8 @@ export class SubformComponent implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.setCurrentConnection();
-    this.setCurrentAction();
     this.isLoading = false;
+    this.setCurrentAction();
   }
 
   /**
@@ -389,7 +388,7 @@ export class SubformComponent implements AfterViewInit {
     return { itemDisplayedOnSubFormType, objectDisplayedValueOnSubForm, attributesOnSubForm };
   }
 
-  
+  //TODO: quando o subform é chamado pelo foreign key ao criar um novo item, ele não pega a currentAction
   private setCurrentAction() {
     if (this.activatedRoute.snapshot.url[0].path == "new")
       this.currentAction = "new"
@@ -405,15 +404,6 @@ export class SubformComponent implements AfterViewInit {
       const { itemDisplayedOnSubFormType, objectDisplayedValueOnSubForm, attributesOnSubForm } = this.getAttributesToSubForm(this.dataToCreatePage);
       this.createItemsOnList(this.itemsDisplayed, itemDisplayedOnSubFormType, objectDisplayedValueOnSubForm, attributesOnSubForm);
       this.eventSelectedValues.emit(data);
-    });
-  }
-
-
-  private setCurrentConnection() {
-    this.isOnline = this.onlineOfflineService.isOnline;
-
-    this.onlineOfflineService.onlineStatus$.subscribe((status: boolean) => {
-      this.isOnline = status;
     });
   }
 

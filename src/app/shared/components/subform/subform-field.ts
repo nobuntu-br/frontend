@@ -30,6 +30,7 @@ export class SubFormField implements FormField {
       createdComponent.dataToCreatePage = this.dataToCreatePage;
       createdComponent.objectDisplayedValue = this.dataToCreatePage.attributes.map(attribute => attribute.fieldDisplayedInLabel);
       createdComponent.route = this.dataToCreatePage.config.route;
+      createdComponent.itemsDisplayed = [];
       return createdComponent.inputValue;
   }
 }

@@ -300,7 +300,7 @@ export class ForeignKeyInputFieldComponent implements OnDestroy, AfterViewInit {
     if (item == null) return;
 
     const apiUrl = environment.backendUrl + '/' + JSONDictionary.config.apiUrl;
-
+    item = this.objectTratament(item);
     this.http.post(apiUrl, item).pipe(take(1)).subscribe((response: any) => {
       this.inputValue.setValue(response);
       this.matDialog.getDialogById(this.dataToCreatePage.attributes[this.index].className + '-form-dialog').close();
@@ -314,6 +314,26 @@ export class ForeignKeyInputFieldComponent implements OnDestroy, AfterViewInit {
       });
     });
   }
+
+    /**
+   * Realizar uma alteração nos dados do formulário, removendo objetos e substituindo somente pelos IDs
+   * @param item Formulário
+   */
+    objectTratament(item){
+      for(let field in item){
+        if(item[field] instanceof Object){
+          if(item[field] instanceof Array){
+            item[field] = item[field].map((value) => value.id == undefined || value.id == null ? value : value.id);
+          } else {
+            if(item[field].id == undefined || item[field].id == null){
+              continue;
+            }
+            item[field] = item[field].id;
+          }
+        }
+      }
+      return item;
+    }
 
   /**
    * Função que faz o controle da seleção de itens, controlando o limite.
