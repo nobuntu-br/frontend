@@ -227,6 +227,7 @@ export class SubformComponent implements AfterViewInit {
     this.formGeneratorService.getJSONFromDicionario(jsonPath).pipe(takeUntil(this.ngUnsubscribe)).subscribe((JSONDictionary: any) => {
 
       const dialogRef = this.matDialog.open(FormSpaceBuildComponent, {
+        id: this.dataToCreatePage.attributes[this.index].name,
         data: {
           dataToCreatePage: JSONDictionary,
           currentFormAction: 'edit',
@@ -280,7 +281,7 @@ export class SubformComponent implements AfterViewInit {
     this.inputValue.setValue([...currentValue, valueToInput]);
     let { itemDisplayedOnSubFormType, objectDisplayedValueOnSubForm, attributesOnSubForm } = this.getAttributesToSubForm(JSONDictionary);
     this.createItemsOnList(this.itemsDisplayed, itemDisplayedOnSubFormType, objectDisplayedValueOnSubForm, attributesOnSubForm);
-    this.matDialog.closeAll();
+    this.matDialog.getDialogById(this.dataToCreatePage.attributes[this.index].name).close();
   }
   
   /**
@@ -295,6 +296,7 @@ export class SubformComponent implements AfterViewInit {
     this.formGeneratorService.getJSONFromDicionario(jsonPath).pipe(takeUntil(this.ngUnsubscribe)).subscribe((JSONDictionary: any) => {
 
       const dialogRef = this.matDialog.open(FormSpaceBuildComponent, {
+        id: this.dataToCreatePage.attributes[this.index].name,
         // width: '100vh',
         // height: '100vh',
         data: {
@@ -348,7 +350,7 @@ export class SubformComponent implements AfterViewInit {
 
     const currentValue = this.inputValue.value || [];
     this.inputValue.setValue([...currentValue, valueToInput]);
-    this.matDialog.closeAll();
+    this.matDialog.getDialogById(this.dataToCreatePage.attributes[this.index].name).close();
   }
 
   deleteSubForm(items: any[]) {
@@ -400,7 +402,6 @@ export class SubformComponent implements AfterViewInit {
   private displayDataOnEdit() {
     this.inputValue.valueChanges.pipe(takeUntil(this.ngUnsubscribe)).subscribe((data) => {
       this.itemsDisplayed = data;
-      console.log("SUBFORM >", data);
       const { itemDisplayedOnSubFormType, objectDisplayedValueOnSubForm, attributesOnSubForm } = this.getAttributesToSubForm(this.dataToCreatePage);
       this.createItemsOnList(this.itemsDisplayed, itemDisplayedOnSubFormType, objectDisplayedValueOnSubForm, attributesOnSubForm);
       this.eventSelectedValues.emit(data);

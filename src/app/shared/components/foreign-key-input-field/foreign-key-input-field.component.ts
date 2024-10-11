@@ -280,6 +280,7 @@ export class ForeignKeyInputFieldComponent implements OnDestroy, AfterViewInit {
     this.formGeneratorService.getJSONFromDicionario(jsonPath).pipe(takeUntil(this.ngUnsubscribe)).subscribe((JSONDictionary: any) => {
 
       const dialogRef = this.matDialog.open(FormSpaceBuildComponent, {
+        id: this.dataToCreatePage.attributes[this.index].className + '-form-dialog',
         // width: '100vh',
         // height: '100vh',
         data: {
@@ -302,7 +303,7 @@ export class ForeignKeyInputFieldComponent implements OnDestroy, AfterViewInit {
 
     this.http.post(apiUrl, item).pipe(take(1)).subscribe((response: any) => {
       this.inputValue.setValue(response);
-      this.matDialog.closeAll();
+      this.matDialog.getDialogById(this.dataToCreatePage.attributes[this.index].className + '-form-dialog').close();
       this.matSnackBar.open("Item criado com sucesso", "Fechar", {
         duration: 5000
       });
