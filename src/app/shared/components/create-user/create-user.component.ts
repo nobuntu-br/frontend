@@ -47,7 +47,6 @@ export class CreateUserComponent {
     this.applicationService.getDomain().subscribe(
       domain => {
         this.domain = '@'+domain;
-        console.log('Domain obtained:', this.domain);
       },
       error => {
         console.error('Error fetching domain', error);
@@ -60,7 +59,6 @@ export class CreateUserComponent {
     // this.applicationService.sendVerificationCode(this.email)
       .subscribe(
         (response: any) => {
-          console.log(response.message);
           this.codeSent = true;
           this.snackBar.open('Código de verificação enviado com sucesso!', 'Fechar', {
             duration: 3000,

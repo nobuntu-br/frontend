@@ -34,6 +34,7 @@ export class SelectorInputFieldComponent implements AfterViewInit{
   ngAfterViewInit(): void {
     this.limitSelectedItems();
     this.inputValue.valueChanges.pipe(delay(0), take(1)).subscribe(() => {
+      this.getIdsFromValues();
       this.getDataOnEdit();
     });
     // this.changeLanguage();
@@ -62,12 +63,32 @@ export class SelectorInputFieldComponent implements AfterViewInit{
     });
   } 
 
+  private getIdsFromValues(): void {
+    //Caso o valor seja um objeto. Pois ele vem assim quando é um valor vindo do subform
+    if(this.inputValue.value instanceof Object && !Array.isArray(this.inputValue.value)){
+      this.inputValue.setValue(this.inputValue.value.id);
+    }
+    //Caso o valor seja um array de objetos. Pois ele vem assim quando é um valor vindo do subform
+    if(this.inputValue.value instanceof Object && Array.isArray(this.inputValue.value)){
+      let ids = [];
+      this.inputValue.value.forEach((item) => {
+        ids.push(item.id);
+      });
+      this.inputValue.setValue(ids);
+    }
+  }
+
 
   private getDataOnEdit(): void {
     let itens = [];
     if(!this.valuesList) return;
     if (!this.inputValue.value) return;
     this.valuesList.forEach((value) => {
+      if(this.inputValue.value instanceof Object){
+        if (value === this.inputValue.value) {
+          itens.push(value);
+        }
+      }
       if (value.id === this.inputValue.value) {
         itens.push(value);
       }

@@ -110,9 +110,7 @@ export class OfflineSyncService {
       }
     }
 
-    console.log("RESOURCE => ", resource);
     this.http.post(apiPath, resource).subscribe((data) => {
-      console.log("DATA => ", data);
       alert('Operação de criação sincronizada com sucesso');
     },
       error => alert('Falha ao sincronizar operação de criação')

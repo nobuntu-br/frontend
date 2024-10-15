@@ -51,8 +51,6 @@ export class CalculatorComponent {
     }
     checkIfMobile() {
       this.isMobile = window.innerWidth <= 768;
-      console.log(`window.innerWidth (check): ${window.innerWidth}`);
-      console.log(`isMobile (check): ${this.isMobile}`);
     }
   
   appendCharacter(char: string) {

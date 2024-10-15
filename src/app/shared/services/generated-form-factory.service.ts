@@ -68,21 +68,16 @@ export class GeneratedFormFactoryService {
 
     let attributes;
     //Obtem dados dos atributos que farão parte dos formulários
-    console.log(createFormParams.secondaryFormClassName);
     if (createFormParams.secondaryFormClassName != null) {
       // attributes = this.getSecondaryFormAttributesData(createFormParams.dataToCreatePage, createFormParams.secondaryFormClassName);
       var secondaryAttribute = createFormParams.dataToCreatePage.attributes.find(attribute => attribute.name === createFormParams.secondaryFormClassName);
-      console.log("Secondary attribute: ", secondaryAttribute);
       attributes = secondaryAttribute.properties;
-      console.log("properties: ", attributes);
       className = secondaryAttribute.className;
       // className = createFormParams.secondaryFormClassName;
     } else {
       // attributes = this.formGeneratorService.getAttributesData(createFormParams.dataToCreatePage);
       attributes = createFormParams.dataToCreatePage;
     }
-    console.log("Attributes: ", attributes);
-    console.log("resourceForm: ", createFormParams.resourceForm);
     createdComponent.resourceForm = createFormParams.resourceForm;
     createdComponent.submitFormFunction = createFormParams.submitFormFunction;
     createdComponent.deleteFormFunction = createFormParams.deleteFormFunction;

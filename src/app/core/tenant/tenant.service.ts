@@ -48,7 +48,6 @@ export class TenantService extends BaseResourceService<any> {
   }
 
   async getAllTenantsAndSaveInLocalStorage(userUID: string): Promise<Tenant[]>{
-    console.log("obter os tenants e salvar no localstoragE: ", userUID)
     const tenants = await lastValueFrom(this.getByUserUID(userUID));
     this.setTenantsInLocalStore(tenants);
     return tenants;
@@ -86,7 +85,6 @@ export class TenantService extends BaseResourceService<any> {
   }
 
   setTenantsInLocalStore(tenants: Tenant[]) {
-    console.log("set teantns in local storage: ",tenants);
     localStorage.setItem('tenants', JSON.stringify(tenants));
   }
 

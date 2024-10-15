@@ -99,7 +99,8 @@ export abstract class BaseResourceFormComponent<T extends BaseResourceModel> imp
       // this.createResource();
     }
     else // currentAction == "edit"
-      this.updateResource();
+      // this.updateResource();
+      this.updateFormWithChild();
   }
 
   /** 
@@ -150,6 +151,41 @@ export abstract class BaseResourceFormComponent<T extends BaseResourceModel> imp
     }
     else // currentAction == "edit"
       this.updateResource();
+  }
+
+  /** 
+   * Envia os dados do formulário para a API e salva os dados dos filhos no banco de dados
+   * @param childrenData Dados dos filhos que serão salvos no banco de dados
+   */
+  updateFormWithChild() {
+    let childrenData = [];
+    this.submittingForm = true;
+    for(let field in this.resourceForm.value){
+      if(this.resourceForm.value[field] instanceof Array){
+        for(let i = 0; i < this.resourceForm.value[field].length; i++){
+          if(this.resourceForm.value[field][i].fatherName){
+            childrenData.push({item: this.resourceForm.value[field][i].item, apiUrl: this.resourceForm.value[field][i].apiUrl, fatherName: this.resourceForm.value[field][i].fatherName});
+          }
+        }
+      }
+    }
+    this.updateResource();
+    if(childrenData.length == 0){
+      return;
+    }
+    //salvar os childrenData no banco de dados usando o id da entidade pai que foi salva antes
+    const className = (this.resource.constructor as any).name;
+    for(let i = 0; i < childrenData.length; i++){
+      childrenData[i].item[className] = this.resource.id;
+      let url = environment.backendUrl + '/' + childrenData[i].apiUrl;
+      this.objectTratament(childrenData[i].item);
+      this.http.post(url, childrenData[i].item).subscribe({
+        next: (response) => {
+          console.log("Response: ", response);
+        },
+        error: (error) => console.log("Error: ", error)
+      });
+    }
   }
 
 

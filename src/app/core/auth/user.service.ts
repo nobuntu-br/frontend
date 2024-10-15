@@ -42,14 +42,11 @@ export class UserService extends BaseResourceService<User> {
 
     // Verifica se o usuário já existe no array de usuários
     const userExists = users.some((usuario: any) => usuario.email === user.email);
-    console.log(userExists)
     if (!userExists) {
       // Armazena o currentUser no localStorage
       localStorage.setItem(this.currentUserLocalStorageKey, JSON.stringify(user));
-      console.log('Usuário adicionado a CurrentUser.');
     } else {
       localStorage.setItem(this.currentUserLocalStorageKey, JSON.stringify(user));
-      console.log('Usuário já é currentUser');
     }
 
     if (!currentUserExists) {
@@ -58,9 +55,6 @@ export class UserService extends BaseResourceService<User> {
 
       // Armazena o array de volta no localStorage
       localStorage.setItem(this.usersLocalStorageKey, JSON.stringify(users));
-      console.log('Usuário adicionado ao array users localStorage.');
-    } else {
-      console.log('Usuário já existe no array users localStorage.');
     }
   }
 
@@ -106,9 +100,7 @@ export class UserService extends BaseResourceService<User> {
       // Armazena o array de volta no localStorage
       localStorage.setItem(this.usersLocalStorageKey, JSON.stringify(users));
       
-      console.log('Usuário removido do array users localStorage.');
     } else {
-      console.log('Usuário não existe no array users localStorage.');
       return null;
     }
 

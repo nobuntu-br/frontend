@@ -36,7 +36,6 @@ export class AuthService {
   }
 
   get authenticated() {
-    console.log("O usuário está com acesso: ",this._authenticated);
     return this._authenticated;
   }
 
@@ -68,7 +67,6 @@ export class AuthService {
       const user = userString ? JSON.parse(userString) : null;
       // Verifica se o user não é null, não é undefined e não é um array vazio
       if (user && (!Array.isArray(user) || user.length > 0)) {
-        console.log("To aqui");
         this.currentUser = user;
         this._authenticated = true;
         // this.userManager.storeUser(user);
@@ -82,10 +80,7 @@ export class AuthService {
 
     try {
       const data = await firstValueFrom(this.userService.getByUID(user.UID));
-      console.log(data);
-      
     } catch (error) {
-      console.log("Dados para criação do usuário: ", user);
       const registeredUser = await firstValueFrom(this.userService.create(user));
       
     }
@@ -182,7 +177,6 @@ export class AuthService {
       
       const data = await this.loginOnAzure(username, password);
 
-      console.log(data);
       if (data.error) {
         throw new Error(data.error_description);
       }

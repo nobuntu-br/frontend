@@ -124,7 +124,7 @@ export class FormSpaceBuildComponent implements AfterViewInit {
       target: this.target.toArray()[0],
       value: this.dataToCreatePage,
       dataToCreatePage: this.dataToCreatePage,
-      getDataFromAPIFunction: () => {this.isLoading = false; this.formIsReady.emit(true)}
+      getDataFromAPIFunction: this.getDataFromAPIFunction.bind(this)
     }
 
     let simpleForm = this.formSpaceBuild.createComponent(send);
@@ -149,6 +149,14 @@ export class FormSpaceBuildComponent implements AfterViewInit {
         let simpleForm = this.formSpaceBuild.createComponent(send);
         });
       });
+  }
+
+  getDataFromAPIFunction(){
+    this.isLoading = false;
+    this.formIsReady.emit(true);
+    if(this.currentFormAction === "edit"){
+      this.resourceForm.patchValue(this.data.itemToEdit);
+    }
   }
 
   /**

@@ -115,6 +115,9 @@ export class ForeignKeyInputFieldComponent implements OnDestroy, AfterViewInit {
   ) { }
 
   ngAfterViewInit(): void {
+    if(this.inputValue.value != null){
+      this.setDisplayedValue(this.inputValue, this.fieldDisplayedInLabel);
+    }
     this.inputValue.valueChanges.pipe(takeUntil(this.ngUnsubscribe)).subscribe({
       next: (data) => {
         this.setDisplayedValue(this.inputValue, this.fieldDisplayedInLabel);
@@ -254,7 +257,6 @@ export class ForeignKeyInputFieldComponent implements OnDestroy, AfterViewInit {
     });
 
     dialogRef.afterClosed().pipe(take(1)).subscribe(result => {
-      console.log("O retorno do edit foi:", result);
       if (result == null) return;
       this.selectItems(result, ISelectionOption.set);
     });
@@ -391,7 +393,6 @@ export class ForeignKeyInputFieldComponent implements OnDestroy, AfterViewInit {
     if(newItems.length == 1){
       this.inputValue.setValue(newItems[0]);
       this.displayedValue = [newItems[0][searchableProperty]];
-      console.log("InputValue contém: ",this.inputValue.value);
       return;
     }
 
