@@ -13,6 +13,7 @@ import { FormSpaceBuildComponent } from '../form-space-build/form-space-build.co
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { SelectableCardComponent } from '../selectable-card/selectable-card.component';
 import { OnlineOfflineService } from 'app/shared/services/online-offline.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-subform',
@@ -98,6 +99,7 @@ export class SubformComponent implements AfterViewInit {
   constructor(
     protected injector: Injector,
     private formGeneratorService: FormGeneratorService,
+    private matSnackBar: MatSnackBar,
     @Optional() @Inject(MAT_DIALOG_DATA) public dialogInjectorData: IDefaultListComponentDialogConfig,
     private onlineOfflineService: OnlineOfflineService,
     @Optional() private matDialogComponentRef: MatDialogRef<DefaultListComponent>
@@ -375,7 +377,11 @@ export class SubformComponent implements AfterViewInit {
       let jsonPath = environment.jsonPath + nameClass + ".json";
 
       this.formGeneratorService.getJSONFromDicionario(jsonPath).pipe(takeUntil(this.ngUnsubscribe)).subscribe((JSONDictionary: IPageStructure) => {
+        if(item.id != null && item.id != undefined){
+          this.deleteSubFormOnApi(JSONDictionary, item);
+        } else {
           this.deleteSubFormOffline(JSONDictionary, item);
+        }
       });
     });
   }
@@ -385,6 +391,22 @@ export class SubformComponent implements AfterViewInit {
     this.itemsDisplayed = this.itemsDisplayed.filter((element) => element != item);
     let { itemDisplayedOnSubFormType, objectDisplayedValueOnSubForm, attributesOnSubForm } = this.getAttributesToSubForm(JSONDictionary);
     this.createItemsOnList(this.itemsDisplayed, itemDisplayedOnSubFormType, objectDisplayedValueOnSubForm, attributesOnSubForm);
+  }
+
+  deleteSubFormOnApi(JSONDictionary: IPageStructure, item: any) {
+    this.http.delete(environment.backendUrl + '/' + JSONDictionary.config.apiUrl + '/' + item.id).pipe(takeUntil(this.ngUnsubscribe)).subscribe({
+      next: (response) => {
+          this.deleteSubFormOffline(JSONDictionary, item);
+          this.matSnackBar.open('Item deletado com sucesso!', 'Fechar', {
+            duration: 2000,
+          });
+        },
+        error: (err) => {
+          this.matSnackBar.open('Erro ao deletar item!', 'Fechar', {
+            duration: 2000,
+          });
+        }
+      });
   }
 
   private getAttributesToSubForm(JSONDictionary: IPageStructure) {
