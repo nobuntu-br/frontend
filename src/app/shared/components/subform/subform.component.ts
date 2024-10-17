@@ -229,6 +229,8 @@ export class SubformComponent implements AfterViewInit {
 
       const dialogRef = this.matDialog.open(FormSpaceBuildComponent, {
         id: this.dataToCreatePage.attributes[this.index].name,
+        maxHeight: '95vh', // Altura máxima de 90% da tela
+        width: '80vw',      // Largura de 80% da tela
         data: {
           dataToCreatePage: JSONDictionary,
           currentFormAction: 'edit',
@@ -312,8 +314,8 @@ export class SubformComponent implements AfterViewInit {
 
       const dialogRef = this.matDialog.open(FormSpaceBuildComponent, {
         id: this.dataToCreatePage.attributes[this.index].name,
-        // width: '100vh',
-        // height: '100vh',
+        maxHeight: '95vh', // Altura máxima de 90% da tela
+        width: '80vw',      // Largura de 80% da tela
         data: {
           dataToCreatePage: JSONDictionary,
           currentFormAction: 'new',
@@ -370,6 +372,7 @@ export class SubformComponent implements AfterViewInit {
   deleteSubForm(items: any[]) {
     let confirmation = confirm("Deseja realmente deletar os itens selecionados?");
     if (!confirmation) return;
+    this.selectedItems = []; //Para o botão de deletar não ficar ativo
     items.forEach((item) => {
       let nameClass = this.dataToCreatePage.attributes[this.index].className;
       nameClass = nameClass.charAt(0).toLowerCase() + nameClass.slice(1);
@@ -391,6 +394,9 @@ export class SubformComponent implements AfterViewInit {
     this.itemsDisplayed = this.itemsDisplayed.filter((element) => element != item);
     let { itemDisplayedOnSubFormType, objectDisplayedValueOnSubForm, attributesOnSubForm } = this.getAttributesToSubForm(JSONDictionary);
     this.createItemsOnList(this.itemsDisplayed, itemDisplayedOnSubFormType, objectDisplayedValueOnSubForm, attributesOnSubForm);
+    this.matSnackBar.open('Item deletado com sucesso!', 'Fechar', {
+      duration: 2000,
+    });
   }
 
   deleteSubFormOnApi(JSONDictionary: IPageStructure, item: any) {

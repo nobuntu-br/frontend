@@ -283,8 +283,8 @@ export class ForeignKeyInputFieldComponent implements OnDestroy, AfterViewInit {
 
       const dialogRef = this.matDialog.open(FormSpaceBuildComponent, {
         id: this.dataToCreatePage.attributes[this.index].className + '-form-dialog',
-        // width: '100vh',
-        // height: '100vh',
+        maxHeight: '95vh', // Altura máxima de 90% da tela
+        width: '80vw',      // Largura de 80% da tela
         data: {
           dataToCreatePage: JSONDictionary,
           currentFormAction: 'new',
