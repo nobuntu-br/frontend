@@ -1,0 +1,13 @@
+<mat-form-field style="width: 100%;" appearance="outline">
+  <mat-label>{{displayedLabel}}</mat-label>
+  
+  <!-- Input para seleção de arquivo -->
+  <input type="file" (change)="onFileSelected($event)" hidden #fileInput>
+  
+  <!-- Campo de texto para exibir o nome do arquivo -->
+  <input matInput placeholder="{{placeholder}}" [value]="fileName" readonly [required]="isRequired">
+  
+  <!-- Ícone ou botão para disparar o campo de upload -->
+  <mat-icon (click)="fileInput.click()" *ngIf="svgIcon != null && setIconPosition() == 'start'" [matIconPrefix] svgIcon="{{svgIcon}}"></mat-icon>
+  
+</mat-form-field>
