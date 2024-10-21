@@ -10,6 +10,8 @@ import { SubFormField } from "../components/subform/subform-field";
 import { FormField } from "./form-field";
 import { IPageStructure } from "./pageStructure";
 import { CehckboxField } from "../components/checkbox-field/checkbox-field";
+import { TimeField } from "../components/time-field/time-field";
+import { UploadField } from "../components/upload-input-field/upload-field";
 
 @Injectable({
   providedIn: 'root'
@@ -45,6 +47,12 @@ export class DynamicFormFieldFactory implements FormFactory {
       }
       case 'manyToOne': {
           return null;
+      }
+      case 'time': {
+        return new TimeField();
+      }
+      case 'upload': {
+        return new UploadField();
       }
 
       default:
