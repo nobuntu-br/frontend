@@ -20,7 +20,6 @@ export interface IPageStructureConfig {
   delete: boolean;
   isFormStepper: boolean;
   isLinearFormStepper: boolean;
-  allowedExtensions?: string[];
 }
 
 export interface ISearchableField {
@@ -51,6 +50,7 @@ export interface IPageStructureAttribute {
   selectItemsLimit?: number;
   optionList?: any[];
   step?: string;
+  allowedExtensions?: string[];
 }
 
 export interface IPageStructureAttributesProperties {
