@@ -72,6 +72,7 @@ import { SelectorFieldComponent } from './components/selector-field/selector-fie
 import { UploadInputFieldComponent } from './components/upload-input-field/upload-input-field.component';
 import { TimeFieldComponent, TimePickerDialogComponent } from './components/time-field/time-field.component';
 import { EscalaLinearFieldComponent } from './components/escala-linear-field/escala-linear-field.component';
+import { CaptureLocationFieldComponent } from './components/capture-location-field/capture-location-field.component';
 
 @NgModule({
     imports: [
@@ -177,7 +178,8 @@ import { EscalaLinearFieldComponent } from './components/escala-linear-field/esc
         UploadInputFieldComponent,
         TimeFieldComponent,
         EscalaLinearFieldComponent,
-        TimePickerDialogComponent
+        TimePickerDialogComponent,
+        CaptureLocationFieldComponent
 
     ],
 })

@@ -1,6 +1,6 @@
 <mat-form-field style="width: 100%;" appearance="outline" class="centered-input">
   <mat-label>{{displayedLabel}}</mat-label>
-  <input matInput [value]="selectedTime || ''" readonly>
+  <input matInput [value]="selectedTime || ''" readonly [required]="isRequired">
   <button mat-icon-button matSuffix (click)="openDialog()">
     <mat-icon>access_time</mat-icon>
   </button>
