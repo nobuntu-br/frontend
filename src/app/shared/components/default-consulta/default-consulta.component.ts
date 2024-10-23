@@ -71,7 +71,22 @@ export class DefaultConsultaComponent {
       // height: '100vh',
       data: {
         submitFormFunction: this.getDataFromAPI.bind(this),
-        parameters: this.parameters,
+        parameters: this.parameters.map((param, index) => {
+          return {
+            target: null,
+            resourceForm: resourceForm,
+            className: param.name,
+            fieldName: param.name,
+            fieldType: param.type,
+            isRequired: false,
+            labelTittle: param.name,
+            dataToCreatePage: null,
+            fieldDisplayedInLabel: param.name,
+            index: index,
+            optionList: param.optionList,
+            selectItemsLimit: param.selectItemsLimit,
+          }
+        }),
         resourceForm: resourceForm,
         returnFormFunction: () => {
           dialogRef.close(resourceForm.value);
@@ -94,7 +109,7 @@ export class DefaultConsultaComponent {
   }
 
   getUrlWithParameters(parameters: any) {
-    let url = environment.backendUrl + '/' + this.apiUrl + '?';
+    let url = environment.backendUrl + '/api/consulta/' + this.apiUrl + '?';
 
     for(let field in parameters) {
       url += field + '=' + parameters[field] + '&';

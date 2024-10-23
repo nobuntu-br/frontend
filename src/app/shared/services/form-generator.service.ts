@@ -79,7 +79,7 @@ export class FormGeneratorService {
       return null;
     }
 
-    createComponentData.resourceForm.addControl(createComponentData.fieldName,formField.createFormField(createComponentData, createComponentData.dataToCreatePage));
+    createComponentData.resourceForm.addControl(createComponentData.fieldName,formField.createFormField(createComponentData));
   }
 
   //TODO remover essa função
