@@ -73,6 +73,8 @@ import { UploadInputFieldComponent } from './components/upload-input-field/uploa
 import { TimeFieldComponent, TimePickerDialogComponent } from './components/time-field/time-field.component';
 import { EscalaLinearFieldComponent } from './components/escala-linear-field/escala-linear-field.component';
 import { CaptureLocationFieldComponent } from './components/capture-location-field/capture-location-field.component';
+import { DefaultConsultaComponent } from './components/default-consulta/default-consulta.component';
+import { ConsultaFormComponent } from './components/default-consulta/consulta-form/consulta-form.component';
 
 @NgModule({
     imports: [
@@ -179,8 +181,9 @@ import { CaptureLocationFieldComponent } from './components/capture-location-fie
         TimeFieldComponent,
         EscalaLinearFieldComponent,
         TimePickerDialogComponent,
-        CaptureLocationFieldComponent
-
+        CaptureLocationFieldComponent,
+        DefaultConsultaComponent,
+        ConsultaFormComponent
     ],
 })
 export class SharedModule { }

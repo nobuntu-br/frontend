@@ -24,6 +24,7 @@ export class DefaultCardComponent implements AfterViewInit {
   @Input() columnsQuantity: number;
   @Input() displayedfieldsName: string[];
   @Input() fieldsType: string[];
+  @Input() isEditable: boolean = true;
   /**
    * Caso o campo for um objeto, será o nome do campo que está dentro do que será exibido.
    * [Exemplo]: O campo tem um objeto, esse objeto tem "id", "name" e "age". O campo apresentado poderá ser o "name", assim aparecerá o valor do campo "name" no componente.
