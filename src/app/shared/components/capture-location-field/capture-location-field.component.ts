@@ -2,7 +2,6 @@ import { Component, Injector, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
 import { BaseFieldComponent } from '../base-field/base-field.component';
-import * as L from 'leaflet'; // Import Leaflet
 @Component({
   selector: 'app-capture-location-field',
   templateUrl: './capture-location-field.component.html',
