@@ -20,6 +20,7 @@ export interface IPageStructureConfig {
   delete: boolean;
   isFormStepper: boolean;
   isLinearFormStepper: boolean;
+  allowedExtensions?: string[];
 }
 
 export interface ISearchableField {

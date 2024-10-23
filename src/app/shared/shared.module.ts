@@ -70,7 +70,7 @@ import { CheckboxFieldComponent } from './components/checkbox-field/checkbox-fie
 import { ViewToggleComponent } from './components/view-toggle/view-toggle.component';
 import { SelectorFieldComponent } from './components/selector-field/selector-field.component';
 import { UploadInputFieldComponent } from './components/upload-input-field/upload-input-field.component';
-import { TimeFieldComponent } from './components/time-field/time-field.component';
+import { TimeFieldComponent, TimePickerDialogComponent } from './components/time-field/time-field.component';
 import { EscalaLinearFieldComponent } from './components/escala-linear-field/escala-linear-field.component';
 
 @NgModule({
@@ -176,7 +176,9 @@ import { EscalaLinearFieldComponent } from './components/escala-linear-field/esc
         SelectorFieldComponent,
         UploadInputFieldComponent,
         TimeFieldComponent,
-        EscalaLinearFieldComponent
+        EscalaLinearFieldComponent,
+        TimePickerDialogComponent
+
     ],
 })
 export class SharedModule { }
