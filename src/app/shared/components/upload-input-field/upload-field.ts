@@ -9,9 +9,9 @@ export class UploadField implements FormField {
         const component = createdComponent.instance;
 
         component.label = createComponentData.labelTittle;
-        component.valuesList = createComponentData.dataToCreatePage.attributes[createComponentData.index].optionList;
-        component.selectItemsLimit = createComponentData.dataToCreatePage.attributes[createComponentData.index].selectItemsLimit;
-        component.allowedExtensions = createComponentData.dataToCreatePage.attributes[createComponentData.index].allowedExtensions;
+        component.valuesList = createComponentData.valuesList;
+        component.selectItemsLimit = createComponentData.selectItemsLimit;
+        component.allowedExtensions = createComponentData.allowedExtensions;
         component.ngAfterViewInit();
 		return createdComponent.instance.inputValue;
 	}
