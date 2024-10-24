@@ -34,6 +34,7 @@ export interface ICreateComponentParams {
   fieldDisplayedInLabel: string,
   valuesList: any[],
   index: number,
+  allowedExtensions?: string[];
   optionList?: any[],
   selectItemsLimit?: number,
   dataType?: string,
@@ -120,7 +121,10 @@ export class FormGeneratorService {
         fieldDisplayedInLabel: attribute.fieldDisplayedInLabel,
         valuesList: null,
         dataType: attribute.type,
-        index: index
+        index: index,
+        allowedExtensions: attribute.allowedExtensions,
+        optionList: attribute.optionList,
+        selectItemsLimit: attribute.selectItemsLimit
       });
     });
   }

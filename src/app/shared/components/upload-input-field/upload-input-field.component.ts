@@ -27,7 +27,7 @@ export class UploadInputFieldComponent implements AfterViewInit {
   /**
    * Lista de extensões de arquivo permitidas
    */
-  @Input() allowedExtensions: string[] ; // Exemplo de extensões permitidas
+  @Input() allowedExtensions: string[] = []; // Exemplo de extensões permitidas
 
   public inputValue = new FormControl<object[]>([]);
   fileName: string = '';
@@ -53,7 +53,6 @@ export class UploadInputFieldComponent implements AfterViewInit {
       const extension = file.name.split('.').pop().toLowerCase(); // Obtém a extensão do arquivo
       if (this.allowedExtensions.includes(extension)) {
         this.fileName = file.name;
-        console.log(file); // Aqui você pode manipular o arquivo selecionado
       } else {
         alert(`Extensão de arquivo inválida. Permitido: ${this.allowedExtensions.join(', ')}`);
         event.target.value = ''; // Limpa o input se a extensão for inválida
