@@ -15,9 +15,10 @@ export class TimeFieldComponent extends BaseFieldComponent implements OnInit, On
   @Input() isRequired: boolean = false;
   @Input() className: string;
   displayedLabel: string;
-  selectedTime: string; // A variável para armazenar o tempo selecionado
+  selectedTime: string = ''; // Initial value or set based on requirements
 
   inputValue = new FormControl<Date | null>(null);
+  
   private ngUnsubscribe = new Subject();
 
   constructor(protected injector: Injector, private dialog: MatDialog) {
@@ -58,6 +59,31 @@ export class TimeFieldComponent extends BaseFieldComponent implements OnInit, On
     });
   }
 
+  validateTimeFormat(event: KeyboardEvent) {
+    const input = (event.target as HTMLInputElement).value;
+    const regex = /^([01]\d|2[0-3]):([0-5]\d)?$/; // Validates "HH:MM" format
+    if (!regex.test(input) && event.key !== 'Backspace') {
+      event.preventDefault();
+    }
+  }
+
+  formatTimeInput(value: string) {
+    // Remove any non-digit characters
+    const cleanedValue = value.replace(/[^0-9]/g, '');
+  
+    if (cleanedValue.length <= 2) {
+      // If only the hour part is present (1-2 digits)
+      this.selectedTime = cleanedValue;
+    } else if (cleanedValue.length <= 4) {
+      // Format as HH:MM if 3-4 digits are available
+      this.selectedTime = `${cleanedValue.slice(0, 2)}:${cleanedValue.slice(2)}`;
+    } else {
+      // Limit input to the first four digits (HHMM) if too many digits are entered
+      this.selectedTime = `${cleanedValue.slice(0, 2)}:${cleanedValue.slice(2, 4)}`;
+    }
+  }
+  
+
   ngOnDestroy(): void {
     this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
@@ -65,12 +91,14 @@ export class TimeFieldComponent extends BaseFieldComponent implements OnInit, On
 }
 
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
   selector: 'app-time-picker-dialog',
   templateUrl: './dialog-time-input.html',
   styleUrls: ['./dialog-time-input.scss']
 })
+
 export class TimePickerDialogComponent {
   @Input() title?: string;
   @Input() cancelLabel?: string;
@@ -113,6 +141,8 @@ export class TimePickerDialogComponent {
   padNumber(value: number): string {
     return value.toString().padStart(2, '0');
   }
+
+
   
 }
 
