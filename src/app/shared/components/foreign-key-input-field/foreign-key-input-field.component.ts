@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { DefaultListComponent, IDefaultListComponentDialogConfig } from '../default-list/default-list.component';
 import { Subject, take, takeUntil } from 'rxjs';
@@ -298,9 +298,18 @@ export class ForeignKeyInputFieldComponent implements OnDestroy, AfterViewInit {
     }); 
   }
 
-  submitForm(JSONDictionary: IPageStructure, item: any) {
+  submitForm(JSONDictionary: IPageStructure, item: FormGroup) {
     if (item == null) return;
 
+    if(item.invalid){
+      item.markAllAsTouched();
+      this.matSnackBar.open("Preencha todos os campos obrigatórios", "Fechar", {
+        duration: 5000
+      });
+      return;
+    }
+
+   item = item.value;    
     const apiUrl = environment.backendUrl + '/' + JSONDictionary.config.apiUrl;
     item = this.objectTratament(item);
     this.http.post(apiUrl, item).pipe(take(1)).subscribe((response: any) => {

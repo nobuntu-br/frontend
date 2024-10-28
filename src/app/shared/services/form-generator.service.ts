@@ -1,5 +1,5 @@
 import { Injectable, Injector, ViewContainerRef } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
@@ -34,6 +34,7 @@ export interface ICreateComponentParams {
   fieldDisplayedInLabel: string,
   valuesList: any[],
   index: number,
+  defaultValue: any,
   allowedExtensions?: string[];
   optionList?: any[],
   selectItemsLimit?: number,
@@ -80,7 +81,14 @@ export class FormGeneratorService {
       return null;
     }
 
-    createComponentData.resourceForm.addControl(createComponentData.fieldName,formField.createFormField(createComponentData));
+    createComponentData.resourceForm.addControl(
+      createComponentData.fieldName, 
+      formField.createFormField(createComponentData)
+    );
+
+    if (createComponentData.isRequired) {
+      createComponentData.resourceForm.controls[createComponentData.fieldName].setValidators(Validators.required);
+    }
   }
 
   //TODO remover essa função
@@ -119,6 +127,7 @@ export class FormGeneratorService {
         labelTittle: attribute.name,
         dataToCreatePage: null,
         fieldDisplayedInLabel: attribute.fieldDisplayedInLabel,
+        defaultValue: attribute.defaultValue,
         valuesList: null,
         dataType: attribute.type,
         index: index,

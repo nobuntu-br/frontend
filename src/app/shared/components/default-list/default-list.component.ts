@@ -278,7 +278,6 @@ export class DefaultListComponent
         next: (itemsDisplayed) => {
           this.itemsDisplayed = itemsDisplayed;
 
-          if (itemsDisplayed.length == 0) return;
           // console.log("Itens obtidos na requisição: ", itemsDisplayed);
 
           if (this.maxDisplayedItems > this.itemsDisplayed.length)
@@ -624,12 +623,13 @@ export class DefaultListComponent
 
           this.selectedItems = [];
 
+          
           alert(
             this.translocoService.translate(
               'componentsBase.Alerts.deleteSuccessMessage'
             )
           );
-
+          
           this.getDataFromAPI(this.apiUrl);
         }
       });

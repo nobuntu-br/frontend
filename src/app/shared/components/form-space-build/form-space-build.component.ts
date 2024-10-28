@@ -210,10 +210,10 @@ export class FormSpaceBuildComponent implements AfterViewInit {
     this.returnFormFunction = this.data.returnFormFunction;
     // this.config = this.data.config;
     if(this.data.currentFormAction === "edit"){
-      this.submitFormFunction = () => {this.data.submitFormFunction(this.dataToCreatePage, this.data.itemToEdit, this.resourceForm.value)};
+      this.submitFormFunction = () => {this.data.submitFormFunction(this.dataToCreatePage, this.data.itemToEdit, this.resourceForm)};
     }
     if(this.data.currentFormAction === "new"){
-      this.submitFormFunction = () => {this.data.submitFormFunction(this.dataToCreatePage, this.resourceForm.value)};
+      this.submitFormFunction = () => {this.data.submitFormFunction(this.dataToCreatePage, this.resourceForm)};
     }
   }
   

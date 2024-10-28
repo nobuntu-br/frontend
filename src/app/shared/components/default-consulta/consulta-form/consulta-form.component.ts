@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, Inject, Optional, ViewChild, ViewContainerRef } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { DynamicFormFieldFactory } from 'app/shared/models/dinamic-form-factory';
 import { FormField } from 'app/shared/models/form-field';
@@ -43,11 +43,14 @@ export class ConsultaFormComponent implements AfterViewInit {
     const formField: FormField = this.formFieldFactory.createFormFieldConsulta(createComponentData);
 
     this.resourceForm.addControl(createComponentData.className, formField.createFormField(createComponentData));
+
+    if (createComponentData.isRequired) {
+      createComponentData.resourceForm.controls[createComponentData.fieldName].setValidators(Validators.required);
+    }
   }
 
   search() {
-    this.data.submitFormFunction(this.objectTratament(this.resourceForm.value));
-    this.dialogRef.close();
+    this.data.submitFormFunction(this.objectTratament(this.resourceForm.value), this.resourceForm);
   }
 
   /**

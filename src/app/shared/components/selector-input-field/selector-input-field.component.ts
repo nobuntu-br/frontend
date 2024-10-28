@@ -25,6 +25,10 @@ export class SelectorInputFieldComponent implements AfterViewInit{
    * Quantidade limite de itens que podem ser selecionados
    */
   @Input() selectItemsLimit: number;
+  /**
+   * Valor padrão do campo
+   */
+  @Input() defaultValue: string;
   
   public inputValue = new FormControl<string | ISelectorValue | ISelectorValue[]>(null);
   constructor(
@@ -32,6 +36,7 @@ export class SelectorInputFieldComponent implements AfterViewInit{
   ){}
 
   ngAfterViewInit(): void {
+    this.getDefaultValue();
     this.limitSelectedItems();
     this.inputValue.valueChanges.pipe(delay(0), take(1)).subscribe(() => {
       this.getIdsFromValues();
@@ -75,6 +80,12 @@ export class SelectorInputFieldComponent implements AfterViewInit{
         ids.push(item.id);
       });
       this.inputValue.setValue(ids);
+    }
+  }
+
+  getDefaultValue(): void {
+    if (this.defaultValue) {
+      this.inputValue.setValue(this.defaultValue);
     }
   }
 

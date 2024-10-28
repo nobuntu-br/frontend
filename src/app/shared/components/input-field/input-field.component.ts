@@ -51,6 +51,10 @@ export class InputFieldComponent extends BaseFieldComponent implements OnInit, O
    * Função para ser realizada ao ser pressionado o icone presente no campo.
    */
   @Input() actionOnClickInIcon: () => void = null;
+  /**
+   * Valor padrão do campo.
+   */
+  @Input() defaultValue: string | number | null = null;
 
   display = new FormControl<string | null>(null);
 
@@ -71,30 +75,8 @@ export class InputFieldComponent extends BaseFieldComponent implements OnInit, O
   }
 
   ngOnInit(): void {
+    this.getDefaultValue();
     this.setLabel();
-    // this.inputValue.valueChanges.subscribe((newValue: string | number) => {
-    //   if (newValue == null) return;
-
-    //   if (typeof newValue === 'number') {
-    //     console.log(newValue);
-    //     this.changeFormatToMask(this.display, newValue);
-
-        
-
-    //   } else {
-    //     this.display.setValue(newValue);
-    //   }
-    // });
-
-    // this.display.valueChanges.subscribe((newValue) => {
-
-    //   if(typeof this.inputValue.value === 'number'){
-    //     newValue = newValue.replace(',', '.');
-    //     this.inputValue.setValue(parseFloat(newValue), { emitEvent: false });
-    //   }
-
-    // });
-
   }
 
   setLabel() {
@@ -132,6 +114,12 @@ export class InputFieldComponent extends BaseFieldComponent implements OnInit, O
     } else if (newValue.toString().includes('.') && this.mask.includes(',')) {
       const formattedValue = newValue.toString().replace('.', ',');
       inputValueForm.setValue(formattedValue, { emitEvent: false });
+    }
+  }
+
+  getDefaultValue() {
+    if (this.defaultValue != null) {
+      this.inputValue.setValue(this.defaultValue);
     }
   }
 

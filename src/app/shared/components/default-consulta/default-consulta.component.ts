@@ -67,6 +67,7 @@ export class DefaultConsultaComponent {
   getParameters() {
     let resourceForm = new FormGroup({});
     const dialogRef = this.matDialog.open(ConsultaFormComponent, {
+      id: 'consulta-form',
       // width: '100vh',
       // height: '100vh',
       data: {
@@ -95,7 +96,15 @@ export class DefaultConsultaComponent {
     })
   }
 
-  getDataFromAPI(parameters: any) {
+  getDataFromAPI(parameters: any, resourceForm: FormGroup) {
+    if(!resourceForm.valid) {
+      resourceForm.markAllAsTouched();
+      this.matSnackBar.open('Preencha todos os campos obrigatórios', 'Fechar', {
+        duration: 5000
+      });
+      return;
+    }
+    this.matDialog.getDialogById('consulta-form').close();
     const url = this.getUrlWithParameters(parameters);
     this.http.get(url).subscribe((data: any) => {
       this.itemsDisplayed = data;

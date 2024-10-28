@@ -7,7 +7,7 @@ export class CehckboxField implements FormField {
 	createFormField(createComponentData: ICreateComponentParams): FormControl {
 		let createdComponent = createComponentData.target.createComponent(CheckboxFieldComponent);
         const component = createdComponent.instance;
-
+        component.defaultValue = createComponentData.defaultValue;
         component.label = createComponentData.labelTittle;
         return createdComponent.instance.inputValue;
 	}
