@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, Input, Output, ViewChild, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, Output, Renderer2, ViewChild, ViewContainerRef } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { FormGeneratorService, ICreateComponentParams } from 'app/shared/services/form-generator.service';
 import { IPageStructure } from 'app/shared/models/pageStructure';
@@ -36,7 +36,7 @@ export class GeneratedSimpleFormComponent implements AfterViewInit {
   @ViewChild('placeToRender', { read: ViewContainerRef }) target!: ViewContainerRef;
 
   constructor(
-    public formGenerator: FormGeneratorService,
+    public formGenerator: FormGeneratorService
   ) { }
 
   ngAfterViewInit(): void {
@@ -59,6 +59,7 @@ export class GeneratedSimpleFormComponent implements AfterViewInit {
           isRequired: attribute.isRequired ? attribute.isRequired : false,
           value: {propertiesAttributes: attribute.properties, apiUrl: attribute.apiUrl},
           labelTittle: attribute.name,
+          defaultValue: attribute.defaultValue,
           dataToCreatePage: this.dataToCreatePage,
           fieldDisplayedInLabel: attribute.fieldDisplayedInLabel,
           valuesList: null,

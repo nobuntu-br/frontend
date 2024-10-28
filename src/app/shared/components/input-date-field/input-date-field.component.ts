@@ -37,12 +37,16 @@ export class InputDateFieldComponent extends BaseFieldComponent implements OnIni
    * Subject responsável por remover os observadores que estão rodando na pagina no momento do componente ser deletado.
    */
   private ngUnsubscribe = new Subject();
-
+  /**
+   * Valor padrão do campo.
+  */
+  @Input() defaultValue: Date | null = null;
   constructor(protected injector: Injector){
     super(injector);
   }
 
   ngOnInit(): void {
+    this.getDefaultValue();
     this.setLabel();
   }
 
@@ -60,6 +64,12 @@ export class InputDateFieldComponent extends BaseFieldComponent implements OnIni
         this.displayedLabel = this.setCharactersLimit(this.label, this.charactersLimit);
       },
     });
+  }
+
+  getDefaultValue() {
+    if(this.defaultValue){
+      this.inputValue.setValue(this.defaultValue);
+    }
   }
 
   ngOnDestroy(): void {

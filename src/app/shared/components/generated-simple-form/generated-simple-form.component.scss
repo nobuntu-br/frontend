@@ -4,7 +4,6 @@ $breakpoint-medium: 768px; // Exemplo: tablets
 $breakpoint-large: 992px; // Exemplo: laptops/desktops
 $breakpoint-extra-large: 1200px; // Exemplo: monitores grandes
 
-
 #fixedButtons {
     position: fixed;
     z-index: 99;
@@ -52,5 +51,8 @@ $breakpoint-extra-large: 1200px; // Exemplo: monitores grandes
     #formBase {
         display: grid; grid-template-columns: repeat(3, 1fr); column-gap: 20px; padding: 10px;
         height: 100%;
+    }
+    .subform-class {
+        grid-column: span 3; // Ocupa duas colunas no grid
     }
 }

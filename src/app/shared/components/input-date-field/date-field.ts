@@ -10,6 +10,7 @@ export class DateField implements FormField {
     createdComponent.instance.label = createComponentData.labelTittle;
     createdComponent.instance.isRequired = createComponentData.isRequired;
     createdComponent.instance.className = createComponentData.className;
+    createdComponent.instance.defaultValue = createComponentData.defaultValue;
     return createdComponent.instance.inputValue;
   }
 }

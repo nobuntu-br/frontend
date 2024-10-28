@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { AfterViewInit, Component, EventEmitter, Inject, Injector, Input, OnInit, Optional, Output, ViewChild, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, Component, ComponentFactoryResolver, EventEmitter, Inject, Injector, Input, OnInit, Optional, Output, ViewChild, ViewContainerRef } from '@angular/core';
 import { MatDialog, MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslocoService } from '@ngneat/transloco';
@@ -99,6 +99,7 @@ export class SubformComponent implements AfterViewInit {
   constructor(
     protected injector: Injector,
     private formGeneratorService: FormGeneratorService,
+    private resolver: ComponentFactoryResolver,
     private matSnackBar: MatSnackBar,
     @Optional() @Inject(MAT_DIALOG_DATA) public dialogInjectorData: IDefaultListComponentDialogConfig,
     private onlineOfflineService: OnlineOfflineService,
@@ -139,8 +140,8 @@ export class SubformComponent implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.isLoading = false;
-    this.setCurrentAction();
+      this.isLoading = false;
+      this.setCurrentAction();
   }
 
   /**
@@ -263,12 +264,21 @@ export class SubformComponent implements AfterViewInit {
     }); 
   }
 
-  submitEditForm(JSONDictionary: IPageStructure, item: any, itemEdited: any) {
+  submitEditForm(JSONDictionary: IPageStructure, item: FormGroup, itemEdited: any) {
     if (itemEdited == null) return;
-    if(item.id != null && item.id != undefined){
-      this.editSubFormOnApi(JSONDictionary, item, itemEdited);
+
+    if(item.invalid) {
+      item.markAllAsTouched();
+      this.matSnackBar.open('Erro ao editar item!', 'Fechar', {
+        duration: 2000,
+      });
+      return
+    }
+
+    if(item.value.id != null && item.value.id != undefined){
+      this.editSubFormOnApi(JSONDictionary, item.value, itemEdited);
     } else {
-      this.editSubFormOffline(JSONDictionary, item, itemEdited);
+      this.editSubFormOffline(JSONDictionary, item.value, itemEdited);
     }
   }
 
@@ -333,7 +343,7 @@ export class SubformComponent implements AfterViewInit {
     }); 
   }
 
-  submitForm(JSONDictionary: IPageStructure, item: any) {
+  submitForm(JSONDictionary: IPageStructure, item: FormGroup) {
     if (item == null) return;
     this.createSubFormOffline(JSONDictionary, item);
   }
@@ -358,7 +368,17 @@ export class SubformComponent implements AfterViewInit {
     return item;
   }
 
-  createSubFormOffline(JSONDictionary: IPageStructure, item: any) {
+  createSubFormOffline(JSONDictionary: IPageStructure, item: FormGroup) {
+    if(item.invalid) {
+      item.markAllAsTouched();
+      this.matSnackBar.open('Erro ao criar item!', 'Fechar', {
+        duration: 2000,
+      });
+      return
+    }
+
+    item = item.value;
+
     this.itemsDisplayed.push(item);
     let { itemDisplayedOnSubFormType, objectDisplayedValueOnSubForm, attributesOnSubForm } = this.getAttributesToSubForm(JSONDictionary);
     this.createItemsOnList(this.itemsDisplayed, itemDisplayedOnSubFormType, objectDisplayedValueOnSubForm, attributesOnSubForm);

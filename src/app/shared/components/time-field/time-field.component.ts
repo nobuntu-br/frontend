@@ -14,6 +14,10 @@ export class TimeFieldComponent extends BaseFieldComponent implements OnInit, On
   @Input() charactersLimit: number;
   @Input() isRequired: boolean = false;
   @Input() className: string;
+    /**
+   * Valor padrão do campo
+   */
+    @Input() defaultValue: string;
   displayedLabel: string;
   selectedTime: string = ''; // Initial value or set based on requirements
 
@@ -26,6 +30,7 @@ export class TimeFieldComponent extends BaseFieldComponent implements OnInit, On
   }
 
   ngOnInit(): void {
+    this.getDefaultValue();
     this.setLabel();
   }
 
@@ -59,6 +64,14 @@ export class TimeFieldComponent extends BaseFieldComponent implements OnInit, On
     });
   }
 
+  getDefaultValue() {
+    if (this.defaultValue) {
+      this.selectedTime = this.defaultValue;  // Armazena o tempo padrão
+      this.inputValue.setValue(new Date(`1970-01-01T${this.defaultValue}:00`));  // Atualiza o valor do formulário
+    }
+  }
+
+
   validateTimeFormat(event: KeyboardEvent) {
     const input = (event.target as HTMLInputElement).value;
     const regex = /^([01]\d|2[0-3]):([0-5]\d)?$/; // Validates "HH:MM" format
@@ -83,7 +96,6 @@ export class TimeFieldComponent extends BaseFieldComponent implements OnInit, On
     }
   }
   
-
   ngOnDestroy(): void {
     this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();

@@ -91,8 +91,12 @@ export abstract class BaseResourceFormComponent<T extends BaseResourceModel> imp
   }
 
   submitForm() {
+    if (this.resourceForm.invalid) {
+      this.resourceForm.markAllAsTouched();
+      alert("Formulário inválido. Por favor, corrija os campos que estão destacados");
+      return;
+    }
     this.submittingForm = true;
-    console.log("Formulário enviado: ", this.resourceForm.value);
     if (this.currentAction == "new"){
       //TODO: achar uma forma de encontrar o filho
       this.submitFormWithChild();

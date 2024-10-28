@@ -34,6 +34,10 @@ export class CheckboxFieldComponent extends BaseFieldComponent implements OnInit
    * Subject responsável por remover os observadores que estão rodando na pagina no momento do componente ser deletado.
    */
     private ngUnsubscribe = new Subject();
+      /**
+   * Valor padrão do campo
+   */
+  @Input() defaultValue: boolean | null = false;
   /**
    * Campo que retorna o valor do checkbox.
    * @example true
@@ -46,6 +50,7 @@ export class CheckboxFieldComponent extends BaseFieldComponent implements OnInit
   }
 
   ngOnInit(): void {
+    this.getDefaultValue();
     this.setLabel();
   }
 
@@ -64,6 +69,13 @@ export class CheckboxFieldComponent extends BaseFieldComponent implements OnInit
         this.displayedLabel = this.setCharactersLimit(this.label, this.charactersLimit);
       },
     });
+  }
+
+  getDefaultValue() {
+    if (this.defaultValue !== null) {
+      console.log(this.defaultValue);
+      this.inputValue.setValue(this.defaultValue);
+    }
   }
 
   ngOnDestroy(): void {
