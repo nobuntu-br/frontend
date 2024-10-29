@@ -75,6 +75,10 @@ import { EscalaLinearFieldComponent } from './components/escala-linear-field/esc
 import { CaptureLocationFieldComponent } from './components/capture-location-field/capture-location-field.component';
 import { DefaultConsultaComponent } from './components/default-consulta/default-consulta.component';
 import { ConsultaFormComponent } from './components/default-consulta/consulta-form/consulta-form.component';
+import { LocationFieldComponent } from './components/location-field/location-field.component';
+import { LocationPickerDialogComponent } from './components/location-picker-field/location-picker-field.component'
+import { POSITION_OPTIONS } from '@ng-web-apis/geolocation';
+import { BrowserModule } from '@angular/platform-browser';
 
 @NgModule({
     imports: [
@@ -110,9 +114,12 @@ import { ConsultaFormComponent } from './components/default-consulta/consulta-fo
         MatToolbarModule,
         MatSidenavModule,
         MatProgressSpinnerModule,
-        MatExpansionModule
+        MatExpansionModule,
+        BrowserModule
     ],
     providers: [
+        Geolocation,
+        { provide: POSITION_OPTIONS, useValue: { enableHighAccuracy: true, timeout: 3000, maximumAge: 1000 } },
         { provide: TRANSLOCO_SCOPE, useValue: { scope: "components", alias: "componentsBase" } }
     ],
     exports: [
@@ -183,7 +190,9 @@ import { ConsultaFormComponent } from './components/default-consulta/consulta-fo
         TimePickerDialogComponent,
         CaptureLocationFieldComponent,
         DefaultConsultaComponent,
-        ConsultaFormComponent
+        ConsultaFormComponent,
+        LocationFieldComponent,
+        LocationPickerDialogComponent
     ],
 })
 export class SharedModule { }

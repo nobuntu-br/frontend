@@ -12,6 +12,8 @@ import { IPageStructure } from "./pageStructure";
 import { CehckboxField } from "../components/checkbox-field/checkbox-field";
 import { TimeField } from "../components/time-field/time-field";
 import { UploadField } from "../components/upload-input-field/upload-field";
+import { CaptureLocationField } from "../components/capture-location-field/capture-location-field";
+import { LocationField } from "../components/location-field/location-field";
 
 @Injectable({
   providedIn: 'root'
@@ -53,6 +55,12 @@ export class DynamicFormFieldFactory implements FormFactory {
       }
       case 'upload': {
         return new UploadField();
+      }
+      case 'captureLocation' : {
+        return new CaptureLocationField();
+      }
+      case 'location': {
+        return new LocationField();
       }
 
       default:
