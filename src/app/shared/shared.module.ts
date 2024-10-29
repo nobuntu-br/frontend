@@ -76,7 +76,7 @@ import { CaptureLocationFieldComponent } from './components/capture-location-fie
 import { DefaultConsultaComponent } from './components/default-consulta/default-consulta.component';
 import { ConsultaFormComponent } from './components/default-consulta/consulta-form/consulta-form.component';
 import { LocationFieldComponent } from './components/location-field/location-field.component';
-import { LocationPickerDialogComponent } from './components/location-picker-field/location-picker-field.component'
+import { LocationPickerDialogComponent } from './components/location-picker-dialog/location-picker-dialog.component';
 import { POSITION_OPTIONS } from '@ng-web-apis/geolocation';
 import { BrowserModule } from '@angular/platform-browser';
 
