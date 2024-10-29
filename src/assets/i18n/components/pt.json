@@ -109,5 +109,10 @@
     "auth-signin-page":{
         "authentication-error-redirect-to-signin":"Esta aplicação não tem permissão de acesso ao provedor de identidade do domínio. Consulte o administrador da aplicação.",
         "redirect-to-signin":"Redirecionar para a página de inscrição"
+    },
+    "location-field":{
+        "select": "Selecione a Localização",
+        "buttonCancel": "Cancelar",
+        "buttonConfirm": "Confirmar"
     }
 }

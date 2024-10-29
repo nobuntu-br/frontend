@@ -107,5 +107,10 @@
     "auth-signin-page":{
         "authentication-error-redirect-to-signin":"This application does not have permission to access the domain identity provider. Consult the application administrator.",
         "redirect-to-signin":"Redirect to SignUp Page"
+    },
+    "location-field":{
+        "select": "Select Location",
+        "buttonCancel": "Cancel",
+        "buttonConfirm": "Confirm"
     }
 }
