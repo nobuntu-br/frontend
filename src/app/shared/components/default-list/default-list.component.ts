@@ -124,7 +124,7 @@ export interface IDefaultListComponentDialogConfig {
 export class DefaultListComponent
   implements AfterViewInit, OnDestroy, IDefaultListComponentDialogConfig
 {
-  viewMode: string = 'card'; // Definindo o modo padrão como 'list'
+  viewMode: string = 'list'; // Definindo o modo padrão como 'list'
   @Input() currentView: string; // Valor padrão é 'card'
   @Input() itemsDisplayed: any[] = [];
   @Input() columnsQuantity: number = 1;
