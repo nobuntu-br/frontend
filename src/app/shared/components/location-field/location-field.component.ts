@@ -3,7 +3,7 @@ import { FormControl } from '@angular/forms';
 import { GeolocationService } from '@ng-web-apis/geolocation';
 import { BaseFieldComponent } from '../base-field/base-field.component';
 import { MatDialog } from '@angular/material/dialog';
-import { LocationPickerDialogComponent } from '../location-picker-field/location-picker-field.component'
+import { LocationPickerDialogComponent } from '../location-picker-dialog/location-picker-dialog.component';
 
 @Component({
   selector: 'app-location-field',
