@@ -37,12 +37,12 @@ export class CheckboxFieldComponent extends BaseFieldComponent implements OnInit
       /**
    * Valor padrão do campo
    */
-  @Input() defaultValue: boolean | null = false;
+  @Input() defaultValue: boolean;
   /**
    * Campo que retorna o valor do checkbox.
    * @example true
   */ 
-  public inputValue = new FormControl<boolean | null>(false);
+  public inputValue = new FormControl<boolean>(false);
 
 
   constructor(injector: Injector) {
@@ -72,9 +72,11 @@ export class CheckboxFieldComponent extends BaseFieldComponent implements OnInit
   }
 
   getDefaultValue() {
-    if (this.defaultValue !== null) {
+    if (this.defaultValue != null) {
       console.log(this.defaultValue);
       this.inputValue.setValue(this.defaultValue);
+    } else {
+      this.inputValue.setValue(false);
     }
   }
 
