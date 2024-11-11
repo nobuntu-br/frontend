@@ -3,8 +3,6 @@ import { OnInit, AfterContentChecked, Injector, Directive, OnDestroy } from '@an
 import { FormBuilder, FormGroup } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
 import { TranslocoService } from '@ngneat/transloco';
-import { Estabelecimento } from 'app/modules/estabelecimento/shared/estabelecimento.model';
-import { EstabelecimentoService } from 'app/modules/estabelecimento/shared/estabelecimento.service';
 import { BaseResourceModel } from 'app/shared/models/base-resource.model';
 import { LocalStorageFormService } from 'app/shared/services/local-storage-form.service';
 import { BaseResourceService } from 'app/shared/services/shared.service';
