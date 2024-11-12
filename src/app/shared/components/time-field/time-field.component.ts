@@ -1,5 +1,5 @@
-import { Component, Inject, Injector, Input, OnDestroy, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { Component, Inject, Injector, Input, OnDestroy, OnInit, AfterViewInit } from '@angular/core';
+import { FormControl, Validators } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { BaseFieldComponent } from '../base-field/base-field.component';
@@ -9,19 +9,21 @@ import { BaseFieldComponent } from '../base-field/base-field.component';
   templateUrl: './time-field.component.html',
   styleUrls: ['./time-field.component.scss']
 })
-export class TimeFieldComponent extends BaseFieldComponent implements OnInit, OnDestroy {
+export class TimeFieldComponent extends BaseFieldComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() label: string;
   @Input() charactersLimit: number;
   @Input() isRequired: boolean = false;
   @Input() className: string;
-    /**
+  /**
    * Valor padrão do campo
    */
-    @Input() defaultValue: string;
+  @Input() defaultValue: string;
   displayedLabel: string;
   selectedTime: string = ''; // Initial value or set based on requirements
 
-  inputValue = new FormControl<Date | null>(null);
+  inputValue = new FormControl<string | null>(null, [
+    Validators.pattern(/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/)
+  ]);
   
   private ngUnsubscribe = new Subject();
 
@@ -41,7 +43,7 @@ export class TimeFieldComponent extends BaseFieldComponent implements OnInit, On
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
+      if (result && this.isValidTime(result)) {
         this.selectedTime = result;  // Armazena o tempo selecionado
         this.inputValue.setValue(result);  // Atualiza o valor do formulário
       }
@@ -67,38 +69,67 @@ export class TimeFieldComponent extends BaseFieldComponent implements OnInit, On
   getDefaultValue() {
     if (this.defaultValue) {
       this.selectedTime = this.defaultValue;  // Armazena o tempo padrão
-      this.inputValue.setValue(new Date(`1970-01-01T${this.defaultValue}:00`));  // Atualiza o valor do formulário
+      this.inputValue.setValue(this.defaultValue);  // Atualiza o valor do formulário
+    } else if (this.inputValue.value) {
+      this.selectedTime = this.inputValue.value;  // Armazena o tempo do valor existente
     }
   }
 
-
   validateTimeFormat(event: KeyboardEvent) {
     const input = (event.target as HTMLInputElement).value;
-    const regex = /^([01]\d|2[0-3]):([0-5]\d)?$/; // Validates "HH:MM" format
+    const regex = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/; // Validates "HH:MM" format
     if (!regex.test(input) && event.key !== 'Backspace') {
       event.preventDefault();
     }
   }
 
-  formatTimeInput(value: string) {
+  formatTimeInput(value: string): string {
     // Remove any non-digit characters
     const cleanedValue = value.replace(/[^0-9]/g, '');
   
     if (cleanedValue.length <= 2) {
       // If only the hour part is present (1-2 digits)
-      this.selectedTime = cleanedValue;
+      return cleanedValue;
     } else if (cleanedValue.length <= 4) {
       // Format as HH:MM if 3-4 digits are available
-      this.selectedTime = `${cleanedValue.slice(0, 2)}:${cleanedValue.slice(2)}`;
+      return `${cleanedValue.slice(0, 2)}:${cleanedValue.slice(2)}`;
     } else {
       // Limit input to the first four digits (HHMM) if too many digits are entered
-      this.selectedTime = `${cleanedValue.slice(0, 2)}:${cleanedValue.slice(2, 4)}`;
+      return `${cleanedValue.slice(0, 2)}:${cleanedValue.slice(2, 4)}`;
     }
+  }
+
+  isValidTime(value: string): boolean {
+    const regex = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/;
+    return regex.test(value);
   }
   
   ngOnDestroy(): void {
     this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
+  }
+
+  ngAfterViewInit(): void {
+    this.inputValue.valueChanges.subscribe((value) => {
+      if (typeof value === 'string' && this.isValidTime(value)) {
+        this.selectedTime = value; // Assume que o valor é uma string no formato "HH:MM"
+      }
+    });
+
+    // Atualiza o campo de entrada com o valor inicial
+    if (this.inputValue.value) {
+      if (typeof this.inputValue.value === 'string' && this.isValidTime(this.inputValue.value)) {
+        this.selectedTime = this.inputValue.value;
+      }
+    }
+  }
+
+  onInputChange(event: Event): void {
+    const input = (event.target as HTMLInputElement).value;
+    const formattedInput = this.formatTimeInput(input);
+    if (this.isValidTime(formattedInput)) {
+      this.inputValue.setValue(formattedInput); // Atualiza o valor do formulário com o valor formatado
+    }
   }
 }
 
@@ -129,7 +160,9 @@ export class TimePickerDialogComponent {
   }
 
   onConfirm(): void {
-    this.dialogRef.close(this.selectedTime); // Retorna o valor selecionado
+    if (this.isValidTime(this.selectedTime)) {
+      this.dialogRef.close(this.selectedTime); // Retorna o valor selecionado
+    }
   }
 
   onCancel(): void {
@@ -149,12 +182,13 @@ export class TimePickerDialogComponent {
   
     this.selectedTime = `${this.padNumber(hour)}:${this.padNumber(minute)}`;
   }
+
+  isValidTime(value: string): boolean {
+    const regex = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/;
+    return regex.test(value);
+  }
   
   padNumber(value: number): string {
     return value.toString().padStart(2, '0');
   }
-
-
-  
 }
-
