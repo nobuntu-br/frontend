@@ -1,6 +1,8 @@
 import { AfterViewInit, Component, Input } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { TranslocoService } from '@ngneat/transloco';
+import { IFieldFile } from 'app/shared/models/file.model';
+import { FileService } from 'app/shared/services/file.service';
 
 export interface ISelectorValue {
   pt: string;
@@ -29,7 +31,7 @@ export class UploadInputFieldComponent implements AfterViewInit {
    */
   @Input() allowedExtensions: string[] = []; // Exemplo de extensões permitidas
 
-  public inputValue = new FormControl<object[]>([]);
+  public inputValue = new FormControl<string>(null);
   fileName: string = '';
   displayedLabel: string = 'Upload de Arquivo';
   placeholder: string = 'Selecione um arquivo';
@@ -37,10 +39,10 @@ export class UploadInputFieldComponent implements AfterViewInit {
   isRequired: boolean = true;
   svgIcon: string = 'upload'; // Exemplo de ícone
 
-  constructor(private translocoService: TranslocoService) {}
+  constructor(private translocoService: TranslocoService, private fileService: FileService) {}
 
   ngAfterViewInit(): void {
-    this.limitSelectedItems(); // Mantém a limitação de itens
+    // this.limitSelectedItems(); // Mantém a limitação de itens
   }
 
   /**
@@ -53,6 +55,23 @@ export class UploadInputFieldComponent implements AfterViewInit {
       const extension = file.name.split('.').pop().toLowerCase(); // Obtém a extensão do arquivo
       if (this.allowedExtensions.includes(extension)) {
         this.fileName = file.name;
+        const fileBlob = new Blob([file], { type: file.type });
+        const fieldFile: IFieldFile = {
+          fieldType: 'string',
+          files: [{
+            name: file.name,
+            size: file.size,
+            extension: extension,
+            dataBlob: fileBlob,
+          }]
+        };
+        this.fileService.uploadFile(fieldFile).subscribe((response) => {
+          this.inputValue.setValue(response);
+          console.log("Valor do arquivo: ", response);
+        }, (error) => {
+          console.log(error);
+          alert('Erro ao fazer upload do arquivo');
+        });
       } else {
         alert(`Extensão de arquivo inválida. Permitido: ${this.allowedExtensions.join(', ')}`);
         event.target.value = ''; // Limpa o input se a extensão for inválida
