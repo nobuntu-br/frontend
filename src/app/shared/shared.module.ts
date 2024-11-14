@@ -79,6 +79,8 @@ import { LocationFieldComponent } from './components/location-field/location-fie
 import { LocationPickerDialogComponent } from './components/location-picker-dialog/location-picker-dialog.component';
 import { POSITION_OPTIONS } from '@ng-web-apis/geolocation';
 import { BrowserModule } from '@angular/platform-browser';
+import { PictureFieldComponent } from './components/picture-field/picture-field.component';
+import { VideoFieldComponent } from './components/video-field/video-field.component';
 
 @NgModule({
     imports: [
@@ -192,7 +194,9 @@ import { BrowserModule } from '@angular/platform-browser';
         DefaultConsultaComponent,
         ConsultaFormComponent,
         LocationFieldComponent,
-        LocationPickerDialogComponent
+        LocationPickerDialogComponent,
+        PictureFieldComponent,
+        VideoFieldComponent
     ],
 })
 export class SharedModule { }
