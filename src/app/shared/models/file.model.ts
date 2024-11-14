@@ -13,3 +13,14 @@ export interface IFile extends BaseResourceModel {
     extension: string;
     dataBlob: Blob;
 }
+
+export class FieldFile implements IFieldFile {
+    fieldType: string;
+    files: IFile[];
+    user?: User;
+
+    constructor() {
+        this.fieldType = 'file';
+        this.files = [];
+    }
+}
