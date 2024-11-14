@@ -14,6 +14,8 @@ import { TimeField } from "../components/time-field/time-field";
 import { UploadField } from "../components/upload-input-field/upload-field";
 import { CaptureLocationField } from "../components/capture-location-field/capture-location-field";
 import { LocationField } from "../components/location-field/location-field";
+import { VideoField } from "../components/video-field/video-field";
+import { PictureField } from "../components/picture-field/picture-field";
 
 @Injectable({
   providedIn: 'root'
@@ -61,6 +63,12 @@ export class DynamicFormFieldFactory implements FormFactory {
       }
       case 'location': {
         return new LocationField();
+      }
+      case 'picture': {
+        return new PictureField();
+      }
+      case 'video': {
+        return new VideoField();
       }
 
       default:
