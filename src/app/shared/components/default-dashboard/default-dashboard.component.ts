@@ -1,13 +1,6 @@
-import { query } from '@angular/animations';
-import { HttpClient } from '@angular/common/http';
-import { AfterViewInit, Component, Host, HostListener, Input, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, Component, ViewChild, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { DashboardField } from 'app/shared/models/dashboard-field';
-import { ICharOptions } from 'app/shared/models/dashboardStructure';
-import { DinamicDashboardFieldFactory } from 'app/shared/models/dinamic-dashboard-factory';
 import { DashboardFactoryService } from 'app/shared/services/dashboard-factory.service';
-import { environment } from 'environments/environment';
-import { Observable } from 'rxjs';
 
 export interface ICardOptions {
   name: string;
