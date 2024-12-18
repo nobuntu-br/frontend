@@ -1,0 +1,107 @@
+{
+  "home-page-component": {
+    "do-login": "Sing in",
+    "test-now": "Test now",
+    "product-name": "Ortia",
+    "short-product-description": "Gerencie a parte financieira de sua empresa on-line",
+    "long-product-description": "Tenha acesso a um armazenamento em nuvem com tecnologia e perfeito para gestão de finanças.",
+    "workspace": "WorkSpace"
+  },
+  "sign-in-component": {
+    "password-error": "Password error",
+    "sign-in-with-your-email": "Sign in with your Email",
+    "email-placeholder": "youEmailhere@domain.com",
+    "email-not-found": "Email not found. Do you want to create an account?",
+    "generic-error": "An error occurred. Please try again later.",
+    "enter-your-password": "Enter your password",
+    "password": "Password",
+    "forgot-password": "Forgot your password?",
+    "forgot-email": "Forgot email?",
+    "sign-in": "Sign In",
+    "sign-up": "Sign Up",
+    "back-to-access-page": "Back to access page",
+    "email": "Email",
+    "next": "Next",
+    "error-email-required": "E-mail é necessário ser preenchido",
+    "error-email-format": "E-mail preenchido não está no formato correto.",
+    "error-email-maxlength": "E-mail ultrapassou o número máximo de caracteres.",
+    "error-email-minlength": "E-mail deve ter quantidade maior caracteres.",
+    "error-password-required": "Senha é necessária ser preenchida",
+    "error-password-maxlength": "A senha ultrapassou o número máximo de caracteres.",
+    "error-password-minlength": "A senha deve ter quantidade maior caracteres.",
+    "error-password-pattern": "A senha está em um formato incorreto."
+  },
+  "sign-up-component": {
+    "create-product-account": "Cria uma conta do Ortia",
+    "insert-your-name": "Insira seu nome",
+    "set-your-email": "Insira seu e-mail",
+    "name": "Name",
+    "lastName": "Sobrenome",
+    "birthDay": "Dia de nascimento",
+    "birthMonth": "Mês de nascimento",
+    "birthYear": "Ano de nascimento",
+    "gender": "Gênero",
+    "email": "E-mail",
+    "next": "Próxima",
+    "error-name-required": "Nome é necessário ser preenchido.",
+    "error-name-maxlength": "Nome ultrapassou o número máximo de caracteres.",
+    "error-name-minlength": "Nome deve ter quantidade maior caracteres.",
+    "error-lastName-required": "Sobrenome é necessário ser preenchido.",
+    "error-lastName-maxlength": "Sobrenome ultrapassou o número máximo de caracteres.",
+    "error-lastName-minlength": "Sobrenome deve ter quantidade maior caracteres.",
+    "error-birthDay-required": "Dia de nascimento é necessário ser preenchido.",
+    "error-birthDay-invalidFormat": "Dia de nascimento tem formato incorreto.",
+    "error-birthMonth-required": "Mês de nascimento é necessário ser preenchido.",
+    "error-birthMonth-invalidFormat": "Mês de nascimento tem formato incorreto.",
+    "error-birthYear-required": "Ano de nascimento é necessário ser preenchido.",
+    "error-birthYear-invalidFormat": "Ano de nascimento tem formato incorreto.",
+    "error-email-required": "E-mail é necessário ser preenchido",
+    "error-email-pattern": "E-mail tem formato incorreto",
+    "set-your-emailVerificationCode":"Define seu codigo de verificação de email",
+    "error-password-strength": "A senha deve ter pelo menos 8 caracteres, incluindo letras maiúsculas, minúsculas, números e caracteres especiais."
+  },
+  "months": {
+    "january": "January",
+    "february": "February",
+    "march": "March",
+    "april": "April",
+    "may": "May",
+    "june": "June",
+    "july": "July",
+    "august": "August",
+    "september": "September",
+    "october": "October",
+    "november": "November",
+    "december": "December"
+  },
+  "tenant-list-component": {
+    "name": "Name",
+    "user-permission": "User permission"
+  },
+  "tenant-user-list-component": {
+    "new-user": "New user",
+    "delete": "Delete",
+    "download-users":"Download Users",
+    "name": "Name",
+    "email": "Email",
+    "tittle": "Tenant",
+    "description": "Users has acess to this Tenant"
+  },
+  "tenant-invite-user-form-component": {
+    "email": "E-mail",
+    "insert-user-email": "Insert user email",
+    "error-email-required": "E-mail é necessário ser preenchido",
+    "error-email-pattern": "E-mail tem formato incorreto",
+    "send-invite": "Send invite"
+  },
+  "tenant-credential-form": {
+    "create-new-tenant-tittle": "Registrar credenciais para acesso ao banco de dados",
+    "create-new-tenant-database-name":"Nome do banco de dados"
+  },
+  "error-404-component":{
+    "error-message":"Page not found"
+  },
+  "error-500-component":{
+    "error-message":"Internal server error"
+  }
+}

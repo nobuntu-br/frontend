@@ -21,10 +21,12 @@ export class TenantInterceptor implements HttpInterceptor {
    */
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const currentTenant = this.tenantService.currentTenant;
+
+    console.log("currentTenant: ", currentTenant);
     if (currentTenant != null) {
 
       req = req.clone({
-        headers: req.headers.set('X-Tenant-ID', currentTenant.TenantCredentialId.toString())
+        headers: req.headers.set('X-Tenant-ID', currentTenant.tenantCredentialId.toString())
       });
 
     }
@@ -36,7 +38,7 @@ export class TenantInterceptor implements HttpInterceptor {
         // Caso obter "401 Unauthorized" (status de não autorizado para fazer a requisição) como erro
         if (error instanceof HttpErrorResponse && error.status === 401) {
           console.log(error.message);
-          this.tenantService.getAllTenantsAndSaveInLocalStorage(this.authService.currentUser.UID);
+          // this.tenantService.getAllTenantsAndSaveInLocalStorage(this.authService.currentUserSession.user.UID);
 
           //TODO fazer tratativas para erros relacionados a ausência do código ou a perda de permissão de acesso ao tenant
         }

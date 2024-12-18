@@ -1,16 +1,22 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { AuthService } from 'app/core/auth/auth.service';
-import { UserService } from 'app/core/auth/user.service';
-import { finalize, lastValueFrom, take, tap } from 'rxjs';
+import { SessionService } from 'app/core/auth/session.service';
+import { UserSessionService } from 'app/core/auth/user-session.service';
+import { IUserSession } from 'app/core/auth/user.model';
+import { TenantService } from 'app/core/tenant/tenant.service';
+import { finalize, take } from 'rxjs';
 
+/**
+ * Estados da página
+ */
 enum SignInPageState {
   Redirecting,
   Error,
-  EmailVerification,
-  PasswordVerification,
+  SetEmail,
+  SetPassword,
   CreatingAccount
 }
 
@@ -19,89 +25,145 @@ enum SignInPageState {
   templateUrl: './signin.component.html',
   styleUrls: ['./signin.component.scss']
 })
-export class SigninComponent implements OnInit {
+export class SigninComponent {
 
-  signInUserFormGroup: FormGroup = this._formBuilder.group({
-    email: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(60)]],
-    password: ['', [Validators.required]],
-    userPrincipalName: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(60)]],
+  /**
+   * Formulário de acesso do usuário
+   */
+  passwordFormGroup: FormGroup = this._formBuilder.group({
+    password: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(60)]],
   });
 
-  pageState: SignInPageState = SignInPageState.EmailVerification;
-  // Expondo o enum para o template
+  emailFormGroup: FormGroup = this._formBuilder.group({
+    email: ['', [Validators.required, Validators.email, Validators.minLength(3), Validators.maxLength(120)]],
+  });
+  /**
+   * Expondo o enum para o template
+   */
   signInPageStates: typeof SignInPageState = SignInPageState;
-
+  /**
+   * Variável de controle de estado da página
+   */
+  pageState: SignInPageState = SignInPageState.SetEmail;
+  /**
+   * Variável de controle se está em carregamento a página
+   */
   isLoading: boolean = false;
+  /**
+   * Controla a visibilidade da senha
+   */
+  passwordHide = true;
 
   constructor(
     public authService: AuthService,
+    private userSessionService: UserSessionService,
+    // private sessionService: SessionService,
+    private tenantService: TenantService,
     private router: Router,
-    private userService: UserService,
     private _formBuilder: FormBuilder,
     private snackBar: MatSnackBar,
   ) {
   }
 
-  ngOnInit(): void {
+  async checkEmailExist() {
 
-  }
-
-  async onEmailSubmit() {
-    try {
-      this.isLoading = true;
-
-      this.userService.checkEmailExist(this.signInUserFormGroup.value.email).pipe(
-        take(1),
-        //Quando o observable completa ou encontra um erro
-        finalize(() => {
-          this.isLoading = false;
-        }),
-      ).subscribe({
-        next: (_isValidEmail: boolean) => {
-          if (_isValidEmail == true) {
-            this.pageState = SignInPageState.PasswordVerification; // Se o email existe, vai para a etapa de senha
-          } else {
-            this.pageState = SignInPageState.CreatingAccount; // Se o email não existe, oferece criar uma conta
-          }
-        },
-        error(error) {
-          this.pageState = SignInPageState.Error;
-          // if (error.status != null) {
-          //   // alert(this.translocoService.translate("componentsBase.requestError.error-401"))
-          // }
-
-        }
-      });
-    } catch (error) {
-      this.pageState = SignInPageState.Error;
+    if (this.emailFormGroup.get("email").valid == false) {
+      this.emailFormGroup.markAsDirty();
+      return;
     }
+    const email: string = this.emailFormGroup.value.email;
+
+    this.emailFormGroup.get("email").disable();
+    this.isLoading = true;
+
+    this.authService.checkEmailExist(email).pipe(
+      take(1),//O observador só irá existir até o momento que ouvir a primeira requisição, depois será eliminado
+
+      //Quando o observable completa ou encontra um erro
+      finalize(() => {
+        this.isLoading = false;
+        this.emailFormGroup.get("email").enable();
+      }),
+    ).subscribe({
+      next: (_isValidEmail: boolean) => {
+
+        if (_isValidEmail == true) {
+          this.pageState = SignInPageState.SetPassword; // Se o email existe, vai para a etapa de senha
+        } else {
+          this.pageState = SignInPageState.CreatingAccount; // Se o email não existe, oferece criar uma conta
+        }
+      },
+      error: (error) => {
+        //TODO usar transloco para tradução dessas frases
+
+        var checkEmailErrorMessage: string = "Erro ocorreu com os nossos serviços.";
+
+        if (error.status === 404) {
+          checkEmailErrorMessage = "Usuário não encontrado.";
+        }
+
+        if(error.status === 500){
+          this.pageState = SignInPageState.Error;
+        }
+
+        this.snackBar.open(checkEmailErrorMessage, 'Fechar', {
+          duration: 3000,
+        });
+      }
+    });
+    
   }
 
   async login() {
-    try {
-      this.isLoading = true;
-      await this.authService.loginCredential(this.signInUserFormGroup.value.email,this.signInUserFormGroup.value.password, this.signInUserFormGroup.value.email);
-      this.snackBar.open('Login bem-sucedido.', 'Fechar', {
-        duration: 3000,
-      });
-    } catch (error) {
-      this.isLoading = false;
-      this.snackBar.open('Login ou senha incorretos.', 'Fechar', {
-        duration: 3000,
-      });
-      this.pageState = SignInPageState.Error;
-      console.error('Login ou senha incorretos', error);  
-    } finally {
-      this.router.navigate(['/']);
+
+    if (this.passwordFormGroup.valid == false) {
+      return;
     }
+    this.passwordFormGroup.get("password").disable();
+    this.isLoading = true;
+
+    let userSession: IUserSession;
+
+    this.authService.signin(this.emailFormGroup.value.email, this.passwordFormGroup.value.password).pipe(take(1)).subscribe({
+      next:(value) => {
+        userSession = value;
+
+        this.userSessionService.addUserSessionOnLocalStorage(userSession);
+        this.userSessionService.setCurrentUserSessionOnLocalStorage(userSession);
+        this.tenantService.getTenantsAndSaveInLocalStorage(userSession.user.UID);
+        
+    
+        this.snackBar.open('Login bem-sucedido.', 'Fechar', {
+          duration: 3000,
+        }).afterDismissed().pipe(take(1)).subscribe({
+          next: (value) => {
+            this.router.navigate(['/home']);
+          }
+        });
+      },
+
+      error: (error) => {
+
+        if(error.status === 500){
+          this.pageState = SignInPageState.SetPassword;
+        }
+
+        this.isLoading = false;
+        this.passwordFormGroup.get("password").enable();
+
+        this.snackBar.open('Senha incorreta.', 'Fechar', {
+          duration: 3000,
+        });
+      },
+    })
   }
 
-  logout() {
-    // this.authService.logout();
+  toggleVisibility() {
+    this.passwordHide = !this.passwordHide;  // Alterna entre mostrar e ocultar a senha
   }
 
-  createUser() {
-    this.router.navigate(['createuser']);
+  goToSignUpPage() {
+    this.router.navigate(['signup']);
   }
 
   resetPassword() {
@@ -109,7 +171,7 @@ export class SigninComponent implements OnInit {
   }
 
   goBackToLogin() {
-    this.pageState = SignInPageState.EmailVerification;
+    this.pageState = SignInPageState.SetEmail;
   }
 
 }

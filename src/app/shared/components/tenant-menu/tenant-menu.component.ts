@@ -1,60 +1,60 @@
 import { Component, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { TenantCredentialFormComponent } from 'app/core/tenant/tenant-credential-form/tenant-credential-form.component';
-import { Tenant } from 'app/core/tenant/tenant.model';
+import { Router } from '@angular/router';
+import { AuthService } from 'app/core/auth/auth.service';
+import { ITenant } from 'app/core/tenant/tenant.model';
 import { TenantService } from 'app/core/tenant/tenant.service';
-import { lastValueFrom } from 'rxjs';
 
-interface ITenant {
-  name: string;
-  id: string;
-}
 
 @Component({
   selector: 'tenant-menu',
   templateUrl: './tenant-menu.component.html',
   styleUrls: ['./tenant-menu.component.scss']
 })
-export class TenantMenuComponent implements OnInit{
+export class TenantMenuComponent implements OnInit {
   /**
-     * Define o tenent que está sendo utilizado na aplicação.
-     */
-  tenantEnable: ITenant = { name: '', id: '' };
-  /**
-   * Todas as tenants que estão disponíveis para serem utilizadas pelo usuario.
+   * Tenants
    */
-  tenants: ITenant[];
+  tenants: ITenant[] = [];
+  /**
+   * Tenant ativo no momento
+   */
+  currentTenant: ITenant;
 
-  constructor(private tenantService: TenantService, private dialog: MatDialog) { }
+  constructor(
+    private tenantService: TenantService,
+    private authService: AuthService,
+    private router: Router
+  ) {
+
+  }
 
   ngOnInit(): void {
-    // if (!this.tenantService.getTenant()) {
-    //     return
-    // }
-    // this.getTenant();
-    this.constructTenantList();
+    //Obtem o Tenant atual para manipular o componente
+    this.currentTenant = this.tenantService.currentTenant;
+    this.getTenants();
   }
 
-  async constructTenantList() {
-    // this.tenantService.getAll().pipe(take(1)).subscribe(tenants => {
-    //   this.tenants = tenants.map(tenant => {
-    //     return {
-    //       name: tenant.substring(tenant.lastIndexOf('/') + 1, tenant.lastIndexOf('?')),
-    //       id: tenant
-    //     }
-    //   });
-    // });
-    this.tenants = await lastValueFrom(this.tenantService.getAll());
+  async getTenants() {
+    const currentUserSessionUID = this.authService.currentUserSession.user.UID;
+
+    if (currentUserSessionUID != null) {
+      //Obtem os tenants que o usuário tem acesso e salva no armazenamento local
+      this.tenants = await this.tenantService.getTenantsAndSaveInLocalStorage(currentUserSessionUID);
+    }
+
   }
 
-  createTenant() {
-    this.dialog.open(TenantCredentialFormComponent, {
-      width: '380px'
-    });
+  goToAddTenantPage() {
+    this.router.navigate(['/tenant/add']);
   }
 
-  changeTenant(tenant: Tenant | null) {
-    this.tenantService.currentTenant = tenant;
+  goToTenantPage() {
+    this.router.navigate(['/tenant']);
+  }
+
+  changeTenant(tenantCredentialId: string) {
+    this.tenantService.switchTenant(tenantCredentialId);
     window.location.reload();
   }
+
 }

@@ -1,9 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
-import { TenantCredentialService } from '../tenantCredential.service';
-import { finalize, take, tap } from 'rxjs';
-import { ITenantCredential } from '../tenantCredential.model';
+import { DatabaseCredentialService } from '../databaseCredential.service';
+import { take } from 'rxjs';
 import { ITenant, Tenant } from '../tenant.model';
 import { TenantService } from '../tenant.service';
 import { AuthService } from 'app/core/auth/auth.service';
@@ -26,13 +24,13 @@ enum AddTenantResponse {
 }
 
 @Component({
-  selector: 'app-tenant-crendential-form',
-  templateUrl: './tenant-credential-form.component.html',
-  styleUrls: ['./tenant-credential-form.component.scss']
+  selector: 'database-crendential-form',
+  templateUrl: './database-credential-form.component.html',
+  styleUrls: ['./database-credential-form.component.scss']
 })
-export class TenantCredentialFormComponent  implements OnInit {
+export class DatabaseCredentialFormComponent  implements OnInit {
 
-  currentPageStep: AddTenantStep = AddTenantStep.setOptionAddTenantStep;
+  currentPageStep: AddTenantStep = AddTenantStep.createNewTenantStep;
   addTenantResponse: AddTenantResponse = AddTenantResponse.failure;
 
   isRegisterTenantLoading: boolean = false;
@@ -53,12 +51,12 @@ export class TenantCredentialFormComponent  implements OnInit {
    * Formulário para registro de novo tenant
    */
   registerNewTenantFormGroup: FormGroup = this._formBuilder.group({
-    dbName: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(60)]],
-    dbType: ['', [Validators.required]],
-    dbUsername: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(60)]],
-    dbPassword: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(60)]],
-    dbHost: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(60)]],
-    dbPort: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(4), Validators.pattern('^[0-9]*$')]],
+    databaseName: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(60)]],
+    databaseType: ['', [Validators.required]],
+    databaseUsername: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(60)]],
+    databasePassword: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(60)]],
+    databaseHost: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(60)]],
+    databasePort: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(4), Validators.pattern('^[0-9]*$')]],
   });
 
   createNewTenantFormGroup: FormGroup = this._formBuilder.group({
@@ -76,15 +74,14 @@ export class TenantCredentialFormComponent  implements OnInit {
   tenantsUserIsAdmin: ITenant[];
 
   constructor(
-    private dialogRef: MatDialogRef<TenantCredentialFormComponent>,
     private _formBuilder: FormBuilder,
-    private tenantCredentialsService: TenantCredentialService,
+    private databaseCredentialService: DatabaseCredentialService,
     private tenantService: TenantService,
     private authService: AuthService
   ) { }
   
   ngOnInit(): void {
-    this.loadTenantsUserIsAdmin(this.authService.currentUser.UID);
+    // this.loadTenantsUserIsAdmin(this.authService.currentUserSession.user.UID);
   }
 
   selectAddTenantOption() {
@@ -114,21 +111,21 @@ export class TenantCredentialFormComponent  implements OnInit {
 
     this.isRegisterTenantLoading = true;
 
-    if (this.registerNewTenantFormGroup.valid != true) {
+    if (this.registerNewTenantFormGroup.valid == false) {
       console.warn("Erro ao registrar o tenant, valores inválidos");
       return Error("Erro ao registrar o tenant");
     }
 
 
     //TODO ao tentar realizar o registro, deverá ser feito o teste de conectividade, posteiriormente retornado a resposta para cá
-    this.tenantCredentialsService.create(
+    this.databaseCredentialService.create(
       {
-        dbName: this.registerNewTenantFormGroup.get('dbName').value,
-        dbType: this.registerNewTenantFormGroup.get('dbType').value,
-        dbUsername: this.registerNewTenantFormGroup.get('dbUsername').value,
-        dbPassword: this.registerNewTenantFormGroup.get('dbPassword').value,
-        dbHost: this.registerNewTenantFormGroup.get('dbHost').value,
-        dbPort: this.registerNewTenantFormGroup.get('dbPort').value,
+        databaseName: this.registerNewTenantFormGroup.get('databaseName').value,
+        databaseType: this.registerNewTenantFormGroup.get('databaseType').value,
+        databaseUsername: this.registerNewTenantFormGroup.get('databaseUsername').value,
+        databasePassword: this.registerNewTenantFormGroup.get('databasePassword').value,
+        databaseHost: this.registerNewTenantFormGroup.get('databaseHost').value,
+        databasePort: this.registerNewTenantFormGroup.get('databasePort').value,
       }
     ).pipe(
       //Depos de recebido dados 1 vez o observable é encerrado

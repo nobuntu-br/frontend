@@ -1,0 +1,40 @@
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+
+import { ResetPasswordRoutingModule } from './reset-password-routing.module';
+import { ResetPasswordComponent } from './reset-password.component';
+import { TRANSLOCO_SCOPE, TranslocoModule } from '@ngneat/transloco';
+
+//Angular Material Components
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatButtonModule } from '@angular/material/button';
+
+//Nobuntu Components
+import { ChangeLanguageButtonModule } from 'app/shared/components/change-language-button/change-language-button.module';
+
+@NgModule({
+  declarations: [
+    ResetPasswordComponent,
+  ],
+  imports: [
+    CommonModule,
+    ResetPasswordRoutingModule,
+    TranslocoModule,
+    //Angular Material Components
+    FormsModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatToolbarModule,
+    MatButtonModule,
+    //Nobuntu components
+    ChangeLanguageButtonModule,
+  ],
+  providers: [
+    { provide: TRANSLOCO_SCOPE, useValue: { scope: "core", alias: "core" } }
+  ],
+})
+export class ResetPasswordModule { }

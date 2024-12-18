@@ -1,0 +1,151 @@
+{
+
+"Empreendimento": {
+        "Empreendimento": "Entrerprise",
+        "nome": "Name",
+        "nomeFantasia": "Brand Name",
+        "tipoPessoa": "Type Person",
+        "cnpjcpf": "Tax ID Brasil",
+        "logomarca": "Logo",
+        "moedaBase": "moeda Base",
+        "ativo": "ativo",
+        "Estabelecimentos": "Enterprise"
+    },
+"Estabelecimento": {
+        "Estabelecimento": "Stores",
+        "areaDeNegocio": "Business area",
+        "empreendimento": "empreendimento",
+        "nome": "Name",
+        "nomeFantasia": "Brand Name",
+        "tipoPessoa": "Type Person",
+        "cnpjcpf": "Tax ID",
+        "logomarca": "Logo",
+        "ativo": "ativo"
+    },
+"AreaDeNegocio": {
+        "AreaDeNegocio": "Business Area",
+        "nome": "Name",
+        "ativo": "ativo"
+    },
+"PlanoDeContas": {
+        "PlanoDeContas": "Plano De Contas",
+        "empreendimento": "empreendimento",
+        "codigoConta": "codigo Conta",
+        "codigoNatureza": "codigo Natureza",
+        "indicadorConta": "indicador Conta",
+        "nivel": "nivel",
+        "nome": "nome",
+        "ativo": "ativo"
+    },
+"CentroDeCusto": {
+        "CentroDeCusto": "Centro De Custo",
+        "empreendimento": "empreendimento",
+        "nome": "nome",
+        "codigoEcd": "codigo Ecd",
+        "ativo": "ativo"
+    },
+"Projeto": {
+        "Projeto": "Projeto",
+        "empreendimento": "empreendimento",
+        "nome": "nome",
+        "situacao": "situacao",
+        "dataConcCanc": "data Conc Canc"
+    },
+"HistoricoPadrao": {
+        "HistoricoPadrao": "Historico Padrao",
+        "empreendimento": "empreendimento",
+        "nome": "nome",
+        "codigoEcd": "codigo Ecd",
+        "contaDebito": "conta Debito",
+        "contaCredito": "conta Credito",
+        "ativo": "ativo"
+    },
+"EstruturaDoOrcamento": {
+        "EstruturaDoOrcamento": "Estrutura Do Orcamento",
+        "empreendimento": "empreendimento",
+        "nome": "nome",
+        "codigoEcd": "codigo Ecd",
+        "contaDebito": "conta Debito",
+        "contaCredito": "conta Credito",
+        "funcaoPrevisao": "funcao Previsao",
+        "ativo": "ativo"
+    },
+"FuncaoDePrevisao": {
+        "FuncaoDePrevisao": "Funcao De Previsao",
+        "empreendimento": "empreendimento",
+        "nome": "nome",
+        "tipoFuncao": "tipo Funcao",
+        "parametros": "parametros",
+        "formula": "formula",
+        "ativo": "ativo"
+    },
+"Indicador": {
+        "Indicador": "Indicador",
+        "empreendimento": "empreendimento",
+        "nome": "nome",
+        "ativo": "ativo"
+    },
+"RegistroDeIndicador": {
+        "RegistroDeIndicador": "Registro De Indicador",
+        "empreendimento": "empreendimento",
+        "indicador": "Indicator",
+        "dataReferencia": "data Referencia",
+        "valorIndicador": "valor Indicador",
+        "ativo": "ativo"
+    },
+"LancamentoContabil": {
+        "LancamentoContabil": "Lancamento Contabil",
+        "estabelecimento": "estabelecimento",
+        "formaLancamento": "forma Lancamento",
+        "tipoLancamento": "tipo Lancamento",
+        "numeroLancamentoEcd": "numero Lancamento Ecd",
+        "dataLancamento": "data Lancamento",
+        "indicadorLancamento": "indicador Lancamento",
+        "ativo": "ativo",
+        "PartidasdoLancamento": "Enterprise"
+    },
+"PartidaDoLancamento": {
+        "PartidaDoLancamento": "Partida Do Lancamento",
+        "lancamentoContabil": "lancamento Contabil",
+        "historicoPadrao": "historico Padrao",
+        "centroDeCusto": "centro De Custo",
+        "projeto": "projeto",
+        "contaDebito": "conta Debito",
+        "contaCredito": "conta Credito",
+        "historico": "historico",
+        "valor": "valor",
+        "valorMoedaIndexada": "valor Moeda Indexada",
+        "valorCotacaoMoeda": "valor Cotacao Moeda",
+        "moedaIndexada": "moeda Indexada"
+    },
+"UsuarioDoEstabelecimento": {
+        "UsuarioDoEstabelecimento": "Usuario Do Estabelecimento",
+        "estabelecimento": "estabelecimento",
+        "userPrototipo": "user Prototipo",
+        "tipoPermissao": "tipo Permissao",
+        "ativo": "ativo"
+    },
+"TabelaMoeda": {
+        "TabelaMoeda": "Tabela Moeda",
+        "nome": "nome",
+        "codigoBC": "codigo B C",
+        "simbolo": "simbolo",
+        "siglaBC": "sigla B C",
+        "codigoPais": "codigo Pais",
+        "codigoISO": "codigo I S O",
+        "siglaISO": "sigla I S O",
+        "ativo": "ativo"
+    },
+"CotacaoMoeda": {
+        "CotacaoMoeda": "Cotacao Moeda",
+        "empreendimento": "empreendimento",
+        "moeda": "moeda",
+        "InicioCotacao": "Inicio Cotacao",
+        "valorCompraOficial": "valor Compra Oficial",
+        "valorVendaOficial": "valor Venda Oficial",
+        "valorCompraParalelo": "valor Compra Paralelo",
+        "valorVendaParalelo": "valor Venda Paralelo",
+        "valorInterno": "valor Interno",
+        "ativo": "ativo"
+    }
+}

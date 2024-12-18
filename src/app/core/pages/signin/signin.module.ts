@@ -3,9 +3,17 @@ import { CommonModule } from '@angular/common';
 
 import { SigninRoutingModule } from './signin-routing.module';
 import { SigninComponent } from './signin.component';
-import { TranslocoModule } from '@ngneat/transloco';
+import { TRANSLOCO_SCOPE, TranslocoModule } from '@ngneat/transloco';
+
+//Angular Material Components
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatButtonModule } from '@angular/material/button';
+//Nobuntu Components
+import { ChangeLanguageButtonModule } from 'app/shared/components/change-language-button/change-language-button.module';
 
 @NgModule({
   declarations: [
@@ -15,9 +23,19 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     CommonModule,
     SigninRoutingModule,
     TranslocoModule,
+    //Angular Material Components
     FormsModule,
     MatProgressSpinnerModule,
-    ReactiveFormsModule
-  ]
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatToolbarModule,
+    MatButtonModule,
+    //Nobuntu components
+    ChangeLanguageButtonModule
+  ],
+  providers: [
+    { provide: TRANSLOCO_SCOPE, useValue: { scope: "core", alias: "core" } }
+  ],
 })
 export class SigninModule { }

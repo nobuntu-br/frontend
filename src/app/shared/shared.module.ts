@@ -59,11 +59,9 @@ import { SubformComponent } from './components/subform/subform.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { ListAppsComponent } from './components/list-apps/list-apps.component';
-import { UserMenuComponent } from './components/user-menu/user-menu.component';
 import { ConfirmChangeAppComponent } from './components/list-apps/confirm-change-app/confirm-change-app.component';
 import { UserSideNavComponent } from './components/user-side-nav/user-side-nav.component';
 import { FormSpaceBuildComponent } from './components/form-space-build/form-space-build.component';
-import { CreateUserComponent } from './components/create-user/create-user.component';
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 import { EditProfileComponent } from './components/edit-profile/edit-profile.component';
 import { CheckboxFieldComponent } from './components/checkbox-field/checkbox-field.component';
@@ -81,6 +79,9 @@ import { POSITION_OPTIONS } from '@ng-web-apis/geolocation';
 import { BrowserModule } from '@angular/platform-browser';
 import { PictureFieldComponent } from './components/picture-field/picture-field.component';
 import { VideoFieldComponent } from './components/video-field/video-field.component';
+
+import { UserMenuModule } from './components/user-menu/user-menu.module';
+import { TenantMenuModule } from './components/tenant-menu/tenant-menu.module';
 
 @NgModule({
     imports: [
@@ -117,7 +118,10 @@ import { VideoFieldComponent } from './components/video-field/video-field.compon
         MatSidenavModule,
         MatProgressSpinnerModule,
         MatExpansionModule,
-        BrowserModule
+        BrowserModule,
+        //Nobuntu Modules
+        UserMenuModule,
+        TenantMenuModule
     ],
     providers: [
         Geolocation,
@@ -175,11 +179,9 @@ import { VideoFieldComponent } from './components/video-field/video-field.compon
         LanguagesComponent,
         SubformComponent,
         ListAppsComponent,
-        UserMenuComponent,
         ConfirmChangeAppComponent,
         UserSideNavComponent,
         FormSpaceBuildComponent,
-        CreateUserComponent,
         ResetPasswordComponent,
         EditProfileComponent,
         CheckboxFieldComponent,

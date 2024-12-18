@@ -9,7 +9,7 @@ export class AuthInterceptor implements HttpInterceptor {
   /**
    * Constructor
    */
-  constructor(private _authService: AuthService){
+  constructor(private _authService: AuthService) {
   }
 
   /**
@@ -35,7 +35,7 @@ export class AuthInterceptor implements HttpInterceptor {
       });
     }
 
-    
+
     // Resposta obtida após a requisição
     return next.handle(newReq).pipe(
       // Caso ocorreu algum erro
@@ -44,9 +44,9 @@ export class AuthInterceptor implements HttpInterceptor {
         // Caso obter "401 Unauthorized" (status de não autorizado para fazer a requisição) como erro
         if (error instanceof HttpErrorResponse && error.status === 401) {
           // TODO Decidir como tratar casos que o usuário não tem autorização para fazer a requisição na API
-          // this._authService.logout();
-           this._authService.refreshAccessToken();
-          // Recarregar página
+          this._authService.refreshAccessToken();
+
+          
           // location.reload();
         }
 

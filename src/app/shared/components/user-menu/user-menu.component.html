@@ -1,16 +1,109 @@
-<div class="user-menu-container" (click)="toggleMenu()">
-  <div class="user-avatar">
-    {{ userInitial }}
-  </div>
-  <div class="user-menu" *ngIf="menuOpen">
-    <ng-container *ngFor="let user of users">
-      <div class="user-entry">
-        <button (click)="openUserInNewTab(user.profile.sub)">
-          {{ user.profile.given_name }} ({{ user.profile.email }})
+<!-- Componente que chama função de tradução para dentro dos componentes -->
+<ng-container *transloco="let t; read: 'componentsBase.user-menu-component'">
+
+  <!-- Opções para quando o usuário estiver logado -->
+  <button mat-icon-button [matMenuTriggerFor]="menu">
+    <mat-icon>account_circle</mat-icon>
+  </button>
+
+  <mat-menu #menu="matMenu">
+    <div *ngIf="isLoggedIn" style="min-width: 250px; min-height: 200px;">
+
+      <!-- Painel que mostra o usuário atual -->
+      <div class="current-user">
+        <p>{{currentUserSession.user.email}}</p>
+
+        <img src="assets/images/user-image-test.jpg" alt="user image" id="user-image">
+
+        <h4>{{t("hi")}} {{currentUserSession.user.firstName}}!</h4>
+
+        <button mat-flat-button color="primary" style="display: flex; flex-direction: row;">
+          {{t("manage-your-account")}}
         </button>
       </div>
-    </ng-container>
-    <button (click)="addAccount()">Adicionar outra conta</button>
-    <button (click)="logoutAllUsers()">Logout de todas as contas</button>
-  </div>
-</div>
+
+      <!-- Botões apresentados quando só se tem um usuário com acesso na aplicação -->
+      <div *ngIf="userSessions.length == 1">
+        <!-- Botão para fazer acesso a outra conta -->
+        <button mat-menu-item (click)="goToSignInPage()">
+          <mat-icon>add</mat-icon>
+          {{t("add-other-account")}}
+        </button>
+
+        <!-- Botão para sair de todas as contas -->
+        <button mat-menu-item (click)="logoutAllUsers()">
+          <mat-icon>logout</mat-icon>
+          {{t("logout")}}
+        </button>
+      </div>
+
+      <!-- painel capaz de se expandir -->
+      <mat-expansion-panel *ngIf="userSessions.length > 1" (opened)="panelOpenState = true"
+        (closed)="panelOpenState = false" (click)="$event.stopPropagation()" style="background-color: #f3f3f3;">
+
+        <mat-expansion-panel-header>
+          <mat-panel-title style="flex-basis: 60px;">
+            {{t("show-more-accounts")}}
+          </mat-panel-title>
+
+          <mat-panel-description id="other-users-panel-description">
+            <img *ngFor="let userSession of inactiveUserSessions" src="assets/images/user-image-test.jpg"
+              alt="user image" class="other-users-panel-description-image">
+          </mat-panel-description>
+
+        </mat-expansion-panel-header>
+
+        <!-- Lista de sessões de usuário inativas -->
+        <button mat-menu-item *ngFor="let userSession of inactiveUserSessions"(click)="switchCurrentUserSession(userSession)">
+
+          <div style="display: flex; flex-direction: row !important; align-items: center; margin-top: 10px; margin-bottom: 10px;">
+            <!-- Coluna da imagem da conta -->
+            <div>
+              <img src="assets/images/user-image-test.jpg" alt="user image" class="other-users-list-image">
+            </div>
+            <!-- Coluna dos dados da conta -->
+            <div class="user-info">
+              <div>{{userSession.user.firstName + " " + userSession.user.lastName}}</div>
+              <div>{{userSession.user.email}}</div>
+            </div>
+            <!-- Coluna do estado atual da conta, sendo sessão expirada ou não -->
+            <div>
+              <p *ngIf="checkUserSessionExpired(userSession)">{{t("session-expired")}}</p>
+            </div>
+          </div>
+        </button>
+
+        <!-- Botão para fazer acesso a outra conta -->
+        <button mat-menu-item (click)="goToSignInPage()">
+          <mat-icon>add</mat-icon>
+          {{t("add-other-account")}}
+        </button>
+
+        <!-- Botão para sair de todas as contas -->
+        <button mat-menu-item (click)="logoutAllUsers()">
+          <mat-icon>logout</mat-icon>
+          {{t("logout")}}
+        </button>
+
+      </mat-expansion-panel>
+
+      <button mat-menu-item>
+        <mat-icon>settings</mat-icon>
+        {{t("settings")}}
+      </button>
+
+    </div>
+
+    <!-- Ações quando não tem ninguém que realizou acesso a conta -->
+    <div *ngIf="!isLoggedIn">
+      <button mat-menu-item (click)="redirectToSignInPage()">
+        <mat-icon>login</mat-icon>
+        <span>Entrar</span>
+      </button>
+      <button mat-menu-item (click)="createUser()">
+        <mat-icon>person_add</mat-icon>
+        <span>Criar conta</span>
+      </button>
+    </div>
+  </mat-menu>
+</ng-container>

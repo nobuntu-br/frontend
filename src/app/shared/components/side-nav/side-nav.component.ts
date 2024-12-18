@@ -94,7 +94,7 @@ export class SideNavComponent implements OnInit, OnDestroy {
     this.route.queryParams.subscribe(async (params) => {
       const userId = params['userId'];
       if (userId) {
-        await this.authService.switchUser(userId);
+        await this.authService.switchUserSession(userId);
         this.router.navigate(['']);
       }
     });
