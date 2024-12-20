@@ -6,12 +6,14 @@ import { EditProfileComponent } from './shared/components/edit-profile/edit-prof
 import { ResetPasswordComponent } from './shared/components/reset-password/reset-password.component';
 import { CreateUserComponent } from './shared/components/create-user/create-user.component'; 
 import { SigninComponent } from './core/pages/signin/signin.component';
+import { DefaultDashboardComponent } from './shared/components/default-dashboard/default-dashboard.component';
 
 
 export const appRoutes: Route[] = [
 
     // Redirect empty path to '/example' 
     {path: 'signin', pathMatch: 'full', component: SigninComponent}, 
+    { path: 'dashboard/:id', component: DefaultDashboardComponent },
 
     {path: 'createuser', pathMatch: 'full', component: CreateUserComponent}, 
     {path: 'resetPassword', pathMatch: 'full', component: ResetPasswordComponent}, 
