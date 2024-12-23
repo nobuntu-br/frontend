@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { AuthService } from 'app/core/auth/auth.service';
 import { UserService } from 'app/core/auth/user.service';
 import { take } from 'rxjs';
 
@@ -18,12 +19,12 @@ export class ResetPasswordComponent {
   codeVerified: boolean = false;
 
   constructor(
-    private userService: UserService,
+    private authService: AuthService,
     private snackBar: MatSnackBar,
   ) { }
 
   onEmailSubmit() {
-    this.userService.sendVerificationEmailCodeToEmail(this.email).pipe(take(1)).subscribe({
+    this.authService.sendPasswordResetLinkToEmail(this.email).pipe(take(1)).subscribe({
       next(response: any) {
         console.log(response.message);
         this.codeSent = true;
@@ -40,19 +41,19 @@ export class ResetPasswordComponent {
   }
 
   onCodeSubmit() {
-    this.userService.verifyCodeSentToEmail(this.email, this.verificationCode).pipe(take(1)).subscribe({
-      next(response: any) {
-        console.log(response.message);
-        this.codeVerified = true;
-      },
-      error(error) {
-        console.error('Erro ao verificar código:', error.error.message);
-        this.snackBar.open('Erro ao verificar o código', 'Close', {
-          duration: 3000,
-          panelClass: ['custom-snackbar']
-        });
-      },
-    });
+    // this.userService.validateVerificationEmailCode(this.verificationCode).pipe(take(1)).subscribe({
+    //   next(response: any) {
+    //     console.log(response.message);
+    //     this.codeVerified = true;
+    //   },
+    //   error(error) {
+    //     console.error('Erro ao verificar código:', error.error.message);
+    //     this.snackBar.open('Erro ao verificar o código', 'Close', {
+    //       duration: 3000,
+    //       panelClass: ['custom-snackbar']
+    //     });
+    //   },
+    // });
   }
 
   onResetSubmit() {

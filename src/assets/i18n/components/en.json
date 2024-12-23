@@ -108,6 +108,35 @@
         "authentication-error-redirect-to-signin":"This application does not have permission to access the domain identity provider. Consult the application administrator.",
         "redirect-to-signin":"Redirect to SignUp Page"
     },
+    "months": {
+        "january": "Janeiro",
+        "february": "Fevereiro",
+        "march": "Março",
+        "april": "Abril",
+        "may": "Maio",
+        "june": "Junho",
+        "july": "Julho",
+        "august": "Agosto",
+        "september": "Setembro",
+        "october": "Outubro",
+        "november": "Novembro",
+        "december": "Dezembro"
+      },
+    "user-menu-component": {
+        "edit-user":"Editar Perfil",
+        "add-other-account": "Adicionar outra conta",
+        "logout":"Sair",
+        "show-more-accounts":"Mostrar mais contas",
+        "session-expired":"Session expired",
+        "signed-out":"Signed out",
+        "settings":"Configurações",
+        "hi":"Hi",
+        "manage-your-account": "Gerencie sua conta"
+    },
+    "tenant-menu-component": {
+        "add-tenant": "Adicionar Tenant",
+        "manage-tenants":"Gerenciar Tenants"
+    },
     "location-field":{
         "select": "Select Location",
         "buttonCancel": "Cancel",

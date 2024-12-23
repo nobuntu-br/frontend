@@ -28,6 +28,7 @@ export class ListAppsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.fetchApps();
     if (!this.authService.isLoggedIn()) {
       // this.authService.login();
     } else {
@@ -61,7 +62,7 @@ export class ListAppsComponent implements OnInit {
       }
     }).afterClosed().subscribe(result => {
       if (result) {
-        const user = this.authService.currentUser;
+        const user = this.authService.currentUserSession;
         if (user) {
           // Redirecionar para o aplicativo com o usuário codificado na URL
           const redirectUrl = `${app.redirect_uri}`;

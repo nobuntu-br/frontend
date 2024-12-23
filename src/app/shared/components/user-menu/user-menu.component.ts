@@ -1,69 +1,105 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthService } from 'app/core/auth/auth.service';
-import { User } from 'oidc-client-ts';
 import { Router } from '@angular/router';
+import { AuthService } from 'app/core/auth/auth.service';
+import { AuthUtils } from 'app/core/auth/auth.utils';
+import { IUserSession } from 'app/core/auth/user.model';
 
 @Component({
-  selector: 'app-user-menu',
+  selector: 'user-menu',
   templateUrl: './user-menu.component.html',
   styleUrls: ['./user-menu.component.scss']
 })
 export class UserMenuComponent implements OnInit {
-  menuOpen = false;
-  userInitial: string = ''; // Inicial padrão do usuário
-  users: User[] = [];
-  selectedUser: User | null = null;
+  /**
+   * Controla se o painel de dados das contas de usuários está aberto
+   */
+  panelOpenState = false;
+  /**
+   * Controla o estado de acesso
+   */
+  isLoggedIn: boolean = false;
+  /**
+   * Sessão dos usuários
+   */
+  userSessions: IUserSession[] = [];
+  /**
+   * Sessão dos usuários inativos
+   */
+  inactiveUserSessions: IUserSession[] = [];
+  /**
+   * Sessão do usuário atual que está realizando as requisições
+   */
+  currentUserSession: IUserSession;
 
   constructor(
-    public authService: AuthService,
+    private authService: AuthService,
     private router: Router
-  ) { }
+    ) { }
 
   ngOnInit(): void {
-    const user = this.authService.currentUser;
-    if (user) {
-      // this.userInitial = user.profile.given_name.charAt(0).toUpperCase();
-      // this.selectedUser = user;
+    this.updateUserSessionState();
+    //Obtem a sessão de usuário atual para manipular o componente
+    this.currentUserSession = this.authService.currentUserSession;
+    //Obtem informação dos usuário com acesso
+    this.userSessions = this.authService.getUserSessions();
+    //Obtem informações dos usuários com acesso mas não ativos
+    this.inactiveUserSessions = this.authService.getInactiveUserSessions();
+    
+  }
+
+  checkUserSessionExpired(userSession: IUserSession): boolean{
+    if(userSession.tokens == null || userSession.tokens.accessToken == null) return true;
+    return AuthUtils.isTokenExpired(userSession.tokens.accessToken);
+  }
+
+  updateUserSessionState() {
+    this.authService.check().subscribe((res) => {
+      if (res) {
+        this.isLoggedIn = true;
+      }
+    });
+  }
+  
+  goToSignInPage() {
+    this.router.navigate(['signin']);
+  }
+
+  goToEditUserPage(): void {
+    this.router.navigate(['editProfile']);
+  }
+
+  isCurrentUserSession(userSession: IUserSession): boolean {
+    if(this.currentUserSession.user.UID == userSession.user.UID){
+      return true;
     }
-    // this.users = this.authService.getUsers();
+
+    return false;
   }
 
-  toggleMenu() {
-    this.menuOpen = !this.menuOpen;
-  }
+  switchCurrentUserSession(userSession: IUserSession){
 
-  openUserInNewTab(userId: string) {
-    const url = `${window.location.origin}/?userId=${userId}`;
-    window.open(url, '_blank');
-  }
-
-  addAccount() {
-    // this.authService.loginWithPrompt();
-  }
-
-  logoutSelectedUser() {
-    if (this.selectedUser) {
-      this.authService.logoutUserByUID(this.selectedUser.profile.sub);
-      // this.users = this.user.getUsers(); // Atualizar a lista de usuários
-      this.router.navigate(['/']); // Redirecionar para a página inicial
+    //Se por acaso tentar mudar a sessão do usuário para o mesmo usuário, não irá poder fazer isso
+    if(this.isCurrentUserSession(userSession) == true){
+      return null;
     }
-  }
-  async logoutAllUsers() {
-      await this.authService.logoutAllAccounts();
-      this.router.navigate(['/']); // Redirecionar para a página inicial
+
+    this.authService.switchUserSession(userSession.user.UID);
+
+    //Atualiza o sessão de usuário atual
+    this.currentUserSession = this.authService.currentUserSession;
+    //Atualiza a lista de sessões de usuário inativas
+    this.inactiveUserSessions = this.authService.getInactiveUserSessions();
+
+    window.location.reload();
   }
 
-  selectUser(userId: string) {
-    this.authService.switchUser(userId);
-    // this.selectedUser = this.authService.getUser();
-    if (this.selectedUser) {
-      this.userInitial = this.selectedUser.profile.given_name.charAt(0).toUpperCase();
-    }
-    this.menuOpen = false;
+  logoutUser(userSession: IUserSession){
+    this.authService.logoutUserByUID(userSession.user.UID);
+    this.router.navigate([this.router.url]);
   }
 
-  logout(){
-    console.log("Logout");
-    // this.authService.logout();
+  logoutAllUsers() {
+    this.authService.logoutAllAccounts();
+    this.router.navigate(['/signin']); // Redirecionar para a página inicial
   }
 }

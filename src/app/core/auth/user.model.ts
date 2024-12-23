@@ -1,10 +1,15 @@
 import { BaseResourceModel } from "app/shared/models/base-resource.model";
 
-export interface IUserAccessInfo {
-  access_token: string;
-  refresh_token: string;
-  token_type: string;
-  expires_at: number
+export interface ITokens {
+  accessToken: string;
+  refreshToken: string;
+  tokenType: string;
+  expiresAt: number
+}
+
+export interface IUserSession {
+  user: IUser;
+  tokens: ITokens;
 }
 
 export interface IUser {
@@ -14,12 +19,12 @@ export interface IUser {
   userName: string;
   firstName: string;
   lastName: string;
-  isAdministrator: boolean;
-  memberType: string;
-  Roles ?: string[];
+  isAdministrator?: boolean;
+  memberType?: string;
+  // Roles?: string[];
   tenants ?: string[];
   email?: string;
-  accessInfo?: IUserAccessInfo;
+  photoUrl?: string;
 }
 
 export class User extends BaseResourceModel implements IUser {
@@ -28,9 +33,9 @@ export class User extends BaseResourceModel implements IUser {
   userName: string;
   firstName: string;
   lastName: string;
-  isAdministrator: boolean;
-  memberType: string;
-  Roles?: string[];
+  isAdministrator?: boolean;
+  memberType?: string;
+  // Roles?: string[];
   tenants?: string[];
 
   static fromJson(jsonData: any): User {
@@ -38,3 +43,10 @@ export class User extends BaseResourceModel implements IUser {
   }
 }
 
+export interface SignupDTO {
+  userName: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+}
