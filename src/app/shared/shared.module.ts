@@ -79,6 +79,14 @@ import { POSITION_OPTIONS } from '@ng-web-apis/geolocation';
 import { BrowserModule } from '@angular/platform-browser';
 import { PictureFieldComponent } from './components/picture-field/picture-field.component';
 import { VideoFieldComponent } from './components/video-field/video-field.component';
+import { VerticalBarChartComponent } from './components/vertical-bar-chart/vertical-bar-chart.component';
+import { HorizontalBarChartComponent } from './components/horizontal-bar-chart/horizontal-bar-chart.component';
+import { PieChartComponent } from './components/pie-chart/pie-chart.component';
+import { LineChartComponent } from './components/line-chart/line-chart.component';
+import { NgxChartsModule } from '@swimlane/ngx-charts';
+import { DefaultGraphicComponent } from './components/default-graphic/default-graphic.component';
+import { ChartDateFilterComponent } from './components/chart-date-filter/chart-date-filter.component';
+import { DefaultDashboardComponent } from './components/default-dashboard/default-dashboard.component';
 
 import { UserMenuModule } from './components/user-menu/user-menu.module';
 import { TenantMenuModule } from './components/tenant-menu/tenant-menu.module';
@@ -122,6 +130,7 @@ import { TenantMenuModule } from './components/tenant-menu/tenant-menu.module';
         //Nobuntu Modules
         UserMenuModule,
         TenantMenuModule
+        NgxChartsModule
     ],
     providers: [
         Geolocation,
@@ -198,7 +207,15 @@ import { TenantMenuModule } from './components/tenant-menu/tenant-menu.module';
         LocationFieldComponent,
         LocationPickerDialogComponent,
         PictureFieldComponent,
-        VideoFieldComponent
+        VideoFieldComponent,
+        ListAppsComponent,
+        VerticalBarChartComponent,
+        HorizontalBarChartComponent,
+        PieChartComponent,
+        LineChartComponent,
+        DefaultGraphicComponent,
+        ChartDateFilterComponent,
+        DefaultDashboardComponent
     ],
 })
 export class SharedModule { }
