@@ -13,7 +13,8 @@ export const appRoutes: Route[] = [
     { path: 'resetPassword', loadChildren: () => import('app/core/pages/reset-password/reset-password.module').then(m => m.ResetPasswordModule) },
     { path: 'error-404', loadChildren: () => import('app/core/pages/error/error-404/error-404.module').then(m => m.Error404Module) },
     { path: 'error-500', loadChildren: () => import('app/core/pages/error/error-500/error-500.module').then(m => m.Error500Module) },
-    { path: 'home', component: SideNavComponent},
+    { path: 'callback',  loadChildren: () => import('app/core/pages/callback/callback.module').then(m => m.CallbackModule) },
+    { path: 'home', canMatch: [AuthGuard], component: SideNavComponent },
     { path: '**', loadChildren: () => import('app/core/pages/error/error-404/error-404.module').then(m => m.Error404Module) },
     {
         path: 'tenant',

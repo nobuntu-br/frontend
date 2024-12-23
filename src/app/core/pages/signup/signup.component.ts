@@ -189,7 +189,6 @@ export class SignupComponent {
         //Realizar o acesso do novo usuário
         this.authService.signin(this.emailFormGroup.value.email, this.passwordForm.password).pipe(take(1)).subscribe({
           next:(value) => {
-            console.log("valor recebido ao realizar o acesso após cadastro: ", value);
             let userSession: IUserSession = value;
 
             this.userSessionService.addUserSessionOnLocalStorage(userSession);
@@ -202,7 +201,7 @@ export class SignupComponent {
             this.snackBar.open('Erro inesperado ao realizar o cadastro.', 'Fechar', {
               duration: 3000,
             });
-            this.router.navigate(['/error']);
+            this.router.navigate(['/error-505']);
           },
         })
       },
@@ -211,7 +210,7 @@ export class SignupComponent {
         this.snackBar.open('Erro inesperado ao realizar o cadastro.', 'Fechar', {
           duration: 3000,
         });
-        this.router.navigate(['/error']);
+        this.router.navigate(['/error-505']);
       },
     })
   }
