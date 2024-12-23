@@ -129,7 +129,7 @@ import { TenantMenuModule } from './components/tenant-menu/tenant-menu.module';
         BrowserModule,
         //Nobuntu Modules
         UserMenuModule,
-        TenantMenuModule
+        TenantMenuModule,
         NgxChartsModule
     ],
     providers: [
