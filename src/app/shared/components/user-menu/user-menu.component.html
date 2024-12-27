@@ -96,7 +96,7 @@
 
     <!-- Ações quando não tem ninguém que realizou acesso a conta -->
     <div *ngIf="!isLoggedIn">
-      <button mat-menu-item (click)="redirectToSignInPage()">
+      <button mat-menu-item (click)="goToSignInPage()">
         <mat-icon>login</mat-icon>
         <span>Entrar</span>
       </button>
