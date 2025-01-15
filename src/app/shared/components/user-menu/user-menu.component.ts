@@ -93,13 +93,14 @@ export class UserMenuComponent implements OnInit {
     window.location.reload();
   }
 
-  logoutUser(userSession: IUserSession){
-    this.authService.logoutUserByUID(userSession.user.UID);
-    this.router.navigate([this.router.url]);
+  signOutUser(userSession: IUserSession){
+    this.authService.signOutUser(userSession);
+    this.router.navigate(['/signin']);
   }
 
-  logoutAllUsers() {
-    this.authService.logoutAllAccounts();
-    this.router.navigate(['/signin']); // Redirecionar para a página inicial
+  signOutAllUsers() {
+    this.authService.signOutAllUsers().then(() => {
+      this.router.navigate(['/signin']); // Redirecionar para a página inicial
+    });
   }
 }

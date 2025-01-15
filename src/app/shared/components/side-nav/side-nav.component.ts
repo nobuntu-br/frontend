@@ -84,7 +84,7 @@ export class SideNavComponent implements OnInit, OnDestroy {
     public authService: AuthService,
     private router: Router,
     private route: ActivatedRoute
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     const userString = localStorage.getItem('currentUser');
@@ -194,6 +194,7 @@ export class SideNavComponent implements OnInit, OnDestroy {
   private saveRedirectURL(redirectURL: string) {
     localStorage.setItem('redirectURL', redirectURL);
   }
+  
   onViewChange(viewType: string) {
     console.log(viewType);
     this.selectedView = viewType; // Atualiza a exibição com base no botão clicado
@@ -201,8 +202,22 @@ export class SideNavComponent implements OnInit, OnDestroy {
   switchAccount(): void {
     // this.authService.switchAccount();
   }
+
   ngOnDestroy() {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
+  }
+
+  requestTest(){
+    console.log("função chamada");
+
+    this.httpClient.get<any>("http://localhost:8080/api/role/count").pipe(take(1)).subscribe({
+      next: (value) => {
+        console.log(value)
+      },
+      error: (error) => {
+        console.error(error);
+      },
+    });
   }
 }

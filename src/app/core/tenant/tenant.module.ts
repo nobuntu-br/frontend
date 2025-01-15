@@ -1,12 +1,10 @@
-import { forwardRef, NgModule } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { TenantInterceptor } from './tenant.interceptor';
 import { TenantService } from './tenant.service';
 import { MatFormFieldModule } from '@angular/material/form-field';
 
 
-import { TRANSLOCO_SCOPE, TranslocoModule } from '@ngneat/transloco';
+import { TRANSLOCO_SCOPE } from '@ngneat/transloco';
 import { TranslocoRootModule } from 'app/transloco-root.module';
 import { TenantListComponent } from './tenant-list/tenant-list.component';
 import { SharedModule } from "../../shared/shared.module";
@@ -31,7 +29,6 @@ import { TenantRoutingModule } from './tenant-routing.module';
 //Components
 import { TenantUserListComponent } from './tenant-user-list/tenant-user-list.component';
 import { TenantInviteUserFormComponent } from './tenant-user-list/tenant-invite-user-form/tenant-invite-user-form.component';
-import { DatabaseCredentialFormComponent } from './database-credential-form/database-credential-form.component';
 
 @NgModule({
   imports: [
@@ -64,11 +61,6 @@ import { DatabaseCredentialFormComponent } from './database-credential-form/data
   ],
   providers: [
     TenantService,
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: forwardRef(() => TenantInterceptor),
-      multi: true
-    },
     { provide: TRANSLOCO_SCOPE, useValue: { scope: "core", alias: "core" } }
   ],
 })

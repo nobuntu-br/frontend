@@ -12,6 +12,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 //Nobuntu Components
 import { ChangeLanguageButtonModule } from 'app/shared/components/change-language-button/change-language-button.module';
 
@@ -31,6 +32,7 @@ import { ChangeLanguageButtonModule } from 'app/shared/components/change-languag
     MatInputModule,
     MatToolbarModule,
     MatButtonModule,
+    MatCheckboxModule,
     //Nobuntu components
     ChangeLanguageButtonModule
   ],

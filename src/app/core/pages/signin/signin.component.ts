@@ -52,12 +52,12 @@ export class SigninComponent {
   /**
    * Controla a visibilidade da senha
    */
-  passwordHide = true;
+  passwordHide: boolean = false;
+  passwordHideCheckBoxEnabled: boolean = true;
 
   constructor(
     public authService: AuthService,
     private userSessionService: UserSessionService,
-    // private sessionService: SessionService,
     private tenantService: TenantService,
     private router: Router,
     private _formBuilder: FormBuilder,
@@ -119,7 +119,10 @@ export class SigninComponent {
     if (this.passwordFormGroup.valid == false) {
       return;
     }
+
+    //Desabilitar campos de entrada
     this.passwordFormGroup.get("password").disable();
+    this.passwordHideCheckBoxEnabled = false;
     this.isLoading = true;
 
     let userSession: IUserSession;
@@ -131,7 +134,6 @@ export class SigninComponent {
         this.userSessionService.addUserSessionOnLocalStorage(userSession);
         this.userSessionService.setCurrentUserSessionOnLocalStorage(userSession);
         this.tenantService.getTenantsAndSaveInLocalStorage(userSession.user.UID);
-        
     
         this.snackBar.open('Login bem-sucedido.', 'Fechar', {
           duration: 3000,
@@ -148,8 +150,9 @@ export class SigninComponent {
           this.pageState = SignInPageState.SetPassword;
         }
 
-        this.isLoading = false;
         this.passwordFormGroup.get("password").enable();
+        this.passwordHideCheckBoxEnabled = true;
+        this.isLoading = false;
 
         this.snackBar.open('Senha incorreta.', 'Fechar', {
           duration: 3000,

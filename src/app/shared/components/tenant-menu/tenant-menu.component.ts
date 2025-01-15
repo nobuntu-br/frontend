@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from 'app/core/auth/auth.service';
+import { DatabasePermission } from 'app/core/tenant/databasePermission.model';
 import { ITenant } from 'app/core/tenant/tenant.model';
 import { TenantService } from 'app/core/tenant/tenant.service';
 
@@ -18,7 +19,7 @@ export class TenantMenuComponent implements OnInit {
   /**
    * Tenant ativo no momento
    */
-  currentTenant: ITenant;
+  currentTenant: DatabasePermission;
 
   constructor(
     private tenantService: TenantService,
@@ -35,12 +36,9 @@ export class TenantMenuComponent implements OnInit {
   }
 
   async getTenants() {
-    const currentUserSessionUID = this.authService.currentUserSession.user.UID;
-
-    if (currentUserSessionUID != null) {
-      //Obtem os tenants que o usuário tem acesso e salva no armazenamento local
-      this.tenants = await this.tenantService.getTenantsAndSaveInLocalStorage(currentUserSessionUID);
-    }
+  
+    this.currentTenant = this.tenantService.currentTenant;
+    this.tenants = this.tenantService.getTenantsFromLocalstorage();
 
   }
 

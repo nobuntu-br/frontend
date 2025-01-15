@@ -16,7 +16,7 @@ export const appRoutes: Route[] = [
     { path: 'home', canMatch: [AuthGuard], component: SideNavComponent },
     { path: 'dashboard/:id', component: DefaultDashboardComponent },      
       
-    { path: '**', loadChildren: () => import('app/core/pages/error/error-404/error-404.module').then(m => m.Error404Module) },
+    
     {
         path: 'tenant',
         canMatch: [AuthGuard],
@@ -25,4 +25,6 @@ export const appRoutes: Route[] = [
             { path: '', loadChildren: () => import('app/core/tenant/tenant.module').then(m => m.TenantModule) }
         ]   
     },
+
+    { path: '**', loadChildren: () => import('app/core/pages/error/error-404/error-404.module').then(m => m.Error404Module) },
 ]; 

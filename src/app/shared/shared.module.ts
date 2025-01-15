@@ -60,7 +60,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { ListAppsComponent } from './components/list-apps/list-apps.component';
 import { ConfirmChangeAppComponent } from './components/list-apps/confirm-change-app/confirm-change-app.component';
-import { UserSideNavComponent } from './components/user-side-nav/user-side-nav.component';
 import { FormSpaceBuildComponent } from './components/form-space-build/form-space-build.component';
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 import { EditProfileComponent } from './components/edit-profile/edit-profile.component';
@@ -126,10 +125,10 @@ import { TenantMenuModule } from './components/tenant-menu/tenant-menu.module';
         MatSidenavModule,
         MatProgressSpinnerModule,
         MatExpansionModule,
-        BrowserModule,
+        // BrowserModule,
         //Nobuntu Modules
         UserMenuModule,
-        TenantMenuModule
+        TenantMenuModule,
         NgxChartsModule
     ],
     providers: [
@@ -189,7 +188,6 @@ import { TenantMenuModule } from './components/tenant-menu/tenant-menu.module';
         SubformComponent,
         ListAppsComponent,
         ConfirmChangeAppComponent,
-        UserSideNavComponent,
         FormSpaceBuildComponent,
         ResetPasswordComponent,
         EditProfileComponent,

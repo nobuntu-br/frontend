@@ -49,6 +49,8 @@
       </button>
       <span>{{ applicationTitle }}</span>
 
+      <button (click)="requestTest()">teste</button>
+
       <div class="spacer"></div>
 
       <!--  -->
@@ -57,10 +59,10 @@
       <!-- <button *ngIf="canShowLogOutButton == true" mat-button (click)="logout()" class="toolbar-item">LogOut</button>
       <button *ngIf="canShowLogOutButton == false" mat-button (click)="redirectToSignInPage()" class="toolbar-item">SignIn</button> -->
       <app-three-dot-menu *ngIf="authService._authenticated" class="toolbar-item"></app-three-dot-menu>
-      
+
       <!-- Menu para alteração da linguagem do site -->
       <languages class="toolbar-item"></languages>
-      
+
       <!-- Menu de Tenant/Banco de dados -->
       <tenant-menu></tenant-menu>
 

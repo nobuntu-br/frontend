@@ -46,18 +46,17 @@
       </div>
 
       <!-- Formulário para inserção de senha -->
-      <div *ngIf="pageState == signInPageStates.SetPassword" id="password-form" [formGroup]="passwordFormGroup">
+      <div *ngIf="pageState == signInPageStates.SetPassword" id="password-form" >
 
         <h2>{{t("enter-your-password")}}</h2>
 
         <!-- Campo de inserção de senha -->
-        <mat-form-field appearance="outline" style="display: block;">
+        <mat-form-field appearance="outline" style="display: block;" [formGroup]="passwordFormGroup">
           <mat-label>{{t("password")}}</mat-label>
 
-          <input matInput [type]="passwordHide ? 'password' : 'text'" id="password" formControlName="password" name="password" (keydown.enter)="login()">
-          <button mat-icon-button matSuffix (click)="toggleVisibility()" [attr.aria-label]="'Mostrar senha'" [attr.aria-pressed]="!hide">
-            <mat-icon [svgIcon]="hidePassword ? 'mat_solid:visibility_off' : 'mat_solid:visibility'"></mat-icon>
-          </button>
+          <input matInput [type]="passwordHide == false ? 'password' : 'text'" id="password" formControlName="password"
+            name="password" (keydown.enter)="login()">
+
           <!-- Mensagens de erro do campo -->
           <mat-error *ngIf="passwordFormGroup.get('password').hasError('required')">
             {{t("error-password-required")}}
@@ -74,14 +73,18 @@
 
         </mat-form-field>
 
+        <mat-checkbox [(ngModel)]="passwordHide" [disabled]="!passwordHideCheckBoxEnabled">
+          {{t("show-password")}}
+        </mat-checkbox>
+  
         <div class="buttonsColumn" *ngIf="isLoading == false">
           <button mat-button color="primary" id="nextButton" type="submit"
-          (click)="resetPassword()">{{t("forgot-password")}}</button>
-
+            (click)="resetPassword()">{{t("forgot-password")}}</button>
+  
           <button mat-raised-button color="primary" id="nextButton" type="submit" [disabled]="!passwordFormGroup.valid"
             (click)="login()">{{t("next")}}</button>
         </div>
-
+        
       </div>
 
       <!-- Mensagem para criar conta se o email não existir -->

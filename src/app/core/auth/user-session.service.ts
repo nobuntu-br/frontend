@@ -60,6 +60,7 @@ export class UserSessionService {
 
   getAnyUserSessionFromLocalStorage(): IUserSession | null {
     const userSessions: IUserSession[] = this.getUserSessionsFromLocalstorage();
+
     if(userSessions == null || userSessions.length == 0){
       return null;
     }
@@ -67,9 +68,14 @@ export class UserSessionService {
     return userSessions[0];
   }
 
+  /**
+   * Remove os dados da sessão do usuário da lista de usuários com sessão
+   * @param userUID 
+   * @returns Retorna o userUID do usuário removido
+   */
   deleteUserSessionFromLocalStorage(userUID: string): string | null {
 
-    var userSessions : IUserSession[] = this.getUserSessionsFromLocalstorage();
+    let userSessions : IUserSession[] = this.getUserSessionsFromLocalstorage();
 
     if(userSessions != null){
 

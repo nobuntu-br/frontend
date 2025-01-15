@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { firstValueFrom, Observable, of } from 'rxjs';
+import { firstValueFrom, Observable, of, take } from 'rxjs';
 import { Router } from '@angular/router';
 import { UserService } from './user.service';
 import { IUser, IUserSession, SignupDTO } from './user.model';
@@ -8,6 +8,7 @@ import { TenantService } from '../tenant/tenant.service';
 import { UserSessionService } from './user-session.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'environments/environment';
+import { LocalStorageService } from 'app/shared/services/local-storage.service';
 
 
 @Injectable({
@@ -29,38 +30,29 @@ export class AuthService {
   constructor(
     private httpClient: HttpClient,
     private router: Router,
-    private userService: UserService,
     private userSessionService: UserSessionService,
     private tenantService: TenantService,
   ) {
 
-    this.url = environment.backendUrl+"/api/authentication";
+    this.url = environment.backendUrl + "/api/authentication";
     // Recuperar o estado do usuário do localStorage ao iniciar
     // this.restoreUser();
   }
 
   get authenticated() {
-    console.log("O usuário está com acesso: ", this._authenticated);
     return this._authenticated;
-  }
-
-  get accessToken(): string | null {
-    if (this.currentUserSession == null) {
-      return null;
-    }
-    return this.currentUserSession.tokens.accessToken;
   }
 
   get currentUserSession(): IUserSession | null {
 
     //Se não tiver sessão de usuário atual ele irá obter dados os localStorage
     if (this._currentUserSession == null) {
-      this._currentUserSession = this.userSessionService.getAnyUserSessionFromLocalStorage();
+
+      this.currentUserSession = this.userSessionService.getAnyUserSessionFromLocalStorage();
 
       this.userSessionService.setCurrentUserSessionOnLocalStorage(this._currentUserSession);
     }
 
-    // console.log("UserSession ativa no momento: ", this._currentUserSession);
     return this._currentUserSession;
   }
 
@@ -72,11 +64,11 @@ export class AuthService {
     return this.userSessionService.getUserSessionsFromLocalstorage();
   }
 
-  getInactiveUserSessions(): IUserSession[]| null{
+  getInactiveUserSessions(): IUserSession[] | null {
     const currentUserSession = this.currentUserSession;
     const userSessions = this.getUserSessions();
 
-    if(userSessions == null || currentUserSession == null){
+    if (userSessions == null || currentUserSession == null) {
       return null;
     }
 
@@ -84,7 +76,8 @@ export class AuthService {
   }
 
   isLoggedIn(): boolean {
-    return this.currentUserSession != null && AuthUtils.isTokenExpired(this._currentUserSession.tokens.accessToken);
+    // return this.currentUserSession != null && AuthUtils.isTokenExpired(this._currentUserSession.tokens.accessToken);
+    return this.currentUserSession != null;
   }
 
   /**
@@ -110,10 +103,41 @@ export class AuthService {
 
   }
 
-  logoutAllAccounts() {
+  async signOutUser(userSession: IUserSession): Promise<void> {
+    try {
+      await firstValueFrom(this.signout().pipe(take(1)));
+      this.userSessionService.deleteUserSessionFromLocalStorage(userSession.user.UID);
+      this.userSessionService.deleteCurrentUserSessionFromLocalStorage();
+      this.currentUserSession = null;
+    } catch (error) {
+      console.error("Error to signOut user.");
+    }
+  }
+
+  async signOutAllUsers(): Promise<void> {
+    const userSessions = this.userSessionService.getUserSessionsFromLocalstorage();
+
+    for (const userSession of userSessions) {
+      try {
+        // Aguarda o signout ser concluído antes de passar para o próximo usuário
+        await firstValueFrom(this.signout().pipe(take(1)));
+
+        // Limpa os dados do usuário do localStorage
+        this.userSessionService.deleteUserSessionFromLocalStorage(userSession.user.UID);
+        this.userSessionService.deleteCurrentUserSessionFromLocalStorage();
+        this.currentUserSession = null;
+
+
+      } catch (error) {
+        console.error("Error to signOut user.");
+      }
+    }
+
+    //Limpa todas as sessões do LocalStorage
     this.userSessionService.deleteAllUserSessionsFromLocalStorage();
     this.currentUserSession = null;
-    //TODO registrar o final de sessão de todos os usuários
+    this.tenantService.deleteAllTenantsFromLocalStorage();
+
   }
 
   logoutUserByUID(userUID: string): void {
@@ -152,17 +176,23 @@ export class AuthService {
       return of(true);
     }
 
-    if (this.accessToken != null && this.accessToken != '') {
-      return of(true);
-    }
+    // if (this.accessToken != null && this.accessToken != '') {
+    //   return of(true);
+    // }
 
     return of(false);
   }
 
-  signin(email: string, password: string){
-    console.log("Valores enviados ao entrar: ", email, password);
+  signin(email: string, password: string) {
+    return this.httpClient.post<IUserSession>(`${this.url}/signin`, { email, password }, { withCredentials: true });//"{withCredentials: true}" instrui o Angular a incluir cookies em requisições HTTP
+  }
 
-    return this.httpClient.post<IUserSession>(`${this.url}/signin`, { email, password });
+  signup(signupDTO: SignupDTO): Observable<IUser> {
+    return this.httpClient.post<IUser>(`${this.url}/signup`, signupDTO);
+  }
+
+  signout() {
+    return this.httpClient.post<IUser>(`${this.url}/signout`, {});
   }
 
   checkEmailExist(email: string): Observable<boolean> {
@@ -172,12 +202,12 @@ export class AuthService {
   sendVerificationEmailCodeToEmail(email: string): Observable<any> {
     return this.httpClient.post(`${this.url}/send-verification-email-code`, { email });
   }
-  
+
   sendPasswordResetLinkToEmail(email: string): Observable<any> {
     return this.httpClient.post(`${this.url}/send-password-reset-link-to-email`, { email });
   }
 
-  resetPassword(password: string, resetPasswordToken: string){
+  resetPassword(password: string, resetPasswordToken: string) {
     return this.httpClient.post<IUser>(`${this.url}/change-password`, { password, resetPasswordToken });
   }
 
@@ -185,8 +215,8 @@ export class AuthService {
     return this.httpClient.post(`${this.url}/validate-verification-email-code`, { verificationEmailCode });
   }
 
-  signup(signupDTO : SignupDTO): Observable<IUser>{
-    return this.httpClient.post<IUser>(`${this.url}/signup`,  signupDTO );
+  refreshAccessToken(): Observable<string> {
+    return this.httpClient.get<string>(`${this.url}/refresh-token`);
   }
 
   /**
@@ -201,58 +231,4 @@ export class AuthService {
     }
   }
 
-  /**
-   * Atualiza o token de acesso
-   */
-  async refreshAccessToken(): Promise<void> {
-    const currentUserSession: IUserSession = this.userSessionService.getCurrentUserSessionFromLocalStorage();
-
-    if (!currentUserSession) {
-      throw new Error('CurrentUserSession não encontrado');
-    }
-
-    const refreshToken = currentUserSession.tokens.refreshToken;
-
-    if (!refreshToken) {
-      throw new Error('Refresh token não encontrado no currentUserSession');
-    }
-
-    const accessToken: string = await firstValueFrom(this.userService.getNewAccessToken(refreshToken));
-
-    currentUserSession.tokens.accessToken = accessToken;
-
-    this.userSessionService.addUserSessionOnLocalStorage(currentUserSession);
-
-    // Faça a requisição para renovar o access token usando o refresh token
-    // const response = await fetch('https://allystore.b2clogin.com/allystore.onmicrosoft.com/oauth2/v2.0/token?p=b2c_1_ropc', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/x-www-form-urlencoded'
-    //   },
-    //   body: new URLSearchParams({
-    //     'grant_type': 'refresh_token',
-    //     'client_id': environment.client_id,
-    //     'refresh_token': refreshToken,
-    //     'scope': environment.scope + " offline_access"
-    //   })
-    // });
-
-    // if (!response.error) {
-    //   throw new Error('Failed to refresh access token');
-    // }
-
-    // const data = await response.json();
-
-    // Atualize o access token no currentUser e salve no localStorage
-    // this.currentUserSession..accessToken = data.access_token;
-
-    // Se houver um novo refresh token, atualize o currentUser
-    // if (data.refresh_token) {
-    //   currentUser.accessInfo.refreshToken = data.refresh_token;
-    // }
-    // Salve o currentUser atualizado no localStorage
-    // await this.userService.addUserOnLocalStorage(currentUser);
-    this._authenticated = true;
-    window.location.reload();
-  }
 }

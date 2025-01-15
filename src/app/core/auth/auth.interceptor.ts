@@ -1,40 +1,51 @@
 import { Injectable } from '@angular/core';
 import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
-import { catchError, from, Observable, switchMap, throwError } from 'rxjs';
+import { catchError, Observable, take, throwError } from 'rxjs';
 import { AuthService } from './auth.service';
-import { AuthUtils } from 'app/core/auth/auth.utils';
+import { TenantService } from '../tenant/tenant.service';
 
+/**
+ * Intercepta toda requisição adicionando ao cabeçario identificador do usuário da sessão atual, ou seja, usuário que está fazendo a requisição e também identificador do banco de dados que está sendo usado pelo usuário na requisição.
+ */
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
   /**
    * Constructor
    */
-  constructor(private _authService: AuthService) {
+  constructor(
+    private authService: AuthService,
+    private tenantService: TenantService,
+  ) {
   }
 
   /**
-   * Intercept
-   *
+   * Intercepta a requisição informando dados de usuário e banco de dados usado para API.
    * @param req
    * @param next
    */
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    // Clone the request object
     let newReq = req.clone();
-    // Request
-    //
-    // If the access token didn't expire, add the Authorization header.
-    // We won't add the Authorization header if the access token expired.
-    // This will force the server to return a "401 Unauthorized" response
-    // for the protected API routes which our response interceptor will
-    // catch and delete the access token from the local storage while logging
-    // the user out from the app.
-    if (this._authService.accessToken && !AuthUtils.isTokenExpired(this._authService.accessToken)) {
-      newReq = req.clone({
-        headers: req.headers.set('Authorization', 'Bearer ' + this._authService.accessToken)
-      });
+
+    //Indica qual usuário está fazendo a requisição
+    let userSession: string = "";
+    //Indica qual tenant (banco de dados) será a requisição
+    let databaseUsedInRequest: string = "";
+
+    if (this.authService.currentUserSession != null) {
+      userSession = String(this.authService.currentUserSession.user.id);
     }
 
+    if (this.tenantService.currentTenant != null) {
+      databaseUsedInRequest = String(this.tenantService.currentTenant.databaseCredential.id);
+    }
+
+    newReq = req.clone({
+      setHeaders: {
+        "usersession": userSession,
+        "X-Tenant-ID": databaseUsedInRequest,
+      },
+      withCredentials: true,
+    });
 
     // Resposta obtida após a requisição
     return next.handle(newReq).pipe(
@@ -43,11 +54,18 @@ export class AuthInterceptor implements HttpInterceptor {
         console.log(error);
         // Caso obter "401 Unauthorized" (status de não autorizado para fazer a requisição) como erro
         if (error instanceof HttpErrorResponse && error.status === 401) {
-          // TODO Decidir como tratar casos que o usuário não tem autorização para fazer a requisição na API
-          this._authService.refreshAccessToken();
-
           
-          // location.reload();
+          // TODO Decidir como tratar casos que o usuário não tem autorização para fazer a requisição na API
+          this.authService.refreshAccessToken().pipe(take(1)).subscribe({
+            next: (value) => {
+              location.reload();
+            },
+            error: (error) => {
+              //TODO jogar ele pra fora da pagina e limpar dados no localstorage
+              location.reload();
+            },
+          });
+          
         }
 
         return throwError(error);

@@ -31,7 +31,7 @@
         </button>
 
         <!-- Botão para sair de todas as contas -->
-        <button mat-menu-item (click)="logoutAllUsers()">
+        <button mat-menu-item (click)="signOutAllUsers()">
           <mat-icon>logout</mat-icon>
           {{t("logout")}}
         </button>
@@ -80,7 +80,7 @@
         </button>
 
         <!-- Botão para sair de todas as contas -->
-        <button mat-menu-item (click)="logoutAllUsers()">
+        <button mat-menu-item (click)="signOutAllUsers()">
           <mat-icon>logout</mat-icon>
           {{t("logout")}}
         </button>
@@ -96,7 +96,7 @@
 
     <!-- Ações quando não tem ninguém que realizou acesso a conta -->
     <div *ngIf="!isLoggedIn">
-      <button mat-menu-item (click)="redirectToSignInPage()">
+      <button mat-menu-item (click)="goToSignInPage()">
         <mat-icon>login</mat-icon>
         <span>Entrar</span>
       </button>

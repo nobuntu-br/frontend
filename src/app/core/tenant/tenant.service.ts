@@ -5,6 +5,7 @@ import { ITenant, Tenant } from './tenant.model';
 import { Observable } from 'rxjs/internal/Observable';
 import { map, catchError, lastValueFrom, take } from 'rxjs';
 import { LocalStorageService } from 'app/shared/services/local-storage.service';
+import { DatabasePermission } from './databasePermission.model';
 
 /**
  * Serviço que será responsável pelo controle do Tenant
@@ -19,7 +20,7 @@ export class TenantService extends BaseResourceService<any> {
 
   url = environment.backendUrl+"/api/tenant";
 
-  private _currentTenant: Tenant | null = null;
+  private _currentTenant: DatabasePermission | null = null;
   
   constructor(
     protected override injector: Injector,
@@ -32,11 +33,11 @@ export class TenantService extends BaseResourceService<any> {
   /**
    * Obtem o tenant que está sendo usado no momento
    */
-  get currentTenant(): Tenant | null {
+  get currentTenant(): DatabasePermission | null {
 
     //Se não tenant atual ele irá obter dados os localStorage
     if (this._currentTenant == null) {
-      this._currentTenant = this.getAnyTenantFromLocalStorage();
+      this.currentTenant = this.getAnyTenantFromLocalStorage();
       this.setCurrentTenantOnLocalStorage(this._currentTenant);
     }
     
@@ -46,19 +47,19 @@ export class TenantService extends BaseResourceService<any> {
   /**
    * Define o tenant que será usado nas requisições
    */
-  set currentTenant(tenant : Tenant | null){
+  set currentTenant(tenant : DatabasePermission | null){
     this._currentTenant = tenant;
   }
 
   /**
    * Realiza a troca de Tenant ativo no momento
-   * @param tenantCredentialId ID das credenciais do Tenant que será ativo
+   * @param tenantId ID das credenciais do Tenant que será ativo
    */
-  switchTenant(tenantCredentialId: string): ITenant {
+  switchTenant(tenantId: string): DatabasePermission {
 
-    const tenants: ITenant[] = this.getTenantsFromLocalstorage();
+    const tenants: DatabasePermission[] = this.getTenantsFromLocalstorage();
     //Percorre o Tenants salvos no local Storage.
-    const tenant: ITenant = tenants.find(tenant => tenant.tenantCredentialId === tenantCredentialId) || null;
+    const tenant: DatabasePermission = tenants.find(_databasePermission => _databasePermission.tenant.id === tenantId) || null;
 
     if (tenant != null) {
       //Caso for encontrado o Tenant que se tem interesse em fazer uso, faz a troca para esse Tenat que será a utilizado nas requisições
@@ -85,12 +86,19 @@ export class TenantService extends BaseResourceService<any> {
     return currentTenant;
   }
 
-  getCurrentTenantFromLocalStorage(): ITenant {
+  getCurrentTenantFromLocalStorage(): ITenant | null {
     const currentTenant = this.localStorageService.get(this.currentTenantLocalStorageKey);
+
+    if( currentTenant == "" || 
+      currentTenant == "[]"
+    ){
+      return null;
+    }
+
     return currentTenant;
   }
 
-  getTenantsFromLocalstorage(): ITenant[] | null {
+  getTenantsFromLocalstorage(): DatabasePermission[] | null {
     const localStorageData = this.localStorageService.get(this.tenantsLocalStorageKey);
     
     if( localStorageData == "" || 
@@ -102,51 +110,47 @@ export class TenantService extends BaseResourceService<any> {
     return localStorageData;
   }
 
-  async getTenantsAndSaveInLocalStorage(userUID: string): Promise<ITenant[]>{
-    const tenants = await lastValueFrom(this.getByUserUID(userUID));
-    this.localStorageService.set(this.tenantsLocalStorageKey, tenants);
-    return tenants;
+  async getTenantsAndSaveInLocalStorage(userUID: string): Promise<any>{
+
+    this.http.get<DatabasePermission[]>(this.url + "/uid/" + userUID).pipe(take(1)).subscribe({
+      next: (tenants: DatabasePermission[]) => {
+        this.localStorageService.set(this.tenantsLocalStorageKey, tenants);
+        return tenants;
+      },
+      error: (error) => {
+        console.log("Error to get tenants: ", error);
+        return null;
+      }
+    });
+
   }
 
-  addTenantOnLocalStorage(tenant: ITenant): void {
+  addTenantOnLocalStorage(databasePermission: DatabasePermission): void {
     
-    var tenants : ITenant[] | null = this.getTenantsFromLocalstorage();
+    let databasePermissions : DatabasePermission[] | null = this.getTenantsFromLocalstorage();
 
-    if(tenants != null){
+    if(databasePermissions != null){
 
-      tenants = tenants.filter(_tenant => _tenant.tenantCredentialId !== tenant.tenantCredentialId);
+      databasePermissions = databasePermissions.filter(_databasePermissions => _databasePermissions.databaseCredential.id !== databasePermission.databaseCredential.id);
       //Adiciona novamente (caso tenha algum dado alterado)
-      tenants.push(tenant);
+      databasePermissions.push(databasePermission);
       //Salva novamente dentro do array de tenants
-      this.localStorageService.set(this.tenantsLocalStorageKey, tenants)
+      this.localStorageService.set(this.tenantsLocalStorageKey, databasePermissions)
     } else {
       //Salva o array contendo os tenants
-      this.localStorageService.set(this.tenantsLocalStorageKey, [tenants]);
+      this.localStorageService.set(this.tenantsLocalStorageKey, [databasePermissions]);
     }
 
   }
 
-  // getAllTenantsInLocalStorage(userUID: string): ITenant[] | null {
-  //   //Obtem os tenants armazenados no localstorage
-  //   const storedTenants = JSON.parse(localStorage.getItem('tenants') || '[]');
-
-  //   //Procura se já existe um tenant igual
-  //   const tenantIndex = storedTenants.findIndex(_userUID => _userUID === userUID);
-  //   if (tenantIndex === -1) {
-  //     return null;
-  //   } else {
-  //     return storedTenants[tenantIndex];
-  //   }
-  // }
-
-  getAnyTenantFromLocalStorage(): ITenant | null{
-    const storedTenants: ITenant[] = this.getTenantsFromLocalstorage();
+  getAnyTenantFromLocalStorage(): DatabasePermission | null{
+    const storedDatabasePermissions: DatabasePermission[] = this.getTenantsFromLocalstorage();
     
-    if(storedTenants == null || storedTenants.length == 0){
+    if(storedDatabasePermissions == null || storedDatabasePermissions.length == 0){
       return null;
     }
 
-    return storedTenants[0];
+    return storedDatabasePermissions[0];
   }
 
   getTenantsUserIsAdmin(userUID: string): Observable<Tenant[]>{
@@ -156,17 +160,17 @@ export class TenantService extends BaseResourceService<any> {
     )
   }
 
-  deleteTenantFromLocalStorage(tenantCredentialId: string): string | null {
+  deleteTenantFromLocalStorage(databaseCredentialId: number): number | null {
 
-    var tenants : ITenant[] = this.getTenantsFromLocalstorage();
+    let databasePermissions : DatabasePermission[] = this.getTenantsFromLocalstorage();
 
-    if(tenants != null){
+    if(databasePermissions != null || databasePermissions.length > 0){
 
-      tenants = tenants.filter(_tenant => _tenant.tenantCredentialId !== tenantCredentialId);
+      databasePermissions = databasePermissions.filter(_databasePermission => _databasePermission.databaseCredential.id !== databaseCredentialId);
 
-      this.localStorageService.set(this.tenantsLocalStorageKey, tenants);
+      this.localStorageService.set(this.tenantsLocalStorageKey, databasePermissions);
 
-      return tenantCredentialId;
+      return databaseCredentialId;
     }
 
     return null;
@@ -180,7 +184,7 @@ export class TenantService extends BaseResourceService<any> {
     this.localStorageService.remove(this.currentTenantLocalStorageKey);
   }
 
-  changeCurrentTenant(tenant: Tenant | null){
+  changeCurrentTenant(tenant: DatabasePermission | null){
     this.currentTenant = tenant;
   }
 

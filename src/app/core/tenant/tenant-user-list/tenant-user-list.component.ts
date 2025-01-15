@@ -31,8 +31,6 @@ export class TenantUserListComponent implements OnInit {
 
   tenant: ITenant = {
     name: "teste",
-    tenantCredentialId: "1",
-    tenantId: "2"
   }
 
   constructor(

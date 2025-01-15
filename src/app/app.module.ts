@@ -26,7 +26,7 @@ const routerConfig: ExtraOptions = {
     AppComponent,
   ],
   imports: [
-    BrowserModule,
+    BrowserModule, //O BrowserModule fornece funcionalidades básicas para a aplicação Angular, como o suporte a diretivas (*ngIf, *ngFor, etc.) e precisa ser importado apenas uma vez.
     BrowserAnimationsModule,
     RouterModule.forRoot(appRoutes, routerConfig),
     NgxMaskModule.forRoot(),

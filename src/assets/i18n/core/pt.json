@@ -29,7 +29,8 @@
     "error-password-required": "Senha é necessária ser preenchida",
     "error-password-maxlength": "A senha ultrapassou o número máximo de caracteres.",
     "error-password-minlength": "A senha deve ter quantidade maior caracteres.",
-    "error-password-pattern": "A senha está em um formato incorreto."
+    "error-password-pattern": "A senha está em um formato incorreto.",
+    "show-password": "Mostrar senha"
   },
   "sign-up-component": {
     "create-product-account": "Cria uma conta do Ortia",

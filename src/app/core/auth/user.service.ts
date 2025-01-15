@@ -37,14 +37,8 @@ export class UserService extends BaseResourceService<User> {
     )
   }
 
-  
-
   sendChangePasswordLink(email: string){
     return this.http.post<IUser>(`${this.apiPath}/send-change-password-link`, { email });
-  }
-
-  getNewAccessToken(refreshToken: string): Observable<string>{
-    return this.http.post<string>(`${this.apiPath}/refresh-token`, { refreshToken });
   }
 
   checkEmailIsUsed(email: string){
