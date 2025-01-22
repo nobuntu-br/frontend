@@ -89,6 +89,8 @@ import { DefaultDashboardComponent } from './components/default-dashboard/defaul
 
 import { UserMenuModule } from './components/user-menu/user-menu.module';
 import { TenantMenuModule } from './components/tenant-menu/tenant-menu.module';
+import { AvaliacaoFieldComponent } from './components/avaliacao-field/avaliacao-field.component';
+import { AvaliacaoUnicaFieldComponent } from './components/avaliacao-unica-field/avaliacao-unica-field.component';
 
 @NgModule({
     imports: [
@@ -213,7 +215,9 @@ import { TenantMenuModule } from './components/tenant-menu/tenant-menu.module';
         LineChartComponent,
         DefaultGraphicComponent,
         ChartDateFilterComponent,
-        DefaultDashboardComponent
+        DefaultDashboardComponent,
+        AvaliacaoFieldComponent,
+        AvaliacaoUnicaFieldComponent
     ],
 })
 export class SharedModule { }

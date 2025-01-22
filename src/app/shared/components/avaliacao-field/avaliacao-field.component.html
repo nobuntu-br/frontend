@@ -1,0 +1,17 @@
+<div class="rating-container">
+    <label>{{ label }}</label>
+    <div class="rating">
+      <ng-container *ngFor="let star of stars; let i = index">
+        <mat-icon
+          class="star"
+          [class.filled]="i < inputValue.value"
+          (click)="rate(i + 1)"
+        >
+          {{ i < inputValue.value ? 'star' : 'star_border' }}
+        </mat-icon>
+      </ng-container>
+    </div>
+    <mat-error *ngIf="inputValue.invalid && inputValue.touched">
+      Please provide a rating.
+    </mat-error>
+  </div>
