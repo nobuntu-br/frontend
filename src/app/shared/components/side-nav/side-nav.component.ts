@@ -207,17 +207,4 @@ export class SideNavComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
-  requestTest(){
-    console.log("função chamada");
-
-    this.httpClient.get<any>("http://localhost:8080/api/role/count").pipe(take(1)).subscribe({
-      next: (value) => {
-        console.log(value)
-      },
-      error: (error) => {
-        console.error(error);
-      },
-    });
-  }
 }

@@ -51,18 +51,19 @@ export class AuthInterceptor implements HttpInterceptor {
     return next.handle(newReq).pipe(
       // Caso ocorreu algum erro
       catchError((error) => {
-        console.log(error);
+        // console.log(error);
         // Caso obter "401 Unauthorized" (status de não autorizado para fazer a requisição) como erro
         if (error instanceof HttpErrorResponse && error.status === 401) {
-          
+
           // TODO Decidir como tratar casos que o usuário não tem autorização para fazer a requisição na API
           this.authService.refreshAccessToken().pipe(take(1)).subscribe({
             next: (value) => {
-              location.reload();
+              // location.reload();
+              
             },
             error: (error) => {
               //TODO jogar ele pra fora da pagina e limpar dados no localstorage
-              location.reload();
+              // location.reload();
             },
           });
           

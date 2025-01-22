@@ -3,6 +3,8 @@ import { Router } from '@angular/router';
 import { AuthService } from 'app/core/auth/auth.service';
 import { AuthUtils } from 'app/core/auth/auth.utils';
 import { IUserSession } from 'app/core/auth/user.model';
+import { UserService } from 'app/core/auth/user.service';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'user-menu',
@@ -30,11 +32,13 @@ export class UserMenuComponent implements OnInit {
    * Sessão do usuário atual que está realizando as requisições
    */
   currentUserSession: IUserSession;
+  userProfilePhotoEnabled: boolean = false;
 
   constructor(
     private authService: AuthService,
+    private userService: UserService,
     private router: Router
-    ) { }
+  ) { }
 
   ngOnInit(): void {
     this.updateUserSessionState();
@@ -44,11 +48,13 @@ export class UserMenuComponent implements OnInit {
     this.userSessions = this.authService.getUserSessions();
     //Obtem informações dos usuários com acesso mas não ativos
     this.inactiveUserSessions = this.authService.getInactiveUserSessions();
-    
+
+    this.getUserProfilePhoto(this.currentUserSession.user.UID);
+
   }
 
-  checkUserSessionExpired(userSession: IUserSession): boolean{
-    if(userSession.tokens == null || userSession.tokens.accessToken == null) return true;
+  checkUserSessionExpired(userSession: IUserSession): boolean {
+    if (userSession.tokens == null || userSession.tokens.accessToken == null) return true;
     return AuthUtils.isTokenExpired(userSession.tokens.accessToken);
   }
 
@@ -59,7 +65,7 @@ export class UserMenuComponent implements OnInit {
       }
     });
   }
-  
+
   goToSignInPage() {
     this.router.navigate(['signin']);
   }
@@ -69,17 +75,17 @@ export class UserMenuComponent implements OnInit {
   }
 
   isCurrentUserSession(userSession: IUserSession): boolean {
-    if(this.currentUserSession.user.UID == userSession.user.UID){
+    if (this.currentUserSession.user.UID == userSession.user.UID) {
       return true;
     }
 
     return false;
   }
 
-  switchCurrentUserSession(userSession: IUserSession){
+  switchCurrentUserSession(userSession: IUserSession) {
 
     //Se por acaso tentar mudar a sessão do usuário para o mesmo usuário, não irá poder fazer isso
-    if(this.isCurrentUserSession(userSession) == true){
+    if (this.isCurrentUserSession(userSession) == true) {
       return null;
     }
 
@@ -93,7 +99,7 @@ export class UserMenuComponent implements OnInit {
     window.location.reload();
   }
 
-  signOutUser(userSession: IUserSession){
+  signOutUser(userSession: IUserSession) {
     this.authService.signOutUser(userSession);
     this.router.navigate(['/signin']);
   }
@@ -102,5 +108,18 @@ export class UserMenuComponent implements OnInit {
     this.authService.signOutAllUsers().then(() => {
       this.router.navigate(['/signin']); // Redirecionar para a página inicial
     });
+  }
+
+  async getUserProfilePhoto(userUID: string) {
+    this.userService.getUserProfilePhoto(userUID).pipe(take(2)).subscribe({
+      next: (value) => {
+        console.log("resposta ao obter imagem: ", value);
+        this.userProfilePhotoEnabled = true;
+      },
+      error: (error) => {
+        console.log("erro ao obter foto do perfil: ", error);
+        this.userProfilePhotoEnabled = false;
+      },
+    })
   }
 }

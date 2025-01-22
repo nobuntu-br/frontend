@@ -48,4 +48,8 @@ export class UserService extends BaseResourceService<User> {
   inviteUser(input: InviteUserToApplicationDTO){
     return this.http.post(`${this.apiPath}/invite-user`, input);
   }
+
+  getUserProfilePhoto(userUID: string): Observable<string> {
+    return this.http.get<string>(`${this.apiPath}/get-user-profile-photo/${userUID}`);
+  }
 }

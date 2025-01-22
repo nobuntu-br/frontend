@@ -11,9 +11,21 @@
 }
 
 #user-image {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #007bff; /* Cor de fundo */
+  color: white; /* Cor da letra */
+  width: 100px; /* Largura do círculo */
+  height: 100px; /* Altura do círculo */
+  border-radius: 50%; /* Forma de círculo */
+  font-size: 48px; /* Tamanho da letra */
+  font-weight: bold; /* Deixa a letra em negrito */
+  text-transform: uppercase; /* Letra maiúscula */
+}
+
+.letter {
+  user-select: none; /* Impede a seleção da letra */
 }
 
 .other-users-panel-description-image {

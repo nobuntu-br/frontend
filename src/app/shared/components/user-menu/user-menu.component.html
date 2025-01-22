@@ -13,7 +13,11 @@
       <div class="current-user">
         <p>{{currentUserSession.user.email}}</p>
 
-        <img src="assets/images/user-image-test.jpg" alt="user image" id="user-image">
+        <!-- <img *ngIf="userProfilePhotoEnabled == true" src="assets/images/user-image-test.jpg" alt="user image" id="user-image"> -->
+        
+        <div id="user-image" *ngIf="userProfilePhotoEnabled == false">
+          <span class="letter">{{ currentUserSession.user.firstName[0] }}</span>
+        </div>
 
         <h4>{{t("hi")}} {{currentUserSession.user.firstName}}!</h4>
 
