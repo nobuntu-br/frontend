@@ -16,6 +16,8 @@ import { CaptureLocationField } from "../components/capture-location-field/captu
 import { LocationField } from "../components/location-field/location-field";
 import { VideoField } from "../components/video-field/video-field";
 import { PictureField } from "../components/picture-field/picture-field";
+import { AvaliacaoField } from "../components/avaliacao-field/avaliacao-field";
+import { AvaliacaoUnicaField } from "../components/avaliacao-unica-field/avaliacao-unica-field";
 
 @Injectable({
   providedIn: 'root'
@@ -69,6 +71,12 @@ export class DynamicFormFieldFactory implements FormFactory {
       }
       case 'video': {
         return new VideoField();
+      }
+      case 'avaliacao': {
+        return new AvaliacaoField();
+      }
+      case 'avaliacaounica': {
+        return new AvaliacaoUnicaField();
       }
 
       default:

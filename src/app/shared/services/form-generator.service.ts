@@ -7,6 +7,11 @@ import { FormField } from '../models/form-field';
 import { DynamicFormFieldFactory } from '../models/dinamic-form-factory';
 import { IPageStructure, PageStructure } from '../models/pageStructure';
 
+interface IconOption {
+  nome: string;
+  valor: number;
+}
+
 
 /**
   * Dados que irão criar um campo que irá compor o formulário
@@ -40,6 +45,8 @@ export interface ICreateComponentParams {
   selectItemsLimit?: number,
   dataType?: string,
   language?: string,
+  icones?: IconOption[]
+
 }
 
 /**
