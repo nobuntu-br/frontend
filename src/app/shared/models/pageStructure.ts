@@ -60,6 +60,8 @@ export interface IPageStructureAttribute {
   optionList?: any[];
   step?: string;
   allowedExtensions?: string[];
+  icones?: IconOption[];
+
 }
 
 export interface IPageStructureAttributesProperties {
