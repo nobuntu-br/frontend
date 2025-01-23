@@ -4,6 +4,12 @@ export interface IPageStructure {
   
 }
 
+
+export interface IconOption {
+  nome: string;
+  valor: number;
+}
+
 export interface IPageStructureConfig {
   modified: Date;
   description: string;
@@ -20,6 +26,8 @@ export interface IPageStructureConfig {
   delete: boolean;
   isFormStepper: boolean;
   isLinearFormStepper: boolean;
+  icones?: IconOption[];
+
 }
 
 export interface ISearchableField {
@@ -52,6 +60,8 @@ export interface IPageStructureAttribute {
   optionList?: any[];
   step?: string;
   allowedExtensions?: string[];
+  icones?: IconOption[];
+
 }
 
 export interface IPageStructureAttributesProperties {

@@ -1,0 +1,23 @@
+<div class="avaliacao-unica-container">
+    <label>{{ label }}</label>
+    <div *ngIf="showSelector">
+      <div class="icon-selector">
+        <mat-icon
+          *ngFor="let icon of icones"
+          class="icone"
+          [class.selected]="icon === selectedIcon"
+          (click)="selectIcon(icon)"
+        >
+          {{ icon.nome }}
+        </mat-icon>
+      </div>
+    </div>
+    <div class="avaliacao-unica" *ngIf="!showSelector">
+      <mat-icon class="icone" (click)="showIconSelector()">
+        {{ selectedIcon?.nome }}
+      </mat-icon>
+    </div>
+    <mat-error *ngIf="inputValue.invalid && inputValue.touched">
+      Please provide a valid value.
+    </mat-error>
+  </div>
