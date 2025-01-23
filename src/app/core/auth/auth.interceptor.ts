@@ -3,18 +3,21 @@ import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest
 import { catchError, Observable, take, throwError } from 'rxjs';
 import { AuthService } from './auth.service';
 import { TenantService } from '../tenant/tenant.service';
+import { Router } from '@angular/router';
 
 /**
  * Intercepta toda requisição adicionando ao cabeçario identificador do usuário da sessão atual, ou seja, usuário que está fazendo a requisição e também identificador do banco de dados que está sendo usado pelo usuário na requisição.
  */
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
+  private hasTriedToRefresh: boolean = false;
   /**
    * Constructor
    */
   constructor(
     private authService: AuthService,
     private tenantService: TenantService,
+    private router: Router
   ) {
   }
 
@@ -50,26 +53,32 @@ export class AuthInterceptor implements HttpInterceptor {
     // Resposta obtida após a requisição
     return next.handle(newReq).pipe(
       // Caso ocorreu algum erro
-      catchError((error) => {
-        // console.log(error);
+      catchError((error: HttpErrorResponse) => {
+
         // Caso obter "401 Unauthorized" (status de não autorizado para fazer a requisição) como erro
         if (error instanceof HttpErrorResponse && error.status === 401) {
 
-          // TODO Decidir como tratar casos que o usuário não tem autorização para fazer a requisição na API
-          this.authService.refreshAccessToken().pipe(take(1)).subscribe({
-            next: (value) => {
-              // location.reload();
-              
-            },
-            error: (error) => {
-              //TODO jogar ele pra fora da pagina e limpar dados no localstorage
-              // location.reload();
-            },
-          });
-          
-        }
+          if (this.hasTriedToRefresh == false) {
+            this.hasTriedToRefresh = true;
+            //Tenta obter o token de acesso
+            this.authService.refreshAccessToken().pipe(take(1)).subscribe({
+              next: (value) => {
+                location.reload();
+              },
+              error: (error) => {
+                this.hasTriedToRefresh = false;
+              },
+            });
+          } else {
 
-        return throwError(error);
+            //Limpa todos os dados armazenados e redireciona o usuário
+            localStorage.clear();
+            this.router.navigate(['/']);
+          }
+
+        }
+        return throwError(() => error);
+
       })
     );
   }

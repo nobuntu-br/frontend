@@ -73,9 +73,10 @@
 
         </mat-form-field>
 
-        <mat-checkbox [(ngModel)]="passwordHide" [disabled]="!passwordHideCheckBoxEnabled">
+        <div>
+          <mat-checkbox [(ngModel)]="passwordHide" [disabled]="!passwordHideCheckBoxEnabled"></mat-checkbox>
           {{t("show-password")}}
-        </mat-checkbox>
+        </div>
   
         <div class="buttonsColumn" *ngIf="isLoading == false">
           <button mat-button color="primary" id="nextButton" type="submit"

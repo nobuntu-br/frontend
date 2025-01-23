@@ -12,7 +12,7 @@ import { MatTableDataSource } from '@angular/material/table';
   styleUrls: ['./tenant-user-list.component.scss']
 })
 export class TenantUserListComponent implements OnInit {
-  displayedColumns: string[] = ['checkbox','userName', 'email'];
+  displayedColumns: string[] = ['checkbox','userName', 'email', 'edit'];
 
   /**
    * Controladores de dados da tabela
@@ -20,14 +20,7 @@ export class TenantUserListComponent implements OnInit {
   dataSource = new MatTableDataSource<IUser>();
   selection = new SelectionModel<IUser>(true, []);
 
-  users: IUser[] = [{
-    firstName:"test",
-    lastName:"sobrenome",
-    TenantUID:"dd",
-    UID:"1",
-    userName:"test",
-    email:"teste@email.com"
-  }];
+  users: IUser[] = [];
 
   tenant: ITenant = {
     name: "teste",

@@ -3,7 +3,7 @@ import { BaseResourceService } from 'app/shared/services/shared.service';
 import { environment } from 'environments/environment';
 import { ITenant, Tenant } from './tenant.model';
 import { Observable } from 'rxjs/internal/Observable';
-import { map, catchError, lastValueFrom, take } from 'rxjs';
+import { map, catchError, lastValueFrom, take, firstValueFrom } from 'rxjs';
 import { LocalStorageService } from 'app/shared/services/local-storage.service';
 import { DatabasePermission } from './databasePermission.model';
 
@@ -110,18 +110,28 @@ export class TenantService extends BaseResourceService<any> {
     return localStorageData;
   }
 
-  async getTenantsAndSaveInLocalStorage(userUID: string): Promise<any>{
+  async getTenantsAndSaveInLocalStorage(userUID: string): Promise<DatabasePermission[] | null>{
 
-    this.http.get<DatabasePermission[]>(this.url + "/uid/" + userUID).pipe(take(1)).subscribe({
-      next: (tenants: DatabasePermission[]) => {
-        this.localStorageService.set(this.tenantsLocalStorageKey, tenants);
-        return tenants;
-      },
-      error: (error) => {
-        console.log("Error to get tenants: ", error);
-        return null;
-      }
-    });
+    try {
+      let tenants: DatabasePermission[] = await firstValueFrom(this.http.get<DatabasePermission[]>(this.url + "/uid/" + userUID).pipe(take(1)));
+      this.localStorageService.set(this.tenantsLocalStorageKey, tenants);
+
+      return tenants;
+    } catch (error) {
+      console.log("Error to get tenants: ", error);
+      return null;
+    }
+
+    // this.http.get<DatabasePermission[]>(this.url + "/uid/" + userUID).pipe(take(1)).subscribe({
+    //   next: (tenants: DatabasePermission[]) => {
+    //     this.localStorageService.set(this.tenantsLocalStorageKey, tenants);
+    //     return tenants;
+    //   },
+    //   error: (error) => {
+    //     console.log("Error to get tenants: ", error);
+    //     return null;
+    //   }
+    // });
 
   }
 

@@ -68,7 +68,7 @@
         <mat-form-field appearance="outline" style="display: block;">
           <mat-label>{{t("emailVerificationCode")}}</mat-label>
 
-          <input matInput type="number" id="emailVerificationCode" formControlName="emailVerificationCode" name="emailVerificationCode" (keydown.enter)="validateEmailVerificationCode()">
+          <input matInput type="string" id="emailVerificationCode" formControlName="emailVerificationCode" name="emailVerificationCode" (keydown.enter)="validateEmailVerificationCode()">
 
           <!-- Mensagens de erro do campo -->
           <mat-error *ngIf="emailVerificationCodeFormGroup.get('emailVerificationCode').hasError('required')">

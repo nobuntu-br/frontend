@@ -90,8 +90,11 @@
     "december": "Dezembro"
   },
   "tenant-list-component": {
+    "tittle": "Lista de tenants",
+    "description": "",
     "name": "Nome",
-    "user-permission": "Permissão de usuário"
+    "user-permission": "Permissão de usuário",
+    "manage-access": "Gerenciar acesso"
   },
   "tenant-user-list-component": {
     "new-user": "Novo usuário",

@@ -49,7 +49,8 @@ export class UserMenuComponent implements OnInit {
     //Obtem informações dos usuários com acesso mas não ativos
     this.inactiveUserSessions = this.authService.getInactiveUserSessions();
 
-    this.getUserProfilePhoto(this.currentUserSession.user.UID);
+    //TODO fazer isso só uma vez após o login pra não dar problema com a Azure
+    // this.getUserProfilePhoto(this.currentUserSession.user.UID);
 
   }
 
@@ -113,11 +114,9 @@ export class UserMenuComponent implements OnInit {
   async getUserProfilePhoto(userUID: string) {
     this.userService.getUserProfilePhoto(userUID).pipe(take(2)).subscribe({
       next: (value) => {
-        console.log("resposta ao obter imagem: ", value);
         this.userProfilePhotoEnabled = true;
       },
       error: (error) => {
-        console.log("erro ao obter foto do perfil: ", error);
         this.userProfilePhotoEnabled = false;
       },
     })

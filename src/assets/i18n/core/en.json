@@ -58,7 +58,7 @@
     "error-birthYear-invalidFormat": "Ano de nascimento tem formato incorreto.",
     "error-email-required": "E-mail é necessário ser preenchido",
     "error-email-pattern": "E-mail tem formato incorreto",
-    "set-your-emailVerificationCode":"Define seu codigo de verificação de email",
+    "set-your-emailVerificationCode": "Define seu codigo de verificação de email",
     "error-password-strength": "A senha deve ter pelo menos 8 caracteres, incluindo letras maiúsculas, minúsculas, números e caracteres especiais."
   },
   "months": {
@@ -76,17 +76,20 @@
     "december": "December"
   },
   "tenant-list-component": {
+    "tittle": "Tenant list",
+    "description": "",
     "name": "Name",
-    "user-permission": "User permission"
+    "user-permission": "User permission",
+    "manage-access": "Manage access"
   },
   "tenant-user-list-component": {
     "new-user": "New user",
     "delete": "Delete",
-    "download-users":"Download Users",
+    "download-users": "Download Users",
     "name": "Name",
     "email": "Email",
     "tittle": "Tenant",
-    "description": "Users has acess to this Tenant"
+    "description": "Users with access to this Workspace"
   },
   "tenant-invite-user-form-component": {
     "email": "E-mail",
@@ -97,12 +100,12 @@
   },
   "tenant-credential-form": {
     "create-new-tenant-tittle": "Registrar credenciais para acesso ao banco de dados",
-    "create-new-tenant-database-name":"Nome do banco de dados"
+    "create-new-tenant-database-name": "Nome do banco de dados"
   },
-  "error-404-component":{
-    "error-message":"Page not found"
+  "error-404-component": {
+    "error-message": "Page not found"
   },
-  "error-500-component":{
-    "error-message":"Internal server error"
+  "error-500-component": {
+    "error-message": "Internal server error"
   }
 }

@@ -29,7 +29,7 @@ export class PasswordFormComponent {
   /**
    * Controla a visibilidade da senha
    */
-  passwordHide = true;
+  passwordHide: boolean = false;
   confirmPasswordHide = true; 
 
   constructor(
@@ -66,12 +66,8 @@ export class PasswordFormComponent {
     }
   }
 
-  toggleVisibility(field: 'password' | 'confirmPassword'): void {
-    if(field = 'password'){
-      this.passwordHide = !this.passwordHide
-    }else if(field = 'confirmPassword'){
-      this.confirmPasswordHide = !this.confirmPasswordHide;  // Alterna entre mostrar e ocultar a senha
-    }
+  toggleVisibility() {
+    this.passwordHide = !this.passwordHide;  // Alterna entre mostrar e ocultar a senha
   }
 
 }

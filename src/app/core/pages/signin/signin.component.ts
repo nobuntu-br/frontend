@@ -3,7 +3,6 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { AuthService } from 'app/core/auth/auth.service';
-import { SessionService } from 'app/core/auth/session.service';
 import { UserSessionService } from 'app/core/auth/user-session.service';
 import { IUserSession } from 'app/core/auth/user.model';
 import { TenantService } from 'app/core/tenant/tenant.service';

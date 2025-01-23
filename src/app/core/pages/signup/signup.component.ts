@@ -1,11 +1,9 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { AuthService } from 'app/core/auth/auth.service';
-import { UserService } from 'app/core/auth/user.service';
-import { ApplicationService } from 'app/shared/services/application.service';
-import { finalize, take } from 'rxjs';
+import { take } from 'rxjs';
 import { INameForm } from './name-form/name-form.component';
 import { IBirthDayAndGenderForm } from './birth-day-and-gender-form/birth-day-and-gender-form.component';
 import { IPasswordForm } from './password-form/password-form.component';
@@ -121,6 +119,7 @@ export class SignupComponent {
       error: (error) => {
 
         this.emailFormGroup.get("email").enable;
+        
         if (error.status == 409) {
           this.snackBar.open('Erro ao enviar código. Código já enviado para o email.', 'Fechar', {
             duration: 3000,

@@ -25,17 +25,14 @@ export class TenantListComponent implements OnInit {
     if (this.authService.currentUserSession != null) {
       this.getTenants(this.authService.currentUserSession.user.UID);
     }
+    
 
   }
 
   async getTenants(userUID: string) {
-    const _tenants = this.tenantService.getTenantsFromLocalstorage();
-
-    if (_tenants != null) {
-      this.tenants = _tenants;
-    }
-
     this.tenants = await this.tenantService.getTenantsAndSaveInLocalStorage(userUID);
+
+    console.log("tenants obtidos: ",this.tenants)
   }
 
   goToUserTenantPage() {

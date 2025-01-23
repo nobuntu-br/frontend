@@ -14,24 +14,35 @@
   box-shadow: none !important;
 }
 
-/* Estilos para dispositivos móveis (celulares) - até 576px */
-@media (max-width: 576px) {
-
-  /* CSS específico para telas pequenas */
-
+/* Estilos para cada breakpoint */
+@media (max-width: 320px) {
+  /* Estilos para telas muito pequenas */
+  .panel {
+    padding: 10px; /* Reduzir o padding para telas menores */
+    text-align: left;
+  }
 }
 
-/* Estilos para dispositivos móveis (celulares grandes e tablets em modo retrato) - até 768px */
-@media (max-width: 768px) {}
+@media (min-width: 375px) and (max-width: 768px) {
+  /* Estilos para smartphones um pouco maiores */
+  .panel {
+    padding: 10px; /* Reduzir o padding para telas menores */
+    text-align: left;
+  }
+}
 
-/* Estilos para tablets (modo retrato) e dispositivos móveis maiores - até 992px */
-@media (max-width: 992px) {}
+@media (min-width: 768px) and (max-width: 1024px) {
+  /* Estilos para tablets */
+  .panel {
+    padding: 10px; /* Reduzir o padding para telas menores */
+    text-align: left;
+  }
+}
 
-/* Estilos para tablets (modo paisagem) e laptops menores - até 1200px */
-@media (max-width: 1200px) {}
+@media (min-width:1024px) and (max-width: 1280px) {
+  /* Estilos para telas maiores, mas ainda não desktop */
+}
 
-/* Estilos para desktops grandes - até 1400px */
-@media (max-width: 1400px) {}
-
-/* Estilos para desktops ultra largos */
-@media (min-width: 1400px) {}
+@media (min-width: 1280px) {
+  /* Estilos para desktops */
+}

@@ -15,8 +15,6 @@ export const appRoutes: Route[] = [
     { path: 'callback',  loadChildren: () => import('app/core/pages/callback/callback.module').then(m => m.CallbackModule) },
     { path: 'home', canMatch: [AuthGuard], component: SideNavComponent },
     { path: 'dashboard/:id', component: DefaultDashboardComponent },      
-      
-    
     {
         path: 'tenant',
         canMatch: [AuthGuard],
