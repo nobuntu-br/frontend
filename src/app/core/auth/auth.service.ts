@@ -1,24 +1,17 @@
 import { Injectable } from '@angular/core';
 import { firstValueFrom, Observable, of, take } from 'rxjs';
 import { Router } from '@angular/router';
-import { UserService } from './user.service';
 import { IUser, IUserSession, SignupDTO } from './user.model';
 import { AuthUtils } from './auth.utils';
 import { TenantService } from '../tenant/tenant.service';
 import { UserSessionService } from './user-session.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'environments/environment';
-import { LocalStorageService } from 'app/shared/services/local-storage.service';
-
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-
-  _authenticated: boolean = false;
-
-  // protected http: HttpClient;
 
   private _currentUserSession: IUserSession | null = null;
 
@@ -37,10 +30,6 @@ export class AuthService {
     this.url = environment.backendUrl + "/api/authentication";
     // Recuperar o estado do usuário do localStorage ao iniciar
     // this.restoreUser();
-  }
-
-  get authenticated() {
-    return this._authenticated;
   }
 
   get currentUserSession(): IUserSession | null {
@@ -167,18 +156,12 @@ export class AuthService {
    */
   check(): Observable<boolean> {
 
-    // Verificar se o usuário está logado
-    if (this._authenticated) {
-      return of(true);
-    }
+    this.tenantService.getTenantsAndSaveInLocalStorage(this.currentUserSession.user.UID);
+    //TODO get user data and save on localStorage
 
     if (this.isLoggedIn() == true) {
       return of(true);
     }
-
-    // if (this.accessToken != null && this.accessToken != '') {
-    //   return of(true);
-    // }
 
     return of(false);
   }

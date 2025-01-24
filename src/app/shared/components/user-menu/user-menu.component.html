@@ -21,7 +21,7 @@
 
         <h4>{{t("hi")}} {{currentUserSession.user.firstName}}!</h4>
 
-        <button mat-flat-button color="primary" style="display: flex; flex-direction: row;">
+        <button mat-flat-button color="primary" style="display: flex; flex-direction: row;" (click)="goToManageAccountPage()">
           {{t("manage-your-account")}}
         </button>
       </div>

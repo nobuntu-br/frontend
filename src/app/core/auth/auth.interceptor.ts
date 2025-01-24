@@ -63,6 +63,7 @@ export class AuthInterceptor implements HttpInterceptor {
             //Tenta obter o token de acesso
             this.authService.refreshAccessToken().pipe(take(1)).subscribe({
               next: (value) => {
+                //TODO reload and save user data on localstorage
                 location.reload();
               },
               error: (error) => {

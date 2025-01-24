@@ -51,12 +51,9 @@
 
       <div class="spacer"></div>
 
-      <!--  -->
-      <app-view-toggle class="toolbar-item"></app-view-toggle>
       <app-list-apps *ngIf="canShowLogOutButton == true" class="toolbar-item"></app-list-apps>
       <!-- <button *ngIf="canShowLogOutButton == true" mat-button (click)="logout()" class="toolbar-item">LogOut</button>
       <button *ngIf="canShowLogOutButton == false" mat-button (click)="redirectToSignInPage()" class="toolbar-item">SignIn</button> -->
-      <app-three-dot-menu *ngIf="authService._authenticated" class="toolbar-item"></app-three-dot-menu>
 
       <!-- Menu para alteração da linguagem do site -->
       <languages class="toolbar-item"></languages>

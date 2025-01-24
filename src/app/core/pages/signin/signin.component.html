@@ -55,7 +55,7 @@
           <mat-label>{{t("password")}}</mat-label>
 
           <input matInput [type]="passwordHide == false ? 'password' : 'text'" id="password" formControlName="password"
-            name="password" (keydown.enter)="login()">
+            name="password" (keydown.enter)="signIn()">
 
           <!-- Mensagens de erro do campo -->
           <mat-error *ngIf="passwordFormGroup.get('password').hasError('required')">
@@ -83,7 +83,7 @@
             (click)="resetPassword()">{{t("forgot-password")}}</button>
   
           <button mat-raised-button color="primary" id="nextButton" type="submit" [disabled]="!passwordFormGroup.valid"
-            (click)="login()">{{t("next")}}</button>
+            (click)="signIn()">{{t("next")}}</button>
         </div>
         
       </div>

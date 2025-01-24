@@ -75,6 +75,10 @@ export class UserMenuComponent implements OnInit {
     this.router.navigate(['editProfile']);
   }
 
+  goToManageAccountPage(): void{
+    
+  }
+
   isCurrentUserSession(userSession: IUserSession): boolean {
     if (this.currentUserSession.user.UID == userSession.user.UID) {
       return true;
