@@ -1,12 +1,4 @@
 {
-  "home-page-component": {
-    "do-login": "Fazer login",
-    "test-now": "Teste agora",
-    "product-name": "Ortia",
-    "short-product-description": "Gerencie a parte financieira de sua empresa on-line",
-    "long-product-description": "Tenha acesso a um armazenamento em nuvem com tecnologia e perfeito para gestão de finanças.",
-    "workspace": "WorkSpace"
-  },
   "sign-in-component": {
     "password-error": "Senha errada",
     "sign-in-with-your-email": "Entre com seu e-mail",

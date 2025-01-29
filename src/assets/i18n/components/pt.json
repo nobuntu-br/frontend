@@ -43,7 +43,7 @@
         "endWith": "Termina Com...",
         "contains": "Contém...",
         "dontContains": "Não Contém...",
-        "match":"Combina com.."
+        "match": "Combina com.."
     },
     "filter-number-component": {
         "operation": "Operação",
@@ -89,26 +89,26 @@
         "edit": "Alterar",
         "clean": "Limpar"
     },
-    "confirmation-dialog":{
-        "title":"Confirmar",
-        "messageToConfirmDelete":"Você tem certeza que deseja remover este item permanentemente?",
-        "confirm":"Sim",
-        "cancel":"Não"
+    "confirmation-dialog": {
+        "title": "Confirmar",
+        "messageToConfirmDelete": "Você tem certeza que deseja remover este item permanentemente?",
+        "confirm": "Sim",
+        "cancel": "Não"
     },
-    "default-list":{
-        "noData":"Sem dados na lista"
+    "default-list": {
+        "noData": "Sem dados na lista"
     },
-    "selector-input-field":{
+    "selector-input-field": {
         "other": "outro",
         "others": "outros"
     },
-    "auth-callback-page":{
-        "authentication-error-clientId-missmatch":"Esta aplicação não tem permissão de acesso ao provedor de identidade do domínio. Consulte o administrador da aplicação.",
-        "redirect-to-callback":"Redirecionando para a última página.."
+    "auth-callback-page": {
+        "authentication-error-clientId-missmatch": "Esta aplicação não tem permissão de acesso ao provedor de identidade do domínio. Consulte o administrador da aplicação.",
+        "redirect-to-callback": "Redirecionando para a última página.."
     },
-    "auth-signin-page":{
-        "authentication-error-redirect-to-signin":"Esta aplicação não tem permissão de acesso ao provedor de identidade do domínio. Consulte o administrador da aplicação.",
-        "redirect-to-signin":"Redirecionar para a página de inscrição"
+    "auth-signin-page": {
+        "authentication-error-redirect-to-signin": "Esta aplicação não tem permissão de acesso ao provedor de identidade do domínio. Consulte o administrador da aplicação.",
+        "redirect-to-signin": "Redirecionar para a página de inscrição"
     },
     "months": {
         "january": "Janeiro",
@@ -123,23 +123,23 @@
         "october": "Outubro",
         "november": "Novembro",
         "december": "Dezembro"
-      },
+    },
     "user-menu-component": {
-        "edit-user":"Edit user",
-        "add-other-account": "Add other account",
-        "logout":"Logout",
-        "show-more-accounts":"Show more accounts",
-        "session-expired":"Session expired",
-        "signed-out":"Signed out",
-        "settings":"Settings",
-        "hi":"Hi",
-        "manage-your-account": "Manage your account"
+        "edit-user": "Editar Perfil",
+        "add-other-account": "Adicionar outra conta",
+        "logout": "Sair",
+        "show-more-accounts": "Mostrar mais contas",
+        "session-expired": "Session expired",
+        "signed-out": "Signed out",
+        "settings": "Configurações",
+        "hi": "Hi",
+        "manage-your-account": "Gerencie sua conta"
     },
     "tenant-menu-component": {
         "add-tenant": "Add Tenant",
-        "manage-tenants":"Manage Tenants"
+        "manage-tenants": "Manage Tenants"
     },
-    "location-field":{
+    "location-field": {
         "select": "Selecione a Localização",
         "buttonCancel": "Cancelar",
         "buttonConfirm": "Confirmar"

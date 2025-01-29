@@ -22,8 +22,8 @@ export class TenantListComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    if (this.authService.currentUserSession != null) {
-      this.getTenants(this.authService.currentUserSession.user.UID);
+    if (this.authService.currentUser != null) {
+      this.getTenants(this.authService.currentUser.UID);
     }
     
 

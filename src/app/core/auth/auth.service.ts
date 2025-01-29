@@ -1,19 +1,19 @@
 import { Injectable } from '@angular/core';
 import { firstValueFrom, Observable, of, take } from 'rxjs';
 import { Router } from '@angular/router';
-import { IUser, IUserSession, SignupDTO } from './user.model';
-import { AuthUtils } from './auth.utils';
+import { IUser, SignupDTO } from './user.model';
 import { TenantService } from '../tenant/tenant.service';
-import { UserSessionService } from './user-session.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'environments/environment';
+import { UserService } from './user.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
 
-  private _currentUserSession: IUserSession | null = null;
+  // private _currentUserSession: IUserSession | null = null;
+  private _currentUser: IUser | null = null;
 
   private url;
 
@@ -23,98 +23,104 @@ export class AuthService {
   constructor(
     private httpClient: HttpClient,
     private router: Router,
-    private userSessionService: UserSessionService,
+    // private userSessionService: UserSessionService,
     private tenantService: TenantService,
+    private userService: UserService
   ) {
 
     this.url = environment.backendUrl + "/api/authentication";
-    // Recuperar o estado do usuário do localStorage ao iniciar
-    // this.restoreUser();
+
   }
 
-  get currentUserSession(): IUserSession | null {
+  get currentUser(): IUser | null {
 
     //Se não tiver sessão de usuário atual ele irá obter dados os localStorage
-    if (this._currentUserSession == null) {
+    if (this._currentUser == null) {
 
-      this.currentUserSession = this.userSessionService.getAnyUserSessionFromLocalStorage();
+      let userFromLocalStorage = this.userService.getCurrentUserFromLocalStorage();
 
-      this.userSessionService.setCurrentUserSessionOnLocalStorage(this._currentUserSession);
+      if (userFromLocalStorage == null) {
+        userFromLocalStorage = this.userService.getAnyUserFromLocalStorage();
+        this.userService.setCurrentUserOnLocalStorage(userFromLocalStorage);
+      }
+
+      this._currentUser = userFromLocalStorage;
     }
 
-    return this._currentUserSession;
+    return this._currentUser;
   }
 
-  set currentUserSession(userSession: IUserSession | null) {
-    this._currentUserSession = userSession;
+  set currentUser(user: IUser | null) {
+    this._currentUser = user;
   }
 
-  getUserSessions(): IUserSession[] | null {
-    return this.userSessionService.getUserSessionsFromLocalstorage();
+  getUsers(): IUser[] | null {
+    return this.userService.getUsersFromLocalstorage();
   }
 
-  getInactiveUserSessions(): IUserSession[] | null {
-    const currentUserSession = this.currentUserSession;
-    const userSessions = this.getUserSessions();
+  getInactiveUsers(): IUser[] | null {
+    const currentUser = this.currentUser;
+    const users = this.getUsers();
 
-    if (userSessions == null || currentUserSession == null) {
+    if (users == null || currentUser == null) {
       return null;
     }
 
-    return userSessions.filter(userSession => userSession.user.UID != currentUserSession.user.UID);
+    return users.filter(_user => _user.UID != currentUser.UID);
   }
 
   isLoggedIn(): boolean {
     // return this.currentUserSession != null && AuthUtils.isTokenExpired(this._currentUserSession.tokens.accessToken);
-    return this.currentUserSession != null;
+    return this.currentUser != null;
   }
 
   /**
    * Realiza a troca de sessão de usuário ativa no momento
    * @param userUID UID do usuário que sua sessão está ativa
    */
-  switchUserSession(userUID: string): IUserSession {
+  switchUser(userUID: string): IUser {
 
-    const userSessions: IUserSession[] = this.userSessionService.getUserSessionsFromLocalstorage();
+    const users: IUser[] = this.userService.getUsersFromLocalstorage();
     //Percorre as sessões de usuários salvas no local Storage.
-    const _userSession: IUserSession = userSessions.find(_userSession => _userSession.user.UID === userUID) || null;
+    const _user: IUser = users.find(_userSession => _userSession.UID === userUID) || null;
 
-    if (_userSession != null) {
+    if (_user != null) {
       //Caso for encontrado a sessão de usuário que se tem interesse em fazer uso, faz a troca para essa sessão de usuário que será a utilizada nas requisições
-      this.currentUserSession = _userSession;
+      this.currentUser = _user;
       //Armazena no local storage a nova sessão de usuário ativa
-      this.userSessionService.setCurrentUserSessionOnLocalStorage(this.currentUserSession);
+      this.userService.setCurrentUserOnLocalStorage(this.currentUser);
+      this.userService.moveUserToFirstPositionOnLocalStorage(this.currentUser.UID);
 
-      return this.currentUserSession;
+      return this.currentUser;
     }
 
     throw new Error("Não foi possível alterar o usuário ativo");
 
   }
 
-  async signOutUser(userSession: IUserSession): Promise<void> {
+  async signOutUser(user: IUser): Promise<void> {
     try {
       await firstValueFrom(this.signout().pipe(take(1)));
-      this.userSessionService.deleteUserSessionFromLocalStorage(userSession.user.UID);
-      this.userSessionService.deleteCurrentUserSessionFromLocalStorage();
-      this.currentUserSession = null;
+      this.userService.deleteUserFromLocalStorage(user.UID);
+      this.userService.deleteCurrentUserFromLocalStorage();
+      this.currentUser = null;
     } catch (error) {
       console.error("Error to signOut user.");
     }
   }
 
   async signOutAllUsers(): Promise<void> {
-    const userSessions = this.userSessionService.getUserSessionsFromLocalstorage();
+    const users = this.userService.getUsersFromLocalstorage();
 
-    for (const userSession of userSessions) {
+    for (const user of users) {
       try {
         // Aguarda o signout ser concluído antes de passar para o próximo usuário
         await firstValueFrom(this.signout().pipe(take(1)));
 
         // Limpa os dados do usuário do localStorage
-        this.userSessionService.deleteUserSessionFromLocalStorage(userSession.user.UID);
-        this.userSessionService.deleteCurrentUserSessionFromLocalStorage();
-        this.currentUserSession = null;
+        this.userService.deleteUserFromLocalStorage(user.UID);
+        this.userService.deleteCurrentUserFromLocalStorage();
+        this.currentUser = null;
 
 
       } catch (error) {
@@ -123,27 +129,27 @@ export class AuthService {
     }
 
     //Limpa todas as sessões do LocalStorage
-    this.userSessionService.deleteAllUserSessionsFromLocalStorage();
-    this.currentUserSession = null;
+    this.userService.deleteAllUserFromLocalStorage();
+    this.currentUser = null;
     this.tenantService.deleteAllTenantsFromLocalStorage();
 
   }
 
   logoutUserByUID(userUID: string): void {
     // Fará a remoção das informações do usuário no localstorage
-    const removedUserUID: string | null = this.userSessionService.deleteUserSessionFromLocalStorage(userUID);
+    const removedUserUID: string | null = this.userService.deleteUserFromLocalStorage(userUID);
 
     if (removedUserUID == null) {
       throw new Error("Erro ao encerrar a sessão do usuário");
     }
 
     // Se o usuário atual for o mesmo que está sendo removido o acesso, alterar para a outra conta que está acessada.
-    if (this.currentUserSession && this.currentUserSession.user.UID === removedUserUID) {
+    if (this.currentUser && this.currentUser.UID === removedUserUID) {
 
-      const otherUserSession: IUserSession | null = this.userSessionService.getAnyUserSessionFromLocalStorage();
+      const otherUser: IUser | null = this.userService.getAnyUserFromLocalStorage();
 
-      if (otherUserSession != null) {
-        this.switchUserSession(otherUserSession.user.UID);
+      if (otherUser != null) {
+        this.switchUser(otherUser.UID);
       }
 
     }
@@ -156,7 +162,7 @@ export class AuthService {
    */
   check(): Observable<boolean> {
 
-    this.tenantService.getTenantsAndSaveInLocalStorage(this.currentUserSession.user.UID);
+    this.tenantService.getTenantsAndSaveInLocalStorage(this.currentUser.UID);
     //TODO get user data and save on localStorage
 
     if (this.isLoggedIn() == true) {
@@ -166,8 +172,8 @@ export class AuthService {
     return of(false);
   }
 
-  signin(email: string, password: string) {
-    return this.httpClient.post<IUserSession>(`${this.url}/signin`, { email, password }, { withCredentials: true });//"{withCredentials: true}" instrui o Angular a incluir cookies em requisições HTTP
+  signin(email: string, password: string): Observable<IUser> {
+    return this.httpClient.post<IUser>(`${this.url}/signin`, { email, password }, { withCredentials: true });//"{withCredentials: true}" instrui o Angular a incluir cookies em requisições HTTP
   }
 
   signup(signupDTO: SignupDTO): Observable<IUser> {
@@ -198,20 +204,37 @@ export class AuthService {
     return this.httpClient.post(`${this.url}/validate-verification-email-code`, { verificationEmailCode });
   }
 
-  refreshAccessToken(): Observable<string> {
-    return this.httpClient.get<string>(`${this.url}/refresh-token`);
+  refreshAccessToken(): Observable<IUser[]> {
+    return this.httpClient.get<IUser[]>(`${this.url}/refresh-token`);
   }
 
   /**
    * Verifica se o token de acesso expirou e atualiza caso necessário
    */
-  async handleTokenExpiration(): Promise<void> {
-    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-    const accessToken = currentUser.access_token;
+  async handleToken(): Promise<void> {
 
-    if (AuthUtils.isTokenExpired(accessToken)) {
-      await this.refreshAccessToken();
+    try {
+      let usersData: IUser[] = await firstValueFrom(this.refreshAccessToken().pipe(take(1)));
+
+      if (usersData.length == 0) {
+        return;
+      }
+
+      if(this.userService.getCurrentUserFromLocalStorage() == null){
+        this.userService.setCurrentUserOnLocalStorage(usersData[0]);
+        this.userService.moveUserToFirstPositionOnLocalStorage(usersData[0].UID);
+        this.currentUser = usersData[0];
+      }
+      
+      usersData.forEach((userData: IUser) => {
+        this.userService.addUserOnLocalStorage(userData);
+        this.tenantService.getTenantsAndSaveInLocalStorage(userData.UID);
+      });
+
+    } catch (error) {
+      throw new Error("Error to refresh token!");
     }
+
   }
 
 }

@@ -7,9 +7,9 @@ import { take } from 'rxjs';
 import { INameForm } from './name-form/name-form.component';
 import { IBirthDayAndGenderForm } from './birth-day-and-gender-form/birth-day-and-gender-form.component';
 import { IPasswordForm } from './password-form/password-form.component';
-import { IUserSession } from 'app/core/auth/user.model';
-import { UserSessionService } from 'app/core/auth/user-session.service';
+import { IUser } from 'app/core/auth/user.model';
 import { TenantService } from 'app/core/tenant/tenant.service';
+import { UserService } from 'app/core/auth/user.service';
 
 /**
  * Estados da página
@@ -62,7 +62,7 @@ export class SignupComponent {
   codeVerified: boolean = false;
   constructor(
     private authService: AuthService,
-    private userSessionService: UserSessionService,
+    private userService: UserService,
     private tenantService: TenantService,
     private snackBar: MatSnackBar,
     private _formBuilder: FormBuilder,
@@ -188,11 +188,13 @@ export class SignupComponent {
         //Realizar o acesso do novo usuário
         this.authService.signin(this.emailFormGroup.value.email, this.passwordForm.password).pipe(take(1)).subscribe({
           next:(value) => {
-            let userSession: IUserSession = value;
+            let user: IUser = value;
 
-            this.userSessionService.addUserSessionOnLocalStorage(userSession);
-            this.userSessionService.setCurrentUserSessionOnLocalStorage(userSession);
-            this.tenantService.getTenantsAndSaveInLocalStorage(userSession.user.UID);
+            this.userService.addUserOnLocalStorage(user);
+            this.userService.setCurrentUserOnLocalStorage(user);
+            this.userService.moveUserToFirstPositionOnLocalStorage(user.UID);
+            this.authService.currentUser = user;
+            this.tenantService.getTenantsAndSaveInLocalStorage(user.UID);
 
             this.router.navigate(['/home']);
           },

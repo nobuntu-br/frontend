@@ -11,23 +11,24 @@
 
       <!-- Painel que mostra o usuário atual -->
       <div class="current-user">
-        <p>{{currentUserSession.user.email}}</p>
+        <p>{{currentUser.email}}</p>
 
         <!-- <img *ngIf="userProfilePhotoEnabled == true" src="assets/images/user-image-test.jpg" alt="user image" id="user-image"> -->
-        
+
         <div id="user-image" *ngIf="userProfilePhotoEnabled == false">
-          <span class="letter">{{ currentUserSession.user.firstName[0] }}</span>
+          <span class="letter">{{ currentUser.firstName[0] }}</span>
         </div>
 
-        <h4>{{t("hi")}} {{currentUserSession.user.firstName}}!</h4>
+        <h4>{{t("hi")}} {{currentUser.firstName}}!</h4>
 
-        <button mat-flat-button color="primary" style="display: flex; flex-direction: row;" (click)="goToManageAccountPage()">
+        <button mat-flat-button color="primary" style="display: flex; flex-direction: row;"
+          (click)="goToManageAccountPage()">
           {{t("manage-your-account")}}
         </button>
       </div>
 
       <!-- Botões apresentados quando só se tem um usuário com acesso na aplicação -->
-      <div *ngIf="userSessions.length == 1">
+      <div *ngIf="users.length == 1">
         <!-- Botão para fazer acesso a outra conta -->
         <button mat-menu-item (click)="goToSignInPage()">
           <mat-icon>add</mat-icon>
@@ -42,8 +43,8 @@
       </div>
 
       <!-- painel capaz de se expandir -->
-      <mat-expansion-panel *ngIf="userSessions.length > 1" (opened)="panelOpenState = true"
-        (closed)="panelOpenState = false" (click)="$event.stopPropagation()" style="background-color: #f3f3f3;">
+      <mat-expansion-panel *ngIf="users.length > 1" (opened)="panelOpenState = true" (closed)="panelOpenState = false"
+        (click)="$event.stopPropagation()" style="background-color: #f3f3f3;">
 
         <mat-expansion-panel-header>
           <mat-panel-title style="flex-basis: 60px;">
@@ -51,28 +52,36 @@
           </mat-panel-title>
 
           <mat-panel-description id="other-users-panel-description">
-            <img *ngFor="let userSession of inactiveUserSessions" src="assets/images/user-image-test.jpg"
-              alt="user image" class="other-users-panel-description-image">
+            <!-- <img *ngFor="let user of inactiveUsers" src="assets/images/user-image-test.jpg"
+              alt="user image" class="other-users-panel-description-image"> -->
+            <div *ngFor="let inactiveUser of inactiveUsers" alt="user image"
+              class="other-users-panel-description-image">
+              <span class="letter">{{ inactiveUser.firstName[0] }}</span>
+            </div>
           </mat-panel-description>
 
         </mat-expansion-panel-header>
 
         <!-- Lista de sessões de usuário inativas -->
-        <button mat-menu-item *ngFor="let userSession of inactiveUserSessions"(click)="switchCurrentUserSession(userSession)">
+        <button mat-menu-item *ngFor="let inactiveUser of inactiveUsers" (click)="switchCurrentUser(inactiveUser)">
 
-          <div style="display: flex; flex-direction: row !important; align-items: center; margin-top: 10px; margin-bottom: 10px;">
+          <div
+            style="display: flex; flex-direction: row !important; align-items: center; margin-top: 10px; margin-bottom: 10px;">
             <!-- Coluna da imagem da conta -->
-            <div>
+            <!-- <div>
               <img src="assets/images/user-image-test.jpg" alt="user image" class="other-users-list-image">
+            </div> -->
+            <div id="inactive-user-default-image" *ngIf="userProfilePhotoEnabled == false">
+              <span class="letter">{{ inactiveUser.firstName[0] }}</span>
             </div>
             <!-- Coluna dos dados da conta -->
             <div class="user-info">
-              <div>{{userSession.user.firstName + " " + userSession.user.lastName}}</div>
-              <div>{{userSession.user.email}}</div>
+              <div>{{inactiveUser.firstName + " " + inactiveUser.lastName}}</div>
+              <div>{{inactiveUser.email}}</div>
             </div>
             <!-- Coluna do estado atual da conta, sendo sessão expirada ou não -->
             <div>
-              <p *ngIf="checkUserSessionExpired(userSession)">{{t("session-expired")}}</p>
+              <p *ngIf="checkUserExpired()">{{t("session-expired")}}</p>
             </div>
           </div>
         </button>

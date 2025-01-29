@@ -4,8 +4,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { TranslocoService } from '@ngneat/transloco';
 import { AuthService } from 'app/core/auth/auth.service';
-import { UserSessionService } from 'app/core/auth/user-session.service';
-import { IUserSession } from 'app/core/auth/user.model';
+import { IUser } from 'app/core/auth/user.model';
+import { UserService } from 'app/core/auth/user.service';
 import { TenantService } from 'app/core/tenant/tenant.service';
 import { finalize, take } from 'rxjs';
 
@@ -57,7 +57,7 @@ export class SigninComponent {
 
   constructor(
     public authService: AuthService,
-    private userSessionService: UserSessionService,
+    private userService: UserService,
     private tenantService: TenantService,
     private translocoService: TranslocoService,
     private router: Router,
@@ -126,19 +126,22 @@ export class SigninComponent {
     this.passwordHideCheckBoxEnabled = false;
     this.isLoading = true;
 
-    let userSession: IUserSession;
+    let user: IUser;
 
     const closeMessage = this.translocoService.translate('core.sign-in-component.close');
 
     this.authService.signin(this.emailFormGroup.value.email, this.passwordFormGroup.value.password).pipe(take(1)).subscribe({
       next:(value) => {
-        userSession = value;
+        user = value;
 
-        this.userSessionService.addUserSessionOnLocalStorage(userSession);
-        this.userSessionService.setCurrentUserSessionOnLocalStorage(userSession);
-        this.tenantService.getTenantsAndSaveInLocalStorage(userSession.user.UID);
+        this.userService.addUserOnLocalStorage(user);
+        this.userService.setCurrentUserOnLocalStorage(user);
+        this.userService.moveUserToFirstPositionOnLocalStorage(user.UID);
+        this.authService.currentUser = user;
+        this.tenantService.getTenantsAndSaveInLocalStorage(user.UID);
     
         const signInSuccessMessage = this.translocoService.translate("core.sign-in-component.signIn-sucess");
+        
         this.snackBar.open(signInSuccessMessage, closeMessage, {
           duration: 3000,
         }).afterDismissed().pipe(take(1)).subscribe({
