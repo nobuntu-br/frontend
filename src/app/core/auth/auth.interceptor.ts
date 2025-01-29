@@ -30,12 +30,12 @@ export class AuthInterceptor implements HttpInterceptor {
     let newReq = req.clone();
 
     //Indica qual usuário está fazendo a requisição
-    let userSession: string = "";
+    let user: string = "";
     //Indica qual tenant (banco de dados) será a requisição
     let databaseUsedInRequest: string = "";
 
-    if (this.authService.currentUserSession != null) {
-      userSession = String(this.authService.currentUserSession.user.id);
+    if (this.authService.currentUser != null) {
+      user = String(this.authService.currentUser.id);
     }
 
     if (this.tenantService.currentTenant != null) {
@@ -44,7 +44,7 @@ export class AuthInterceptor implements HttpInterceptor {
 
     newReq = req.clone({
       setHeaders: {
-        "usersession": userSession,
+        "usersession": user,
         "X-Tenant-ID": databaseUsedInRequest,
       },
       withCredentials: true,
@@ -59,16 +59,17 @@ export class AuthInterceptor implements HttpInterceptor {
         if (error instanceof HttpErrorResponse && error.status === 401) {
 
           if (this.hasTriedToRefresh == false) {
+            
             this.hasTriedToRefresh = true;
             //Tenta obter o token de acesso
-            this.authService.refreshAccessToken().pipe(take(1)).subscribe({
-              next: (value) => {
-                location.reload();
-              },
-              error: (error) => {
-                this.hasTriedToRefresh = false;
-              },
+            this.authService.handleToken().then((value)=>{
+              this.hasTriedToRefresh = false;
+              
+              // location.reload();
+            }).catch((error)=>{
+              // console.log("erro no refresh: ", error);
             });
+
           } else {
 
             //Limpa todos os dados armazenados e redireciona o usuário

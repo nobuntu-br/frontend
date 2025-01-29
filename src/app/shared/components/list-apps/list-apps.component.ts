@@ -1,11 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ApplicationService, Application } from 'app/shared/services/application.service';
 import { AuthService } from 'app/core/auth/auth.service';
-import { UserManager, UserManagerSettings } from 'oidc-client-ts';
-import { environment } from 'environments/environment';
+import { UserManager } from 'oidc-client-ts';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 import { ConfirmChangeAppComponent } from './confirm-change-app/confirm-change-app.component';
 
 @Component({
@@ -62,7 +60,7 @@ export class ListAppsComponent implements OnInit {
       }
     }).afterClosed().subscribe(result => {
       if (result) {
-        const user = this.authService.currentUserSession;
+        const user = this.authService.currentUser;
         if (user) {
           // Redirecionar para o aplicativo com o usuário codificado na URL
           const redirectUrl = `${app.redirect_uri}`;

@@ -1,12 +1,4 @@
 {
-  "home-page-component": {
-    "do-login": "Fazer login",
-    "test-now": "Teste agora",
-    "product-name": "Ortia",
-    "short-product-description": "Gerencie a parte financieira de sua empresa on-line",
-    "long-product-description": "Tenha acesso a um armazenamento em nuvem com tecnologia e perfeito para gestão de finanças.",
-    "workspace": "WorkSpace"
-  },
   "sign-in-component": {
     "password-error": "Senha errada",
     "sign-in-with-your-email": "Entre com seu e-mail",
@@ -30,7 +22,11 @@
     "error-password-maxlength": "A senha ultrapassou o número máximo de caracteres.",
     "error-password-minlength": "A senha deve ter quantidade maior caracteres.",
     "error-password-pattern": "A senha está em um formato incorreto.",
-    "show-password": "Mostrar senha"
+    "show-password": "Mostrar senha",
+    "signIn-sucess": "Acesso feito com sucesso",
+    "incorrect-password": "Senha incorreta",
+    "error-many-incorrect-signin-attempts": "Muitas tentativas de acesso. Acesso temporáriamente bloqueado.",
+    "close": "Fechar"
   },
   "sign-up-component": {
     "create-product-account": "Cria uma conta do Ortia",
@@ -65,8 +61,8 @@
     "error-password-minlength": "A senha deve ter quantidade maior caracteres.",
     "error-password-pattern": "A senha está em um formato incorreto.",
     "error-password-strength": "A senha deve ter pelo menos 8 caracteres, incluindo letras maiúsculas, minúsculas, números e caracteres especiais.",
-    "set-your-emailVerificationCode":"Define seu codigo de verificação de email",
-    "emailVerificationCode" : "Código de verificação de email",
+    "set-your-emailVerificationCode": "Define seu codigo de verificação de email",
+    "emailVerificationCode": "Código de verificação de email",
     "error-emailVerificationCode-required": "Código de verificação de email é necessário ser preenchido",
     "error-emailVerificationCode-pattern": "Código de verificação de email tem formato incorreto",
     "confirmPassword": "Confirme sua senha",
@@ -99,7 +95,7 @@
   "tenant-user-list-component": {
     "new-user": "Novo usuário",
     "delete": "Remover",
-    "download-users":"Baixar lista de usuários",
+    "download-users": "Baixar lista de usuários",
     "name": "Nome",
     "email": "E-mail",
     "tittle": "Ambiente de Trabalho",
@@ -114,12 +110,12 @@
   },
   "tenant-credential-form": {
     "create-new-tenant-tittle": "Registrar credenciais para acesso ao banco de dados",
-    "create-new-tenant-database-name":"Nome do banco de dados"
+    "create-new-tenant-database-name": "Nome do banco de dados"
   },
-  "error-404-component":{
-    "error-message":"Pagina não encontrada"
+  "error-404-component": {
+    "error-message": "Pagina não encontrada"
   },
-  "error-500-component":{
-    "error-message":"Erro no servidor"
+  "error-500-component": {
+    "error-message": "Erro no servidor"
   }
 }

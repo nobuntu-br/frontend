@@ -43,7 +43,7 @@
         "endWith": "End With",
         "contains": "Contains",
         "dontContains": "Don't Contains",
-        "match":"Match"
+        "match": "Match"
     },
     "filter-number-component": {
         "operation": "Operation",
@@ -87,26 +87,26 @@
         "edit": "Edit",
         "clean": "Clean"
     },
-    "confirmation-dialog":{
-        "title":"Confirm",
-        "messageToConfirmDelete":"Are you sure you want to remove this item permanently?",
-        "confirm":"Yes",
-        "cancel":"No"
+    "confirmation-dialog": {
+        "title": "Confirm",
+        "messageToConfirmDelete": "Are you sure you want to remove this item permanently?",
+        "confirm": "Yes",
+        "cancel": "No"
     },
-    "default-list":{
-        "noData":"No data"
+    "default-list": {
+        "noData": "No data"
     },
-    "selector-input-field":{
+    "selector-input-field": {
         "other": "other",
         "others": "others"
     },
-    "auth-callback-page":{
-        "authentication-error-clientId-missmatch":"This application does not have permission to access the domain identity provider. Consult the application administrator.",
-        "redirect-to-callback":"Redirecting to last page.."
+    "auth-callback-page": {
+        "authentication-error-clientId-missmatch": "This application does not have permission to access the domain identity provider. Consult the application administrator.",
+        "redirect-to-callback": "Redirecting to last page.."
     },
-    "auth-signin-page":{
-        "authentication-error-redirect-to-signin":"This application does not have permission to access the domain identity provider. Consult the application administrator.",
-        "redirect-to-signin":"Redirect to SignUp Page"
+    "auth-signin-page": {
+        "authentication-error-redirect-to-signin": "This application does not have permission to access the domain identity provider. Consult the application administrator.",
+        "redirect-to-signin": "Redirect to SignUp Page"
     },
     "months": {
         "january": "Janeiro",
@@ -121,23 +121,23 @@
         "october": "Outubro",
         "november": "Novembro",
         "december": "Dezembro"
-      },
+    },
     "user-menu-component": {
-        "edit-user":"Editar Perfil",
-        "add-other-account": "Adicionar outra conta",
-        "logout":"Sair",
-        "show-more-accounts":"Mostrar mais contas",
-        "session-expired":"Session expired",
-        "signed-out":"Signed out",
-        "settings":"Configurações",
-        "hi":"Hi",
-        "manage-your-account": "Gerencie sua conta"
+        "edit-user": "Edit user",
+        "add-other-account": "Add other account",
+        "logout": "Logout",
+        "show-more-accounts": "Show more accounts",
+        "session-expired": "Session expired",
+        "signed-out": "Signed out",
+        "settings": "Settings",
+        "hi": "Hi",
+        "manage-your-account": "Manage your account"
     },
     "tenant-menu-component": {
         "add-tenant": "Adicionar Tenant",
-        "manage-tenants":"Gerenciar Tenants"
+        "manage-tenants": "Gerenciar Tenants"
     },
-    "location-field":{
+    "location-field": {
         "select": "Select Location",
         "buttonCancel": "Cancel",
         "buttonConfirm": "Confirm"

@@ -26,7 +26,7 @@ import { ChangeLanguageButtonModule } from 'app/shared/components/change-languag
     ChangeLanguageButtonModule
   ],
   providers: [
-    { provide: TRANSLOCO_SCOPE, useValue: { scope: "core", alias: "core" } }
+    { provide: TRANSLOCO_SCOPE, useValue: { scope: "", alias: "" } }
   ],
 })
 export class HomePageModule { }

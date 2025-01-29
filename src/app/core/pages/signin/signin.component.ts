@@ -2,9 +2,10 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+import { TranslocoService } from '@ngneat/transloco';
 import { AuthService } from 'app/core/auth/auth.service';
-import { UserSessionService } from 'app/core/auth/user-session.service';
-import { IUserSession } from 'app/core/auth/user.model';
+import { IUser } from 'app/core/auth/user.model';
+import { UserService } from 'app/core/auth/user.service';
 import { TenantService } from 'app/core/tenant/tenant.service';
 import { finalize, take } from 'rxjs';
 
@@ -56,8 +57,9 @@ export class SigninComponent {
 
   constructor(
     public authService: AuthService,
-    private userSessionService: UserSessionService,
+    private userService: UserService,
     private tenantService: TenantService,
+    private translocoService: TranslocoService,
     private router: Router,
     private _formBuilder: FormBuilder,
     private snackBar: MatSnackBar,
@@ -93,19 +95,19 @@ export class SigninComponent {
         }
       },
       error: (error) => {
-        //TODO usar transloco para tradução dessas frases
-
-        var checkEmailErrorMessage: string = "Erro ocorreu com os nossos serviços.";
+        let checkEmailErrorMessage: string = this.translocoService.translate("core.sign-in-component.generic-error");
 
         if (error.status === 404) {
-          checkEmailErrorMessage = "Usuário não encontrado.";
+          checkEmailErrorMessage = this.translocoService.translate("core.sign-in-component.email-not-found");
         }
 
         if(error.status === 500){
           this.pageState = SignInPageState.Error;
         }
 
-        this.snackBar.open(checkEmailErrorMessage, 'Fechar', {
+        const closeMessage = this.translocoService.translate('core.sign-in-component.close');
+
+        this.snackBar.open(checkEmailErrorMessage, closeMessage, {
           duration: 3000,
         });
       }
@@ -113,7 +115,7 @@ export class SigninComponent {
     
   }
 
-  async login() {
+  async signIn() {
 
     if (this.passwordFormGroup.valid == false) {
       return;
@@ -124,17 +126,23 @@ export class SigninComponent {
     this.passwordHideCheckBoxEnabled = false;
     this.isLoading = true;
 
-    let userSession: IUserSession;
+    let user: IUser;
+
+    const closeMessage = this.translocoService.translate('core.sign-in-component.close');
 
     this.authService.signin(this.emailFormGroup.value.email, this.passwordFormGroup.value.password).pipe(take(1)).subscribe({
       next:(value) => {
-        userSession = value;
+        user = value;
 
-        this.userSessionService.addUserSessionOnLocalStorage(userSession);
-        this.userSessionService.setCurrentUserSessionOnLocalStorage(userSession);
-        this.tenantService.getTenantsAndSaveInLocalStorage(userSession.user.UID);
+        this.userService.addUserOnLocalStorage(user);
+        this.userService.setCurrentUserOnLocalStorage(user);
+        this.userService.moveUserToFirstPositionOnLocalStorage(user.UID);
+        this.authService.currentUser = user;
+        this.tenantService.getTenantsAndSaveInLocalStorage(user.UID);
     
-        this.snackBar.open('Login bem-sucedido.', 'Fechar', {
+        const signInSuccessMessage = this.translocoService.translate("core.sign-in-component.signIn-sucess");
+        
+        this.snackBar.open(signInSuccessMessage, closeMessage, {
           duration: 3000,
         }).afterDismissed().pipe(take(1)).subscribe({
           next: (value) => {
@@ -145,17 +153,28 @@ export class SigninComponent {
 
       error: (error) => {
 
-        if(error.status === 500){
-          this.pageState = SignInPageState.SetPassword;
-        }
-
+        //Define o campo para permitir escrita
         this.passwordFormGroup.get("password").enable();
         this.passwordHideCheckBoxEnabled = true;
         this.isLoading = false;
 
-        this.snackBar.open('Senha incorreta.', 'Fechar', {
+        if(error.status === 500){
+          this.pageState = SignInPageState.SetPassword;
+        }
+
+        if(error.status === 429){
+          const manyIncorrectsignInMessage = this.translocoService.translate('core.sign-in-component.error-many-incorrect-signin-attempts');
+          this.snackBar.open(manyIncorrectsignInMessage, closeMessage, {
+            duration: 3000,
+          });
+          return;
+        }
+
+        const incorrectPasswordMessage = this.translocoService.translate('core.sign-in-component.incorrect-password');
+        this.snackBar.open(incorrectPasswordMessage, closeMessage, {
           duration: 3000,
         });
+        return
       },
     })
   }

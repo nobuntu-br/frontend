@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from 'app/core/auth/auth.service';
-import { AuthUtils } from 'app/core/auth/auth.utils';
-import { IUserSession } from 'app/core/auth/user.model';
+import { IUser } from 'app/core/auth/user.model';
 import { UserService } from 'app/core/auth/user.service';
 import { take } from 'rxjs';
 
@@ -23,15 +22,15 @@ export class UserMenuComponent implements OnInit {
   /**
    * Sessão dos usuários
    */
-  userSessions: IUserSession[] = [];
+  users: IUser[] = [];
   /**
    * Sessão dos usuários inativos
    */
-  inactiveUserSessions: IUserSession[] = [];
+  inactiveUsers: IUser[] = [];
   /**
    * Sessão do usuário atual que está realizando as requisições
    */
-  currentUserSession: IUserSession;
+  currentUser: IUser;
   userProfilePhotoEnabled: boolean = false;
 
   constructor(
@@ -41,25 +40,24 @@ export class UserMenuComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.updateUserSessionState();
+    this.updateUserState();
     //Obtem a sessão de usuário atual para manipular o componente
-    this.currentUserSession = this.authService.currentUserSession;
+    this.currentUser = this.authService.currentUser;
     //Obtem informação dos usuário com acesso
-    this.userSessions = this.authService.getUserSessions();
+    this.users = this.authService.getUsers();
     //Obtem informações dos usuários com acesso mas não ativos
-    this.inactiveUserSessions = this.authService.getInactiveUserSessions();
+    this.inactiveUsers = this.authService.getInactiveUsers();
 
     //TODO fazer isso só uma vez após o login pra não dar problema com a Azure
     // this.getUserProfilePhoto(this.currentUserSession.user.UID);
 
   }
 
-  checkUserSessionExpired(userSession: IUserSession): boolean {
-    if (userSession.tokens == null || userSession.tokens.accessToken == null) return true;
-    return AuthUtils.isTokenExpired(userSession.tokens.accessToken);
+  checkUserExpired(user: IUser) {
+    
   }
 
-  updateUserSessionState() {
+  updateUserState() {
     this.authService.check().subscribe((res) => {
       if (res) {
         this.isLoggedIn = true;
@@ -75,33 +73,37 @@ export class UserMenuComponent implements OnInit {
     this.router.navigate(['editProfile']);
   }
 
-  isCurrentUserSession(userSession: IUserSession): boolean {
-    if (this.currentUserSession.user.UID == userSession.user.UID) {
+  goToManageAccountPage(): void{
+    
+  }
+
+  isCurrentUser(user: IUser): boolean {
+    if (this.currentUser.UID == user.UID) {
       return true;
     }
 
     return false;
   }
 
-  switchCurrentUserSession(userSession: IUserSession) {
+  switchCurrentUser(user: IUser) {
 
     //Se por acaso tentar mudar a sessão do usuário para o mesmo usuário, não irá poder fazer isso
-    if (this.isCurrentUserSession(userSession) == true) {
+    if (this.isCurrentUser(user) == true) {
       return null;
     }
 
-    this.authService.switchUserSession(userSession.user.UID);
+    this.authService.switchUser(user.UID);
 
     //Atualiza o sessão de usuário atual
-    this.currentUserSession = this.authService.currentUserSession;
+    this.currentUser = this.authService.currentUser;
     //Atualiza a lista de sessões de usuário inativas
-    this.inactiveUserSessions = this.authService.getInactiveUserSessions();
+    this.inactiveUsers = this.authService.getInactiveUsers();
 
     window.location.reload();
   }
 
-  signOutUser(userSession: IUserSession) {
-    this.authService.signOutUser(userSession);
+  signOutUser(user: IUser) {
+    this.authService.signOutUser(user);
     this.router.navigate(['/signin']);
   }
 

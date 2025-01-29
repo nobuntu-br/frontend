@@ -21,7 +21,6 @@ export interface IUser {
   lastName: string;
   isAdministrator?: boolean;
   memberType?: string;
-  // Roles?: string[];
   tenants ?: string[];
   email?: string;
   photoUrl?: string;
@@ -35,7 +34,6 @@ export class User extends BaseResourceModel implements IUser {
   lastName: string;
   isAdministrator?: boolean;
   memberType?: string;
-  // Roles?: string[];
   tenants?: string[];
 
   static fromJson(jsonData: any): User {

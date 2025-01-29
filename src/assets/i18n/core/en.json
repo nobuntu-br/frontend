@@ -1,12 +1,4 @@
 {
-  "home-page-component": {
-    "do-login": "Sing in",
-    "test-now": "Test now",
-    "product-name": "Ortia",
-    "short-product-description": "Gerencie a parte financieira de sua empresa on-line",
-    "long-product-description": "Tenha acesso a um armazenamento em nuvem com tecnologia e perfeito para gestão de finanças.",
-    "workspace": "WorkSpace"
-  },
   "sign-in-component": {
     "password-error": "Password error",
     "sign-in-with-your-email": "Sign in with your Email",
@@ -30,7 +22,11 @@
     "error-password-maxlength": "A senha ultrapassou o número máximo de caracteres.",
     "error-password-minlength": "A senha deve ter quantidade maior caracteres.",
     "error-password-pattern": "A senha está em um formato incorreto.",
-    "show-password": "Show password"
+    "show-password": "Show password",
+    "signIn-sucess": "Successful signIn",
+    "incorrect-password":"Incorrect password",
+    "error-many-incorrect-signin-attempts":"Too many signIn attempts. Please try accessing later.",
+    "close": "Close"
   },
   "sign-up-component": {
     "create-product-account": "Cria uma conta do Ortia",
