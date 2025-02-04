@@ -8,10 +8,11 @@ import { DatabaseCredential } from './databaseCredential.model';
 })
 export class DatabaseCredentialService extends BaseResourceService<DatabaseCredential> {
   url = environment.backendUrl + "/api/tenantCredential";
-  
+
   constructor(protected override injector: Injector) {
     var url = environment.backendUrl + "/api/tenantCredential";
 
     super(url, injector, DatabaseCredential.fromJson)
   }
+
 }

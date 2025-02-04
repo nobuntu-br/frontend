@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { firstValueFrom, Observable, of, take } from 'rxjs';
+import { catchError, firstValueFrom, from, Observable, of, switchMap, take, throwError } from 'rxjs';
 import { Router } from '@angular/router';
 import { IUser, SignupDTO } from './user.model';
 import { TenantService } from '../tenant/tenant.service';
@@ -37,9 +37,11 @@ export class AuthService {
     //Se não tiver sessão de usuário atual ele irá obter dados os localStorage
     if (this._currentUser == null) {
 
+      //Irá obter o usuário atual usado do localstorage
       let userFromLocalStorage = this.userService.getCurrentUserFromLocalStorage();
 
       if (userFromLocalStorage == null) {
+        //Obtem algum usuário da lista de usuários
         userFromLocalStorage = this.userService.getAnyUserFromLocalStorage();
         this.userService.setCurrentUserOnLocalStorage(userFromLocalStorage);
       }
@@ -67,11 +69,6 @@ export class AuthService {
     }
 
     return users.filter(_user => _user.UID != currentUser.UID);
-  }
-
-  isLoggedIn(): boolean {
-    // return this.currentUserSession != null && AuthUtils.isTokenExpired(this._currentUserSession.tokens.accessToken);
-    return this.currentUser != null;
   }
 
   /**
@@ -162,10 +159,8 @@ export class AuthService {
    */
   check(): Observable<boolean> {
 
-    this.tenantService.getTenantsAndSaveInLocalStorage(this.currentUser.UID);
-    //TODO get user data and save on localStorage
-
-    if (this.isLoggedIn() == true) {
+    if (this.currentUser != null &&
+      this.tenantService.currentTenant != null) {
       return of(true);
     }
 
@@ -197,7 +192,7 @@ export class AuthService {
   }
 
   resetPassword(password: string, resetPasswordToken: string) {
-    return this.httpClient.post<IUser>(`${this.url}/change-password`, { password, resetPasswordToken });
+    return this.httpClient.patch<IUser>(`${this.url}/reset-password`, { password, resetPasswordToken });
   }
 
   validateVerificationEmailCode(verificationEmailCode: string): Observable<any> {
@@ -209,32 +204,37 @@ export class AuthService {
   }
 
   /**
-   * Verifica se o token de acesso expirou e atualiza caso necessário
+   * Obtem dados de usuário e tenants para armazenamento local
    */
-  async handleToken(): Promise<void> {
+  handleToken(): Observable<boolean> {
 
-    try {
-      let usersData: IUser[] = await firstValueFrom(this.refreshAccessToken().pipe(take(1)));
+    return from(this.refreshAccessToken().pipe(take(1))).pipe(
+      switchMap((usersData: IUser[]) => {
 
-      if (usersData.length == 0) {
-        return;
-      }
+        if (usersData.length === 0) {
+          return throwError(() => new Error("Nenhum usuário retornado após a atualização do token."));
+        }
 
-      if(this.userService.getCurrentUserFromLocalStorage() == null){
-        this.userService.setCurrentUserOnLocalStorage(usersData[0]);
-        this.userService.moveUserToFirstPositionOnLocalStorage(usersData[0].UID);
-        this.currentUser = usersData[0];
-      }
-      
-      usersData.forEach((userData: IUser) => {
-        this.userService.addUserOnLocalStorage(userData);
-        this.tenantService.getTenantsAndSaveInLocalStorage(userData.UID);
-      });
+        if (this.userService.getCurrentUserFromLocalStorage() == null) {
+          this.userService.setCurrentUserOnLocalStorage(usersData[0]);
+          this.userService.moveUserToFirstPositionOnLocalStorage(usersData[0].UID);
+          this.currentUser = usersData[0];
+        }
 
-    } catch (error) {
-      throw new Error("Error to refresh token!");
-    }
+        usersData.forEach((userData: IUser) => {
+          this.userService.addUserOnLocalStorage(userData);
+          this.tenantService.getTenantsAndSaveInLocalStorage(userData.UID);
+        });
 
+        let currentTennat = this.tenantService.currentTenant;
+
+        return of(true);
+      }),
+      catchError((error) => {
+        console.error("Erro ao atualizar token:", error);
+        return of(false);
+      })
+    );
   }
 
 }

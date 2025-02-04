@@ -71,6 +71,18 @@
     "error-confirmPassword-minlength": "A senha deve ter quantidade maior caracteres.",
     "error-confirmPassword-maxlength": "A senha ultrapassou o número máximo de caracteres."
   },
+  "reset-password": {
+    "set-your-password": "Insira sua senha",
+    "error-password-required": "Senha é necessária ser preenchida",
+    "error-password-maxlength": "A senha ultrapassou o número máximo de caracteres.",
+    "error-password-minlength": "A senha deve ter quantidade maior caracteres.",
+    "error-password-pattern": "A senha está em um formato incorreto.",
+    "show-password": "Mostrar senha",
+    "password": "Senha",
+    "confirmPassword": "Escreva a senha novamente",
+    "change-password": "Alterar senha",
+    "next": "Concluir"
+  },
   "months": {
     "january": "Janeiro",
     "february": "Fevereiro",
@@ -90,7 +102,15 @@
     "description": "",
     "name": "Nome",
     "user-permission": "Permissão de usuário",
-    "manage-access": "Gerenciar acesso"
+    "manage-access": "Gerenciar acesso",
+    "create-new-tenant": "Criar base de dados",
+    "button-save": "Save",
+    "manage": "Gerenciar",
+    "databaseCredential": "Credenciais de banco de dados"
+  },
+  "tenant-form": {
+    "name": "Nome",
+    "button-save": "Criar"
   },
   "tenant-user-list-component": {
     "new-user": "Novo usuário",
@@ -110,7 +130,28 @@
   },
   "tenant-credential-form": {
     "create-new-tenant-tittle": "Registrar credenciais para acesso ao banco de dados",
-    "create-new-tenant-database-name": "Nome do banco de dados"
+    "create-new-tenant-database-name": "Nome do banco de dados",
+    "button-cancel": "Cancelar",
+    "button-save": "Criar"
+  },
+  "database-credential-form": {
+    "create-new-database-credential-tittle": "Registrar credenciais da base de dados",
+    "name": "Nome",
+    "type": "Tipo de banco de dados",
+    "username": "Usuário",
+    "password": "Senha",
+    "host": "Host",
+    "port": "Port",
+    "srvEnabled": "SRV Ativo",
+    "options": "Opções",
+    "storagePath": "Caminho do Storage",
+    "sslEnabled": "SSL Ativo",
+    "sslCertificateAuthority": "sslCertificateAuthority",
+    "sslPrivateKey": "sslPrivateKey",
+    "sslCertificate": "sslCertificate",
+    "close": "Fechar",
+    "button-cancel": "Cancelar",
+    "button-save": "Criar"
   },
   "error-404-component": {
     "error-message": "Pagina não encontrada"

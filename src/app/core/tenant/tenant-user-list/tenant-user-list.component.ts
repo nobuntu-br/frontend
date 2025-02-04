@@ -40,9 +40,8 @@ export class TenantUserListComponent implements OnInit {
 
   openDialogTenantInviteUserForm(){
     this.dialog.open(TenantInviteUserFormComponent, {
-      minWidth: '320px',
-      minHeight:'200px',
-      
+      minWidth: "320px",
+      minHeight:"200px",
     });
   }
 

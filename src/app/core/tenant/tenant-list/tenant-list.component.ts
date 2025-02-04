@@ -11,7 +11,7 @@ import { Router } from '@angular/router';
 })
 export class TenantListComponent implements OnInit {
 
-  displayedColumns: string[] = ['name', 'userPermissionTenant'];
+  displayedColumns: string[] = ['name', 'userPermissionTenant', 'databaseCredential'];
 
   tenants: ITenant[] = [];
 
@@ -32,11 +32,19 @@ export class TenantListComponent implements OnInit {
   async getTenants(userUID: string) {
     this.tenants = await this.tenantService.getTenantsAndSaveInLocalStorage(userUID);
 
-    console.log("tenants obtidos: ",this.tenants)
+    // console.log("tenants obtidos: ",this.tenants)
   }
 
   goToUserTenantPage() {
     this.router.navigate(['/tenant/users']);
+  }
+
+  goToCreateTenantPage(){
+    this.router.navigate(['/tenant/add']);
+  }
+
+  goToDatabaseCredentialPage(){
+    this.router.navigate(['/tenant/tenantCredential']);
   }
 
 }

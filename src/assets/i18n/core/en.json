@@ -57,6 +57,18 @@
     "set-your-emailVerificationCode": "Define seu codigo de verificação de email",
     "error-password-strength": "A senha deve ter pelo menos 8 caracteres, incluindo letras maiúsculas, minúsculas, números e caracteres especiais."
   },
+  "reset-password": {
+    "set-your-password": "Set your password",
+    "error-password-required": "Senha é necessária ser preenchida",
+    "error-password-maxlength": "A senha ultrapassou o número máximo de caracteres.",
+    "error-password-minlength": "A senha deve ter quantidade maior caracteres.",
+    "error-password-pattern": "A senha está em um formato incorreto.",
+    "show-password": "Show password",
+    "password": "Password",
+    "confirmPassword": "Password again",
+    "change-password": "Change password",
+    "next":"Next"
+  },
   "months": {
     "january": "January",
     "february": "February",
@@ -76,7 +88,14 @@
     "description": "",
     "name": "Name",
     "user-permission": "User permission",
-    "manage-access": "Manage access"
+    "manage-access": "Manage access",
+    "create-new-tenant": "Create new Tenant",
+    "manage": "Gerenciar",
+    "databaseCredential": "Database credentials"
+  },
+  "tenant-form": {
+    "name": "Name",
+    "button-save": "Save"
   },
   "tenant-user-list-component": {
     "new-user": "New user",
@@ -96,7 +115,28 @@
   },
   "tenant-credential-form": {
     "create-new-tenant-tittle": "Registrar credenciais para acesso ao banco de dados",
-    "create-new-tenant-database-name": "Nome do banco de dados"
+    "create-new-tenant-database-name": "Nome do banco de dados",
+    "button-cancel": "Cancelar",
+    "button-save": "Criar"
+  },
+  "database-credential-form":{
+    "create-new-database-credential-tittle": "Registrar credenciais da base de dados",
+    "name":"Nome",
+    "type":"Tipo de banco de dados",
+    "username":"Usuário",
+    "password":"Senha",
+    "host":"Host",
+    "port":"Port",
+    "srvEnabled":"SRV Ativo",
+    "options": "Opções",
+    "storagePath": "Caminho do Storage",
+    "sslEnabled":"SSL Ativo",
+    "sslCertificateAuthority":"sslCertificateAuthority",
+    "sslPrivateKey":"sslPrivateKey",
+    "sslCertificate":"sslCertificate",
+    "close":"Fechar",
+    "button-cancel": "Cancelar",
+    "button-save": "Criar"
   },
   "error-404-component": {
     "error-message": "Page not found"

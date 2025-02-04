@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { CanMatch, Route, Router, UrlSegment, UrlTree } from '@angular/router';
-import { Observable, of, switchMap, take } from 'rxjs';
+import { ActivatedRouteSnapshot, CanActivate, CanMatch, Route, Router, RouterStateSnapshot, UrlSegment, UrlTree } from '@angular/router';
+import { catchError, Observable, of, switchMap, take } from 'rxjs';
 import { AuthService } from 'app/core/auth/auth.service';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from 'environments/environment';
@@ -44,31 +44,34 @@ export class AuthGuard implements CanMatch {
    * @private
    */
   private _check(segments: UrlSegment[]): Observable<boolean | UrlTree> {
-    this._authService.handleToken();
     // Check the authentication status
+
     return this._authService.check().pipe(
 
       switchMap((authenticated) => {
 
-        // console.log("Usuário com permisão para rota? ", authenticated);
         // Se o usuário não estiver autenticado
         if (!authenticated) {
 
-          // Redirecionará para pagina de sign-in com um redirectUrl param
-          const redirectURL = `/${segments.join('/')}`;
-          // const urlTree = this._router.parseUrl(`sign-in?redirectURL=${redirectURL}`);
+          return this._authService.handleToken().pipe(take(1),
+            switchMap((success) => {
+              if (success) {
+                return of(true);
+              }
 
-          this.saveRedirectURL(redirectURL);
+              return this.redirectToSignIn(segments);
+            }),
+            catchError(() => {
+              return this.redirectToSignIn(segments);
+            })
+          );
 
-          //Redireciona o usuário para página de signIn
-          this._router.navigate(['signin']);
-          
-          return of(false);
         }
-        
+
         // Permite o acesso
         return of(true);
-      })
+      }),
+      take(1)
     );
   }
 
@@ -76,8 +79,20 @@ export class AuthGuard implements CanMatch {
     localStorage.setItem("redirectURL", redirectURL);
   }
 
+  /**
+  * Redireciona para a página de login e retorna `of(false)`
+  */
+  private redirectToSignIn(segments: UrlSegment[]): Observable<boolean> {
+    // Redirecionará para pagina de sign-in com um redirectUrl param
+    const redirectURL = `/${segments.join('/')}`;
+    this.saveRedirectURL(redirectURL);
+    //Redireciona o usuário para página de signIn
+    this._router.navigate(['signin']);
+    return of(false);
+  }
+
   //TODO ao verificar o acesso a página, obter o JSON de contrução de página relacionado a pagina requisitada e a role do usuário
-  verifyAcessToPage(segments: UrlSegment[]){
+  verifyAcessToPage(segments: UrlSegment[]) {
     //No momento que a pessoa for acessar a rota, preciso ler o JSON do menu e pegar o caminho da API
     this.httpClient.get<any>(environment.menuPath).pipe(take(1)).subscribe({
       next: (data) => {
@@ -86,10 +101,10 @@ export class AuthGuard implements CanMatch {
         if (routeobj == null) return;
 
         const _params = new HttpParams()
-        .set('method', "GET")
-        .set('apiUrl', "/cartaoConsumo");
+          .set('method', "GET")
+          .set('apiUrl', "/cartaoConsumo");
 
-        this.httpClient.get<any>(environment.backendUrl + "/api/guard", {params : _params}).subscribe({
+        this.httpClient.get<any>(environment.backendUrl + "/api/guard", { params: _params }).subscribe({
           next: (data) => console.log(data),
         })
 

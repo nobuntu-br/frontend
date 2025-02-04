@@ -27,10 +27,10 @@ export class PasswordFormComponent {
 
   confirmPasswordIsEqualPassword: boolean;
   /**
-   * Controla a visibilidade da senha
-   */
+  * Controla a visibilidade da senha
+  */
   passwordHide: boolean = false;
-  confirmPasswordHide = true; 
+  passwordHideCheckBoxEnabled: boolean = true;
 
   constructor(
     private _formBuilder: FormBuilder,

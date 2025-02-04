@@ -59,22 +59,28 @@ export class AuthInterceptor implements HttpInterceptor {
         if (error instanceof HttpErrorResponse && error.status === 401) {
 
           if (this.hasTriedToRefresh == false) {
-            
+
             this.hasTriedToRefresh = true;
+
             //Tenta obter o token de acesso
-            this.authService.handleToken().then((value)=>{
-              this.hasTriedToRefresh = false;
-              
-              // location.reload();
-            }).catch((error)=>{
-              // console.log("erro no refresh: ", error);
+            this.authService.handleToken().pipe(take(1)).subscribe({
+              next: (value) => {
+
+                if (value == true) {
+                  this.hasTriedToRefresh = false;
+                  location.reload();//TODO verificar se pode entrar em loop
+                } else {
+                  //Se não conseguir o token ele é jogado fora
+                  localStorage.clear();
+                  this.router.navigate(['/']);
+                }
+
+              },
             });
 
           } else {
 
-            //Limpa todos os dados armazenados e redireciona o usuário
-            localStorage.clear();
-            this.router.navigate(['/']);
+            this.router.navigate(['/home']);
           }
 
         }
