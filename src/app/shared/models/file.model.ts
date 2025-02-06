@@ -11,7 +11,7 @@ export interface IFile extends BaseResourceModel {
     name: string;
     size: number;
     extension: string;
-    dataBlob: Blob;
+    dataBlob: Blob | string;
 }
 
 export class FieldFile implements IFieldFile {

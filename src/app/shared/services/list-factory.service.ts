@@ -30,6 +30,7 @@ export class ListFactoryService {
       const createdComponent = target.createComponent(DefaultListComponent).instance;
       createdComponent.apiUrl = pageData.config.apiUrl;
       createdComponent.columnsQuantity = 2;
+      createdComponent.title = pageData.config.title;
       createdComponent.displayedfieldsName = pageData.attributes.map(attribute => attribute.name);
       createdComponent.fieldsType = pageData.attributes.map(attribute => attribute.type);
       createdComponent.isSelectable = pageData.config.edit;
@@ -39,6 +40,7 @@ export class ListFactoryService {
       createdComponent.dataToCreatePage = pageData;
       createdComponent.objectDisplayedValue = pageData.attributes.map(attribute => attribute.fieldDisplayedInLabel);
       createdComponent.route = pageData.config.route;
+      createdComponent.visibleList = pageData.attributes.map(attribute => attribute.visibleList);
     });
   }
 
