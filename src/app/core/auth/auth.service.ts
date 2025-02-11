@@ -203,6 +203,10 @@ export class AuthService {
     return this.httpClient.get<IUser[]>(`${this.url}/refresh-token`);
   }
 
+  singleSignOn(): Observable<IUser[]> {
+    return this.httpClient.get<IUser[]>(`${this.url}/single-sign-on`);
+  }
+
   /**
    * Obtem dados de usuário e tenants para armazenamento local
    */

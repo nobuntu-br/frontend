@@ -2,12 +2,12 @@
 
   <div class="panel" >
   
-    <form [formGroup]="databaseCredentialFormGroup" style="display: flex; flex-direction: column;">
+    <form [formGroup]="tenantFormGroup" style="display: flex; flex-direction: column;">
       <ng-template matStepLabel>{{ t('create-new-database-credential-tittle') }}</ng-template>
   
       <mat-form-field appearance="fill">
         <mat-label>{{ t('name') }}</mat-label>
-        <input matInput formControlName="name" placeholder="Example: business1" required>
+        <input matInput formControlName="name" placeholder="Example: business1" required (keydown.enter)="registerNewTenant()">
   
         <!-- <mat-error *ngIf="registerNewTenantFormGroup.get('name').hasError('required')">{{t("error-name-required")}}</mat-error> -->
         <!-- <mat-error *ngIf="registerNewTenantFormGroup.get('name').hasError('minlength') ">
@@ -20,10 +20,11 @@
   
   
       <div style="display: flex; justify-content: center;">
-        <button mat-raised-button color="primary" class="save-button" (click)="registerNewDatabaseCredential()">{{
+        <button mat-raised-button color="primary" class="save-button" *ngIf="isLoading == false" (click)="registerNewTenant()">{{
           t('button-save') }}</button>
       </div>
   
+      <mat-spinner style="margin: auto;" *ngIf="isLoading == true"></mat-spinner>
     </form>
   </div>
 

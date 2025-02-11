@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AuthService } from 'app/core/auth/auth.service';
 import { take } from 'rxjs';
 
 @Component({
@@ -11,43 +12,34 @@ export class CallbackComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private route: ActivatedRoute
-  ){
-    
+    private route: ActivatedRoute,
+    private authService: AuthService
+  ) {
+
   }
 
   ngOnInit(): void {
-    const accessToken = this.getAccessTokenOnRouteQueryParams();
 
-    this.checkUserHasPermissionOnApplication(accessToken);
-  }
+    this.authService.singleSignOn().subscribe({
+      next: (value) => {
+        console.log("valor obtido ao SSO: ", value);
 
-  getAccessTokenOnRouteQueryParams(): string | null {
-    // Obter query params (parâmetros de consulta, como ?search=value)
-    this.route.queryParams.pipe(take(1)).subscribe(queryParams => {
-      console.log('Query Params:', queryParams);
-      if(queryParams.key === "accessToken"){
-        return queryParams.value as string;
-      }
+        //TODO guardar os valores no localstorage
+        this.redirectToApplication();
+      },
+      error: (error) => {
+        this.redirectToSigninPage();
+      },
+
     });
-
-    return null;
   }
 
-  checkUserHasPermissionOnApplication(accessToken: string){
-    //TODO check acess token. faz requisição para API
-      //TODO ter rota que ao mandar o token de acesso ele passa os dados do usuário
-
-    //TODO save acessToken on localstorage
-
-  }
-
-  redirectToApplication(){
+  redirectToApplication() {
     this.router.navigate(['/home']);
   }
 
-  redirectToErrorPage(){
-    this.router.navigate(['/error-505']);
+  redirectToSigninPage() {
+    this.router.navigate(['/signin']);
   }
 
 }

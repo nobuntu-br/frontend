@@ -50,14 +50,14 @@ export class ListAppsComponent implements OnInit {
   }
 
   fetchApps() {
-    this.applicationService.getApplications().subscribe(
-      (response: Application[]) => {
-        this.apps = response;
+    this.applicationService.getApplications().subscribe({
+      next: (value) => {
+        this.apps = value;
       },
-      error => {
+      error: (error) => {
         console.error('Erro ao buscar aplicativos:', error);
-      }
-    );
+      },
+    });
   }
 
   /**
@@ -75,7 +75,6 @@ export class ListAppsComponent implements OnInit {
         if (user) {
           // Redirecionar para o aplicativo com o usuário codificado na URL
           const redirectUrl = `${app.redirect_uri}`;
-          console.log(redirectUrl);
           window.open(redirectUrl, '_blank');
 
         } else {

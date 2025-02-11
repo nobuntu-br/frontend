@@ -8,15 +8,15 @@ import { Application } from 'app/shared/services/application.service';
   styleUrls: ['./confirm-change-app.component.scss']
 })
 export class ConfirmChangeAppComponent implements OnInit {
-  
+
   constructor(private dialogRef: MatDialogRef<ConfirmChangeAppComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
-) { }
+  ) { }
 
-app: Application = this.data.app;
+  app: Application = this.data.app;
 
-ngOnInit(): void {
-console.log(this.data)
-}
+  ngOnInit(): void {
+    console.log(this.data)
+  }
 
 }
