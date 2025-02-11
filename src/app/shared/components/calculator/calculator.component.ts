@@ -88,12 +88,12 @@ export class CalculatorComponent {
   calculate() {
     try {
       if (this.newCalculation && this.lastOperator && this.lastOperand) {
-        const result = eval(`${this.display}${this.lastOperator}${this.lastOperand}`);
+        // Use a lógica manual para calcular a expressão com operador e operandos anteriores
+        const result = this.safeEval(`${this.display}${this.lastOperator}${this.lastOperand}`);
         this.display = result.toString();
         this.history.push(`${this.display}${this.lastOperator}${this.lastOperand} = ${result}`);
       } else {
-        const result = parseFloat(eval(this.display).toFixed(2));
-
+        const result = this.safeEval(this.display);  // Substitua eval por safeEval
         this.history.push(`${this.display} = ${result}`);
         this.lastOperator = this.display.match(/[+\-*/]/g)?.pop() || '';
         this.lastOperand = this.display.split(/[+\-*/]/g).pop() || '';
@@ -104,13 +104,24 @@ export class CalculatorComponent {
       this.display = 'Erro';
     }
   }
+  
+  // Função para avaliar expressões de maneira segura
+  safeEval(expression: string): number {
+    const sanitizedExpression = expression.replace(/[^\d+\-*/(). ]/g, '');  // Filtra caracteres inválidos
+    try {
+      return new Function('return ' + sanitizedExpression)();
+    } catch (error) {
+      console.error("Erro ao calcular expressão:", error);
+      return NaN;
+    }
+  }
+  
 
   isOperator(char: string) {
     return '+-*/'.includes(char);
   }
   calculatePercentage() {
     try {
-      // Extrair o resultado da expressão atual sem o operador final e número
       let expression = this.display;
       let lastOperatorIndex = Math.max(
         expression.lastIndexOf('+'),
@@ -118,16 +129,17 @@ export class CalculatorComponent {
         expression.lastIndexOf('*'),
         expression.lastIndexOf('/')
       );
-      
+  
       if (lastOperatorIndex !== -1) {
         let lastOperator = expression.charAt(lastOperatorIndex);
         let beforeOperator = expression.slice(0, lastOperatorIndex);
         let afterOperator = parseFloat(expression.slice(lastOperatorIndex + 1));
-        
+  
         if (!isNaN(afterOperator)) {
-          let resultBeforeOperator = parseFloat(eval(beforeOperator).toFixed(2));
+          // Substituindo o uso de eval por uma abordagem segura
+          let resultBeforeOperator = this.safeEval(beforeOperator);
           let percentage = resultBeforeOperator * (afterOperator / 100);
-          
+  
           this.display = beforeOperator + lastOperator + percentage.toString();
         }
       }
@@ -135,6 +147,7 @@ export class CalculatorComponent {
       this.display = 'Erro';
     }
   }
+  
 
   cancel() {
     if (this.dialogInjectorData.formData === undefined || this.dialogInjectorData.formData === null) {
@@ -145,15 +158,14 @@ export class CalculatorComponent {
   }
 
   confirm() {
-
-    if(this.display== ''){
+    if (this.display == '') {
       this.dialogCalculatorRef.close('');
-    }else{
-      const result = eval(this.display);
-      this.dialogCalculatorRef.close(parseFloat(result));
+    } else {
+      const result = this.safeEval(this.display);  // Substitua eval por safeEval
+      this.dialogCalculatorRef.close(result);  // Retorne o resultado diretamente
     }
-    
   }
+  
   toggleHistoryVisibility() {
     this.isHistoryVisible = !this.isHistoryVisible;
   }
