@@ -9,6 +9,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from 'app/core/auth/auth.service';
+import { TitleService } from 'app/shared/services/title.service';
 import { environment } from 'environments/environment';
 import { User } from 'oidc-client-ts';
 import {
@@ -83,8 +84,13 @@ export class SideNavComponent implements OnInit, OnDestroy {
     private httpClient: HttpClient,
     public authService: AuthService,
     private router: Router,
-    private route: ActivatedRoute
-  ) { }
+    private route: ActivatedRoute,
+    private titleService: TitleService
+  ) { 
+    this.titleService.subTitulo$.subscribe(titulo => {
+      this.applicationTitle = titulo;
+    });
+  }
 
   ngOnInit(): void {
     const userString = localStorage.getItem('currentUser');

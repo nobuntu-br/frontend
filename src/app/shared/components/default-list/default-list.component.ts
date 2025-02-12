@@ -32,8 +32,9 @@ import {
 } from '../dinamic-base-resource-form/dinamic-base-resource-form.component';
 import { environment } from 'environments/environment';
 import { ISearchableField } from '../search-input-field/search-input-field.component';
-import { IPageStructure } from 'app/shared/models/pageStructure';
+import { IPageStructure, ITitle } from 'app/shared/models/pageStructure';
 import { ViewToggleService } from 'app/shared/services/view-toggle.service';
+import { TitleService } from 'app/shared/services/title.service';
 
 export interface IDefaultListComponentDialogConfig {
   /**
@@ -134,6 +135,11 @@ export class DefaultListComponent
   @Input() userConfig: any;
   @Input() isSelectable: boolean = true;
   @Input() selectedItemsLimit: number | null = null;
+  @Input() visibleList: boolean[] = [];
+    /**
+   * Campo com o titulo com as traduções que serão apresentadas no componente.
+   */
+  @Input() title: ITitle;
   /**
    * Campo que saída para os valores que foram selecionados.
    */
@@ -201,7 +207,8 @@ export class DefaultListComponent
     public dialogInjectorData: IDefaultListComponentDialogConfig,
     @Optional()
     private matDialogComponentRef: MatDialogRef<DefaultListComponent>,
-    private viewToggleService: ViewToggleService
+    private viewToggleService: ViewToggleService,
+    private titleService: TitleService
   ) {
     this.router = this.injector.get(Router);
     this.http = this.injector.get(HttpClient);
@@ -236,6 +243,8 @@ export class DefaultListComponent
   }
 
   ngAfterViewInit(): void {
+    //Título da página
+    this.changeTitle();
     // Inscreve-se no serviço para ouvir as mudanças no modo de exibição
     this.viewToggleService.viewMode$.subscribe((mode) => {
       this.viewMode = mode;
@@ -276,6 +285,7 @@ export class DefaultListComponent
       )
       .subscribe({
         next: (itemsDisplayed) => {
+          console.log('Itens obtidos na requisição: ', itemsDisplayed);
           this.itemsDisplayed = itemsDisplayed;
 
           // console.log("Itens obtidos na requisição: ", itemsDisplayed);
@@ -287,7 +297,6 @@ export class DefaultListComponent
             0,
             this.maxDisplayedItems
           );
-
           this.createItemsOnList(itemsToDisplay);
         },
         error(error) {
@@ -319,7 +328,7 @@ export class DefaultListComponent
     this.itemsDisplayed = itemsDisplayed;
     this.componentsCreatedList = [];
     this.removeAllComponentsOnView();
-
+    
     for (let index = 0; index < itemsDisplayed.length; index++) {
       let componentCreated;
       if (this.isSelectable == true) {
@@ -342,6 +351,7 @@ export class DefaultListComponent
       componentCreated.fieldsType = this.fieldsType;
       componentCreated.attributes = this.dataToCreatePage.attributes;
       componentCreated.objectDisplayedValue = this.objectDisplayedValue;
+      componentCreated.visibleList = this.visibleList;
 
       componentCreated.className = this.className;
     // Passa o viewMode para o SelectableCardComponent
@@ -633,6 +643,17 @@ export class DefaultListComponent
           this.getDataFromAPI(this.apiUrl);
         }
       });
+  }
+
+  /**
+   * Função que irá alterar o título da página.
+   */
+  changeTitle() {
+    if(this.title == null) return;
+    this.titleService.setSubTitle(this.title[this.translocoService.getActiveLang()]);
+    this.translocoService.langChanges$.subscribe((lang) => {
+      this.titleService.setSubTitle(this.title[lang]);
+    });
   }
 
   /**
