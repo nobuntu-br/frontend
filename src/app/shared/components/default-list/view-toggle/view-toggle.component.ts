@@ -8,7 +8,7 @@ import { ViewToggleService } from 'app/shared/services/view-toggle.service';
 })
 export class ViewToggleComponent {
   @Output() viewModeChanged = new EventEmitter<string>();
-  public listState: string = 'list';
+  public listState: string = 'list-layout';
 
   constructor(private viewToggleService: ViewToggleService) {}
 

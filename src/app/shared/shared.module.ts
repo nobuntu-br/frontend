@@ -64,7 +64,7 @@ import { FormSpaceBuildComponent } from './components/form-space-build/form-spac
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 import { EditProfileComponent } from './components/edit-profile/edit-profile.component';
 import { CheckboxFieldComponent } from './components/checkbox-field/checkbox-field.component';
-import { ViewToggleComponent } from './components/view-toggle/view-toggle.component';
+import { ViewToggleComponent } from './components/default-list/view-toggle/view-toggle.component';
 import { SelectorFieldComponent } from './components/selector-field/selector-field.component';
 import { UploadInputFieldComponent } from './components/upload-input-field/upload-input-field.component';
 import { TimeFieldComponent, TimePickerDialogComponent } from './components/time-field/time-field.component';
