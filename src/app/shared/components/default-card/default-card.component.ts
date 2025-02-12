@@ -25,6 +25,7 @@ export class DefaultCardComponent implements AfterViewInit {
   @Input() displayedfieldsName: string[];
   @Input() fieldsType: string[];
   @Input() isEditable: boolean = true;
+  @Input() visibleList: boolean[] = [];
   /**
    * Caso o campo for um objeto, será o nome do campo que está dentro do que será exibido.
    * [Exemplo]: O campo tem um objeto, esse objeto tem "id", "name" e "age". O campo apresentado poderá ser o "name", assim aparecerá o valor do campo "name" no componente.
@@ -62,7 +63,8 @@ export class DefaultCardComponent implements AfterViewInit {
           this.fieldsType[index],
           this.itemDisplayed[fieldDisplayedName],
           fieldDisplayedName,
-          this.objectDisplayedValue[index]
+          this.objectDisplayedValue[index],
+          this.visibleList[index]
         );
       });
     }, 0);
@@ -85,10 +87,15 @@ export class DefaultCardComponent implements AfterViewInit {
     fieldType,
     value,
     labelTittle: string,
-    objectDisplayedValue: string | null
+    objectDisplayedValue: string | null,
+    visibleList: boolean
   ) {
     if (target == null) {
       console.error('Target not renderized in DefaultCard');
+      return;
+    }
+
+    if (visibleList == false) {
       return;
     }
 
