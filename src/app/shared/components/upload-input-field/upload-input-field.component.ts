@@ -1,5 +1,6 @@
 import { AfterViewInit, Component, Input } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslocoService } from '@ngneat/transloco';
 import { IFieldFile } from 'app/shared/models/file.model';
 import { FileService } from 'app/shared/services/file.service';
@@ -39,7 +40,7 @@ export class UploadInputFieldComponent implements AfterViewInit {
   isRequired: boolean = true;
   svgIcon: string = 'upload'; // Exemplo de ícone
 
-  constructor(private translocoService: TranslocoService, private fileService: FileService) {}
+  constructor(private translocoService: TranslocoService, private fileService: FileService, private matSnackBar: MatSnackBar) { }
 
   ngAfterViewInit(): void {
     // this.limitSelectedItems(); // Mantém a limitação de itens
@@ -48,32 +49,40 @@ export class UploadInputFieldComponent implements AfterViewInit {
   /**
    * Método disparado quando um arquivo é selecionado
    */
-  onFileSelected(event: any) {
+  async onFileSelected(event: any) {
     const file: File = event.target.files[0];
 
     if (file) {
       const extension = file.name.split('.').pop().toLowerCase(); // Obtém a extensão do arquivo
       if (this.allowedExtensions.includes(extension)) {
+        this.inputValue.setValue(file.name);
         this.fileName = file.name;
-        const fileBlob = new Blob([file], { type: file.type });
+        this.displayedLabel = this.fileName;
+        const base64 = await this.fileService.convertFileToBase64(file);
         const fieldFile: IFieldFile = {
-          fieldType: 'string',
+          fieldType: 'file',
           files: [{
             name: file.name,
             size: file.size,
             extension: extension,
-            dataBlob: fileBlob,
+            dataBlob: file,
+            base64: base64
           }]
         };
+        console.log(fieldFile);
         this.fileService.uploadFile(fieldFile).subscribe((response) => {
-          this.inputValue.setValue(response);
-          console.log("Valor do arquivo: ", response);
+          this.matSnackBar.open('Arquivo enviado com sucesso', 'Fechar', {
+            duration: 2000
+          });
         }, (error) => {
-          console.log(error);
-          alert('Erro ao fazer upload do arquivo');
+          this.matSnackBar.open('Erro ao enviar arquivo', 'Fechar', {
+            duration: 2000
+          });
         });
       } else {
-        alert(`Extensão de arquivo inválida. Permitido: ${this.allowedExtensions.join(', ')}`);
+        this.matSnackBar.open(`Extensão de arquivo inválida. Permitido: ${this.allowedExtensions.join(', ')}`, 'Fechar', {
+          duration: 2000
+        });
         event.target.value = ''; // Limpa o input se a extensão for inválida
       }
     }

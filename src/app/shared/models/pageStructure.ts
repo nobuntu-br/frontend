@@ -1,7 +1,6 @@
 export interface IPageStructure {
   config: IPageStructureConfig;
   attributes: IPageStructureAttribute[];
-  
 }
 
 
@@ -16,6 +15,7 @@ export interface IPageStructureConfig {
   name: string;
   apiUrl: string;
   route: string;
+  title: ITitle;
   localStorage: boolean;
   filter: boolean;
   searchableFields: ISearchableField[];
@@ -27,7 +27,11 @@ export interface IPageStructureConfig {
   isFormStepper: boolean;
   isLinearFormStepper: boolean;
   icones?: IconOption[];
+}
 
+export interface ITitle {
+  pt: string;
+  en: string;
 }
 
 export interface ISearchableField {

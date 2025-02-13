@@ -34,6 +34,7 @@ export class SelectableCardComponent implements AfterViewInit, OnInit {
   @Input() attributes: any;
   @Input() isSelectable: boolean = true;
   @Input() isEditable: boolean = false;
+  @Input() visibleList: boolean[] = [];
   @Input() classFather: string;
   @Input() isSubForm: boolean = false;
   @Input() objectDisplayedValue: string | null;
@@ -65,16 +66,20 @@ export class SelectableCardComponent implements AfterViewInit, OnInit {
 
   createComponentsOnView() {
     setTimeout(() => {
-      this.displayedfieldsName.forEach((fieldDisplayedName, index) => {
-        this.createComponent(this.target, this.fieldsType[index], this.itemDisplayed[fieldDisplayedName], fieldDisplayedName, this.objectDisplayedValue[index], index);
+      this.displayedfieldsName.forEach((fieldDisplayedName, index)=>{
+        this.createComponent(this.target, this.fieldsType[index], this.itemDisplayed[fieldDisplayedName], fieldDisplayedName, this.objectDisplayedValue[index], index, this.visibleList[index]);
       });
     }, 0);
   }
 
-  createComponent(target: ViewContainerRef, fieldType, value, labelTittle: string, objectDisplayedValue: string | null, index: number) {
-
+  createComponent(target: ViewContainerRef , fieldType, value, labelTittle: string, objectDisplayedValue: string | null, index: number, visibleList: boolean){
+    
     if (target == null) {
       console.error("Target not renderized in DefaultCard");
+      return;
+    }
+
+    if (visibleList == false) {
       return;
     }
 
