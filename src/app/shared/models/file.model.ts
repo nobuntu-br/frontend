@@ -11,6 +11,7 @@ export interface IFile extends BaseResourceModel {
     name: string;
     size: number;
     extension: string;
+    dataBlob: Blob | string;
     dataBlob: any;
     base64?: string;
 }
