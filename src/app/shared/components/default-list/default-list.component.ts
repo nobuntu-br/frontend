@@ -285,6 +285,7 @@ export class DefaultListComponent
       )
       .subscribe({
         next: (itemsDisplayed) => {
+          console.log('Itens obtidos na requisição: ', itemsDisplayed);
           this.itemsDisplayed = itemsDisplayed;
 
           // console.log("Itens obtidos na requisição: ", itemsDisplayed);
@@ -648,6 +649,7 @@ export class DefaultListComponent
    * Função que irá alterar o título da página.
    */
   changeTitle() {
+    if(this.title == null) return;
     this.titleService.setSubTitle(this.title[this.translocoService.getActiveLang()]);
     this.translocoService.langChanges$.subscribe((lang) => {
       this.titleService.setSubTitle(this.title[lang]);
