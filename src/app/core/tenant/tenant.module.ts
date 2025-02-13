@@ -29,6 +29,9 @@ import { TenantRoutingModule } from './tenant-routing.module';
 //Components
 import { TenantUserListComponent } from './tenant-user-list/tenant-user-list.component';
 import { TenantInviteUserFormComponent } from './tenant-user-list/tenant-invite-user-form/tenant-invite-user-form.component';
+import { DatabaseCredentialFormComponent } from './database-credential-form/database-credential-form.component';
+import { TenantFormComponent } from './tenant-form/tenant-form.component';
+import { DatabaseCredentialListComponent } from './database-credential-list/database-credential-list.component';
 
 @NgModule({
   imports: [
@@ -58,6 +61,9 @@ import { TenantInviteUserFormComponent } from './tenant-user-list/tenant-invite-
     TenantListComponent,
     TenantUserListComponent,
     TenantInviteUserFormComponent,
+    DatabaseCredentialFormComponent,
+    TenantFormComponent,
+    DatabaseCredentialListComponent,
   ],
   providers: [
     TenantService,

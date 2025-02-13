@@ -39,11 +39,11 @@ export class BirthDayAndGenderFormComponent implements OnInit {
     });
   }
 
+  //TODO traduzir isso com o transloco
   genderList: string[] = [
     "Homem",
     "Mulher",
-    "Eu prefiro não dizer",
-    "Outro",
+    "Eu prefiro não dizer"
   ]
 
   ngOnInit(): void {

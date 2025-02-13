@@ -23,7 +23,6 @@ enum ResetPasswordPageState {
 })
 export class ResetPasswordComponent implements OnInit {
 
-
   emailFormGroup: FormGroup = this._formBuilder.group({
     email: ['', [Validators.required, Validators.email, Validators.minLength(3), Validators.maxLength(120)]],
   });
@@ -49,6 +48,16 @@ export class ResetPasswordComponent implements OnInit {
    * Variável de controle de estado da página
    */
   pageState: ResetPasswordPageState = ResetPasswordPageState.SetEmail;
+  /**
+  * Controla a visibilidade da senha
+  */
+  passwordHide: boolean = false;
+  passwordHideCheckBoxEnabled: boolean = true;
+  /**
+  * Variável de controle se está em carregamento a página
+  */
+  isLoading: boolean = false;
+
 
   constructor(
     // private userService: UserService,
@@ -68,7 +77,7 @@ export class ResetPasswordComponent implements OnInit {
       this.resetPasswordToken = params.get('emailVerificationCode');
 
       console.log('Código encontrado na URL:', this.resetPasswordToken);
-      if(this.resetPasswordToken != null){
+      if (this.resetPasswordToken != null) {
         //Se tive o código no parametro, vai direcionar para parte de trocar a senha
         this.pageState = ResetPasswordPageState.SetPassword;
       }
@@ -76,20 +85,21 @@ export class ResetPasswordComponent implements OnInit {
     });
   }
 
-  onChangePasswordLinkSubmit(){
+  onChangePasswordLinkSubmit() {
     console.log(this.emailFormGroup.valid);
-    if(this.emailFormGroup.valid == false){
+    if (this.emailFormGroup.valid == false) {
       return;
     }
 
     this.authService.sendPasswordResetLinkToEmail(this.emailFormGroup.get("email").value).pipe(take(1)).subscribe({
-      next:(value) => {
+      next: (value) => {
         this.snackBar.open('Envio de link para recuperação de senha requisitado!', 'Close', {
           duration: 3000,
           panelClass: ['custom-snackbar']
         });
       },
-      error:(error) => {
+      error: (error) => {
+        console.log("error to request password change: ", error);
         this.snackBar.open('Erro no envio de link para recuperação de senha!', 'Close', {
           duration: 3000,
           panelClass: ['custom-snackbar']
@@ -100,7 +110,7 @@ export class ResetPasswordComponent implements OnInit {
 
   onChangePasswordSubmit() {
     if (this.isPasswordEqual() == false) {
-      this.snackBar.open('Passwords do not match!', 'Close', {
+      this.snackBar.open('Password do not match!', 'Close', {
         duration: 3000,
         panelClass: ['custom-snackbar']
       });
@@ -108,22 +118,32 @@ export class ResetPasswordComponent implements OnInit {
       return;
     }
 
+    this.isLoading = true;
+    //TODO inabilitar os campos de inserir senha e botão para habilitar depois
+
     this.authService.resetPassword(
       this.resetPasswordFormGroup.value.password,
       this.resetPasswordToken
     ).pipe(take(1)).subscribe({
       next: (value) => {
+        this.isLoading = false;
+        
         this.snackBar.open('Senha redefinida com sucesso!', 'Close', {
           duration: 3000,
         });
         this.router.navigate(['login']); // Redireciona para a tela de login
       },
       error: (error) => {
+        this.isLoading = false;
+
+        console.log(error);
         this.snackBar.open('Erro ao redefinir a senha', 'Close', {
           duration: 3000,
         });
       },
     });
+
+    
 
   }
 

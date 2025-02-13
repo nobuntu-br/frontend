@@ -105,6 +105,7 @@ export class SignupComponent {
     this.snackBar.dismiss(); // Limpa qualquer mensagem anterior
     const email: string = this.emailFormGroup.value.email;
     this.emailFormGroup.get("email").disable;
+    this.isLoading = true;
 
     this.authService.sendVerificationEmailCodeToEmail(email).pipe(
       take(1),
@@ -119,7 +120,8 @@ export class SignupComponent {
       error: (error) => {
 
         this.emailFormGroup.get("email").enable;
-        
+        this.isLoading = false;
+
         if (error.status == 409) {
           this.snackBar.open('Erro ao enviar código. Código já enviado para o email.', 'Fechar', {
             duration: 3000,
@@ -173,6 +175,10 @@ export class SignupComponent {
 
   async registerNewUser() {
 
+    this.snackBar.dismiss(); // Limpa qualquer mensagem anterior
+    this.emailFormGroup.disable();
+    this.isLoading = true;
+
     this.authService.signup({
       email: this.emailFormGroup.value.email,
       password: this.passwordForm.password,
@@ -187,7 +193,7 @@ export class SignupComponent {
 
         //Realizar o acesso do novo usuário
         this.authService.signin(this.emailFormGroup.value.email, this.passwordForm.password).pipe(take(1)).subscribe({
-          next:(value) => {
+          next: (value) => {
             let user: IUser = value;
 
             this.userService.addUserOnLocalStorage(user);
@@ -208,6 +214,12 @@ export class SignupComponent {
       },
 
       error: (error) => {
+
+        console.log(error);
+
+        this.emailFormGroup.enable();
+        this.isLoading = false;
+
         this.snackBar.open('Erro inesperado ao realizar o cadastro.', 'Fechar', {
           duration: 3000,
         });

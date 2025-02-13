@@ -5,6 +5,7 @@ import { UserManager } from 'oidc-client-ts';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmChangeAppComponent } from './confirm-change-app/confirm-change-app.component';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'app-list-apps',
@@ -19,19 +20,29 @@ export class ListAppsComponent implements OnInit {
   private userManagerParameter: UserManager;
 
   constructor(
-    private applicationService: ApplicationService, 
+    private applicationService: ApplicationService,
     private authService: AuthService,
     private router: Router,
     private dialog: MatDialog
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.fetchApps();
-    if (!this.authService.isLoggedIn()) {
-      // this.authService.login();
-    } else {
-      this.fetchApps();
-    }
+    
+    this.authService
+      .check()
+      .pipe(take(1))
+      .subscribe({
+        next: (isAuthorized: boolean) => {
+          if(isAuthorized == true){
+            this.fetchApps();
+          }
+            
+        },
+        error: (error) => {
+          
+        },
+      });
   }
 
   toggleAppMenu() {
@@ -39,21 +50,21 @@ export class ListAppsComponent implements OnInit {
   }
 
   fetchApps() {
-    this.applicationService.getApplications().subscribe(
-      (response: Application[]) => {
-        this.apps = response;
+    this.applicationService.getApplications().subscribe({
+      next: (value) => {
+        this.apps = value;
       },
-      error => {
+      error: (error) => {
         console.error('Erro ao buscar aplicativos:', error);
-      }
-    );
+      },
+    });
   }
 
   /**
   * Redireciona o usuário para outra aplicação
   **/
   async openApp(app: Application) {
-  
+
     this.dialog.open(ConfirmChangeAppComponent, {
       data: {
         app: app
@@ -64,9 +75,8 @@ export class ListAppsComponent implements OnInit {
         if (user) {
           // Redirecionar para o aplicativo com o usuário codificado na URL
           const redirectUrl = `${app.redirect_uri}`;
-          console.log(redirectUrl);
           window.open(redirectUrl, '_blank');
-    
+
         } else {
           // this.authService.login();
         }

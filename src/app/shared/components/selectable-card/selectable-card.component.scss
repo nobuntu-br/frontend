@@ -1,77 +1,31 @@
-// Variáveis para breakpoints
-$breakpoint-small: 576px; // Exemplo: smartphones
-$breakpoint-medium: 768px; // Exemplo: tablets
-$breakpoint-large: 992px; // Exemplo: laptops/desktops
-$breakpoint-extra-large: 1200px; // Exemplo: monitores grandes
-// .list-card{
-//   display: flex; 
-//   flex-direction: row; 
-//   margin: auto; 
-//   width: 100%; 
-//   justify-content: space-between;
-// }
-// #cardData {
-//     display: grid; 
-//     width: 100%; 
-//     overflow: auto; 
-//     align-content: space-evenly; 
-//     margin: auto;
-// }
-.card-item {
-    background-color: white;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    width: 100%;
-    min-height: 250px;
-    max-height: 250px;
-    box-sizing: border-box;
-    overflow: hidden;
-
-  }
-  
-  .list .card-item {
-    background-color: transparent;
-    padding: 10px 0;
-    justify-content: flex-start;
-    align-items: flex-start;
-    text-align: left;
-    width: 100%;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    column-gap: 20px;
-  }
-  
-  .card .card-item {
-    background-color: white;
-    padding: 20px;
-    border-radius: 5px;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-  }
-  
-// Estilos para dispositivos pequenos (exemplo: smartphones)
-@media screen and (max-width: $breakpoint-small) {
-    #cardData {
-        grid-template-columns: repeat(1, 1fr) !important;
-    }
+#card-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 }
 
-// Estilos para dispositivos médios (exemplo: tablets)
-@media screen and (min-width: $breakpoint-medium) and (max-width: $breakpoint-large) {
-    
+.card-row {
+  display: flex;
+  width: 100%;
+  // border: 1px solid #ccc;
+  background-color: white;
+  align-items: center;
 }
 
-// Estilos para dispositivos grandes (exemplo: laptops/desktops)
-@media screen and (min-width: $breakpoint-large) and (max-width: $breakpoint-extra-large) {
-    
+.expandable {
+  flex-grow: 1;
+  min-height: 50px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
 }
 
-// Estilos para dispositivos extra grandes (exemplo: monitores grandes)
-@media screen and (min-width: $breakpoint-extra-large) {
-    
+.button-container {
+  display: flex;
+  flex-direction: column;
+  /* Joga o botão para o final */
+  justify-content: flex-end;
 }

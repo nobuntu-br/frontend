@@ -123,9 +123,8 @@ export interface IDefaultListComponentDialogConfig {
   styleUrls: ['./default-list.component.scss'],
 })
 export class DefaultListComponent
-  implements AfterViewInit, OnDestroy, IDefaultListComponentDialogConfig
-{
-  viewMode: string = 'list'; // Definindo o modo padrão como 'list'
+  implements AfterViewInit, OnDestroy, IDefaultListComponentDialogConfig {
+  viewMode: string = 'list-layout'; // Definindo o modo padrão como 'list-layout'
   @Input() currentView: string; // Valor padrão é 'card'
   @Input() itemsDisplayed: any[] = [];
   @Input() columnsQuantity: number = 1;
@@ -249,13 +248,13 @@ export class DefaultListComponent
     this.viewToggleService.viewMode$.subscribe((mode) => {
       this.viewMode = mode;
       // Se o modo de visualização for 'card', definir columnsQuantity para 1
-    if (this.viewMode === 'card') {
-      this.columnsQuantity = 1;
-    } else {
-      // Defina outra quantidade de colunas para outros modos, por exemplo, 3
-      this.columnsQuantity = 3;
-    }
-    
+      if (this.viewMode === 'card-layout') {
+        this.columnsQuantity = 1;
+      } else {
+        // Defina outra quantidade de colunas para outros modos, por exemplo, 3
+        this.columnsQuantity = 3;
+      }
+
     });
     setTimeout(() => {
       if (this.isEnabledToGetDataFromAPI == true) {
@@ -354,7 +353,7 @@ export class DefaultListComponent
       componentCreated.visibleList = this.visibleList;
 
       componentCreated.className = this.className;
-    // Passa o viewMode para o SelectableCardComponent
+      // Passa o viewMode para o SelectableCardComponent
       componentCreated.viewMode = this.viewMode;
       if (this.isSelectable == true) {
         this.selectableFieldController(componentCreated);
@@ -633,13 +632,13 @@ export class DefaultListComponent
 
           this.selectedItems = [];
 
-          
+
           alert(
             this.translocoService.translate(
               'componentsBase.Alerts.deleteSuccessMessage'
             )
           );
-          
+
           this.getDataFromAPI(this.apiUrl);
         }
       });

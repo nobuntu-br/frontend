@@ -35,13 +35,10 @@
     </p>
     <!-- mudança de card, list, grid -->
     <app-view-toggle></app-view-toggle>
-    <!-- <mat-icon svgIcon="list" style="margin: auto;"></mat-icon> -->
-    <!-- TODO adicionar a opção de vizualizar com tabela -->
-    <!-- <mat-icon svgIcon="table_view" style="margin: auto;" (click)="displayOnTable()"></mat-icon> -->
   </div>
 
   <!-- Cards criados -->
-  <div [ngClass]="viewMode" style="flex: 1; overflow-y: auto; overflow-x: auto">
+  <div [ngClass]="viewMode" style="display:flex; flex: 1; overflow-y: auto; overflow-x: auto;">
     <ng-container #placeToRender></ng-container>
   </div>
 

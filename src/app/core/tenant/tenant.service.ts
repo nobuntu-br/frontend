@@ -1,11 +1,12 @@
 import { Injectable, Injector } from '@angular/core';
 import { BaseResourceService } from 'app/shared/services/shared.service';
 import { environment } from 'environments/environment';
-import { ITenant, Tenant } from './tenant.model';
+import { Tenant } from './tenant.model';
 import { Observable } from 'rxjs/internal/Observable';
-import { map, catchError, lastValueFrom, take, firstValueFrom } from 'rxjs';
+import { map, catchError, take, firstValueFrom } from 'rxjs';
 import { LocalStorageService } from 'app/shared/services/local-storage.service';
 import { DatabasePermission } from './databasePermission.model';
+import { HttpClient } from '@angular/common/http';
 
 /**
  * Serviço que será responsável pelo controle do Tenant
@@ -24,7 +25,8 @@ export class TenantService extends BaseResourceService<any> {
   
   constructor(
     protected override injector: Injector,
-    private localStorageService: LocalStorageService
+    private localStorageService: LocalStorageService,
+    private httpClient: HttpClient,
   ) { 
     var url = environment.backendUrl+"/api/tenant"; 
     super(url, injector, Tenant.fromJson) 
@@ -37,8 +39,18 @@ export class TenantService extends BaseResourceService<any> {
 
     //Se não tenant atual ele irá obter dados os localStorage
     if (this._currentTenant == null) {
-      this.currentTenant = this.getAnyTenantFromLocalStorage();
-      this.setCurrentTenantOnLocalStorage(this._currentTenant);
+
+      //Irá obter o tenant atual usado do localstorage
+      let tenantFromLocalStorage = this.getCurrentTenantFromLocalStorage();
+
+      if (tenantFromLocalStorage == null) {
+        
+        tenantFromLocalStorage = this.getAnyTenantFromLocalStorage();
+        this.setCurrentTenantOnLocalStorage(this._currentTenant);
+      }
+
+      this._currentTenant = tenantFromLocalStorage;
+
     }
     
     return this._currentTenant;
@@ -49,6 +61,14 @@ export class TenantService extends BaseResourceService<any> {
    */
   set currentTenant(tenant : DatabasePermission | null){
     this._currentTenant = tenant;
+  }
+
+  inviteUserToTenant(invitingUserEmail: string, invitedUserEmail: string, tenantId: number, databaseCredentialId: number): Observable<boolean> {
+    return this.httpClient.post<boolean>(`${this.url}/invite-user-to-tenant`, { invitingUserEmail, invitedUserEmail, tenantId, databaseCredentialId});
+  }
+
+  removeUserAccessToTenant(removingAccessUserUID: string, removedAccessUserId: string, tenantId: number, databaseCredentialId: number): Observable<boolean> {
+    return this.httpClient.post<boolean>(`${this.url}/remove-user-access-to-tenant`, { removingAccessUserUID, removedAccessUserId, tenantId, databaseCredentialId});
   }
 
   /**
@@ -81,12 +101,12 @@ export class TenantService extends BaseResourceService<any> {
     )
   }
 
-  setCurrentTenantOnLocalStorage(currentTenant: ITenant): ITenant{
+  setCurrentTenantOnLocalStorage(currentTenant: DatabasePermission): DatabasePermission{
     this.localStorageService.set(this.currentTenantLocalStorageKey, currentTenant);
     return currentTenant;
   }
 
-  getCurrentTenantFromLocalStorage(): ITenant | null {
+  getCurrentTenantFromLocalStorage(): DatabasePermission | null {
     const currentTenant = this.localStorageService.get(this.currentTenantLocalStorageKey);
 
     if( currentTenant == "" || 
@@ -121,17 +141,6 @@ export class TenantService extends BaseResourceService<any> {
       console.log("Error to get tenants: ", error);
       return null;
     }
-
-    // this.http.get<DatabasePermission[]>(this.url + "/uid/" + userUID).pipe(take(1)).subscribe({
-    //   next: (tenants: DatabasePermission[]) => {
-    //     this.localStorageService.set(this.tenantsLocalStorageKey, tenants);
-    //     return tenants;
-    //   },
-    //   error: (error) => {
-    //     console.log("Error to get tenants: ", error);
-    //     return null;
-    //   }
-    // });
 
   }
 

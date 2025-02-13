@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DinamicListComponent } from './dinamic-list.component';
+import { TenantFormComponent } from './tenant-form.component';
 
-describe('DinamicListComponent', () => {
-  let component: DinamicListComponent;
-  let fixture: ComponentFixture<DinamicListComponent>;
+describe('TenantFormComponent', () => {
+  let component: TenantFormComponent;
+  let fixture: ComponentFixture<TenantFormComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ DinamicListComponent ]
+      declarations: [ TenantFormComponent ]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(DinamicListComponent);
+    fixture = TestBed.createComponent(TenantFormComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
