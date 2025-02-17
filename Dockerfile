@@ -1,32 +1,34 @@
-#Esse documento é usado para executar uma aplicação SPA de forma estática (arquivos estáticos). A aplicação foi feita com o framework Angular 15 sendo executada com NGinx
-#Fonte: https://youtu.be/F2au3FXq9Y4
-
-#Baixa a imagem do Nodejs que será usada
+# Estágio de Build
 FROM node:20.10.0 as builder
-#Define o ambiente de trabalho dentro do container
 WORKDIR /app
-#Copia tudo que está dentro do diretório atual dentro do ambiente de trabalho no container
+
+# Removendo node_modules e package-lock.json para evitar conflitos
+RUN rm -rf node_modules package-lock.json
+
+# Copia apenas os arquivos de dependência primeiro para aproveitar o cache do Docker
+COPY package*.json ./
+
+# Instala dependências de forma limpa e determinística
+RUN npm ci --force --legacy-peer-deps
+
+# Copia o restante do código após instalar as dependências
 COPY . .
-#Realiza o donwload e instalação das dependências do projeto atual
-RUN npm install
-#Realiza o processo de build da aplicação
+
+# Corrige o problema de dependências opcionais
+RUN npm install @rollup/rollup-linux-x64-gnu --save-dev
+
+# Realiza o build
 RUN npm run build
-#Importar o NGinx
+
+# Estágio de Produção
 FROM nginx:alpine
-#Copia tudo que está dentro do builder para o projeto "buildado"
-COPY --from=builder /app/dist/frontend /usr/share/nginx/html
-#Copiar o arquivo de configurações do nginx pra dentro do container
+
+# Configuração do NGINX
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY mime.types /etc/nginx/mime.types
-#Disponibiliza o serviço na porta 80
+
+# Copia os arquivos buildados para o NGINX
+COPY --from=builder /app/dist/frontend /usr/share/nginx/html
+
 EXPOSE 8081
 CMD ["nginx", "-g", "daemon off;"]
-
-#Comando usado para criar o projeto no Docker:
-    #docker build -t <nome-do-projeto> <diretorio-que-esta-o-dockerfile>
-    #exemplo: docker build -t angular-docker .
-#Comando usado para rotar o container criado no docker
-    #docker run -p <porta-da-maquina-fisica>:<porta-do-container> <nome-do-projeto>
-    #docker run -p 8080:80 angular-docker
-
-
