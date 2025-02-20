@@ -14,6 +14,7 @@ import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { SelectableCardComponent } from '../selectable-card/selectable-card.component';
 import { OnlineOfflineService } from 'app/shared/services/online-offline.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { SubformItemListComponent } from './subform-item-list/subform-item-list.component';
 
 @Component({
   selector: 'app-subform',
@@ -30,6 +31,7 @@ export class SubformComponent implements AfterViewInit {
   @Input() isSelectable: boolean = true;
   @Input() selectedItemsLimit: number | null = null;
   @Input() index: number;
+  @Input() fieldDisplayedInLabel: string;
   /**
    * Campo que saída para os valores que foram selecionados.
    */
@@ -94,7 +96,7 @@ export class SubformComponent implements AfterViewInit {
   createdSubClass: any[] = [];
   resourceForm: any;
   public inputValue: FormControl<object[]> = new FormControl<object[]>([]);
-  private isOnline: boolean;  
+  private isOnline: boolean;
 
   constructor(
     protected injector: Injector,
@@ -139,9 +141,11 @@ export class SubformComponent implements AfterViewInit {
 
   }
 
+
   ngAfterViewInit(): void {
-      this.isLoading = false;
-      this.setCurrentAction();
+    this.className = this.dataToCreatePage.attributes[this.index].className;
+    this.isLoading = false;
+    this.setCurrentAction();
   }
 
   /**
@@ -156,7 +160,7 @@ export class SubformComponent implements AfterViewInit {
 
       let componentCreated;
 
-      componentCreated = this.target.createComponent(SelectableCardComponent).instance;
+      componentCreated = this.target.createComponent(SubformItemListComponent).instance;
       this.componentsCreatedList.push(componentCreated);
 
       componentCreated.columnsQuantity = this.columnsQuantity;
@@ -170,14 +174,13 @@ export class SubformComponent implements AfterViewInit {
       componentCreated.classFather = this.className;
       componentCreated.isSubForm = true;
 
-      componentCreated.className = this.className;
+      // Ajuste para pegar o className do item
+      componentCreated.className = itemsDisplayed[index].className || this.className;
 
       componentCreated.isEditable = this.isAbleToEdit;
       componentCreated.eventClickToEdit.pipe(takeUntil(this.ngUnsubscribe)).subscribe((data) => { this.editItem(data) });
       this.selectItem(componentCreated);
-
     }
-
   }
 
   selectItem(componentCreated: SelectableCardComponent) {
@@ -252,22 +255,22 @@ export class SubformComponent implements AfterViewInit {
 
       instance.formIsReady.subscribe((isReady: boolean) => {
         if (isReady) {
-          for(const key in item) {
-            if(instance.resourceForm.controls[key]) {
+          for (const key in item) {
+            if (instance.resourceForm.controls[key]) {
               instance.resourceForm.controls[key].setValue(item[key]);
             } else {
               instance.resourceForm.addControl(key, new FormControl(item[key]));
             }
           }
         }
-      });      
-    }); 
+      });
+    });
   }
 
   submitEditForm(JSONDictionary: IPageStructure, item: FormGroup, itemEdited: any) {
     if (itemEdited == null) return;
 
-    if(item.invalid) {
+    if (item.invalid) {
       item.markAllAsTouched();
       this.matSnackBar.open('Erro ao editar item!', 'Fechar', {
         duration: 2000,
@@ -275,7 +278,7 @@ export class SubformComponent implements AfterViewInit {
       return
     }
 
-    if(item.value.id != null && item.value.id != undefined){
+    if (item.value.id != null && item.value.id != undefined) {
       this.editSubFormOnApi(JSONDictionary, item.value, itemEdited);
     } else {
       this.editSubFormOffline(JSONDictionary, item.value, itemEdited);
@@ -289,7 +292,7 @@ export class SubformComponent implements AfterViewInit {
       }
       return element;
     });
-    let valueToInput = {apiUrl: JSONDictionary.config.apiUrl, item: item};
+    let valueToInput = { apiUrl: JSONDictionary.config.apiUrl, item: item };
 
     const currentValue = this.inputValue.value || [];
     this.inputValue.setValue([...currentValue, valueToInput]);
@@ -303,14 +306,14 @@ export class SubformComponent implements AfterViewInit {
     const treatedItem = this.objectTratament({ ...itemEdited });
     this.http.put(apiUrl, treatedItem).pipe(takeUntil(this.ngUnsubscribe)).subscribe({
       next: (response) => {
-      this.editSubFormOffline(JSONDictionary, item, itemEdited);
+        this.editSubFormOffline(JSONDictionary, item, itemEdited);
       },
       error: (err) => {
-      console.error('Failed to update item on API', err);
+        console.error('Failed to update item on API', err);
       }
     });
   }
-  
+
   /**
    * Abre o formulário em popUp/dialog tanto para criação.
    */
@@ -339,26 +342,26 @@ export class SubformComponent implements AfterViewInit {
             dialogRef.close();
           }
         }
-      })      
-    }); 
+      })
+    });
   }
 
   submitForm(JSONDictionary: IPageStructure, item: FormGroup) {
     if (item == null) return;
     this.createSubFormOffline(JSONDictionary, item);
   }
-    
+
   /**
    * Realizar uma alteração nos dados do formulário, removendo objetos e substituindo somente pelos IDs
    * @param item Formulário
    */
-  objectTratament(item){
-    for(let field in item){
-      if(item[field] instanceof Object){
-        if(item[field] instanceof Array){
+  objectTratament(item) {
+    for (let field in item) {
+      if (item[field] instanceof Object) {
+        if (item[field] instanceof Array) {
           item[field] = item[field].map((value) => value.id == undefined || value.id == null ? value : value.id);
         } else {
-          if(item[field].id == undefined || item[field].id == null){
+          if (item[field].id == undefined || item[field].id == null) {
             continue;
           }
           item[field] = item[field].id;
@@ -369,7 +372,7 @@ export class SubformComponent implements AfterViewInit {
   }
 
   createSubFormOffline(JSONDictionary: IPageStructure, item: FormGroup) {
-    if(item.invalid) {
+    if (item.invalid) {
       item.markAllAsTouched();
       this.matSnackBar.open('Erro ao criar item!', 'Fechar', {
         duration: 2000,
@@ -382,7 +385,7 @@ export class SubformComponent implements AfterViewInit {
     this.itemsDisplayed.push(item);
     let { itemDisplayedOnSubFormType, objectDisplayedValueOnSubForm, attributesOnSubForm } = this.getAttributesToSubForm(JSONDictionary);
     this.createItemsOnList(this.itemsDisplayed, itemDisplayedOnSubFormType, objectDisplayedValueOnSubForm, attributesOnSubForm);
-    let valueToInput = {item: item, apiUrl: JSONDictionary.config.apiUrl, fatherName: this.getFatherReferenceName(JSONDictionary)};
+    let valueToInput = { item: item, apiUrl: JSONDictionary.config.apiUrl, fatherName: this.getFatherReferenceName(JSONDictionary) };
 
     const currentValue = this.inputValue.value || [];
     this.inputValue.setValue([...currentValue, valueToInput]);
@@ -400,7 +403,7 @@ export class SubformComponent implements AfterViewInit {
       let jsonPath = environment.jsonPath + nameClass + ".json";
 
       this.formGeneratorService.getJSONFromDicionario(jsonPath).pipe(takeUntil(this.ngUnsubscribe)).subscribe((JSONDictionary: IPageStructure) => {
-        if(item.id != null && item.id != undefined){
+        if (item.id != null && item.id != undefined) {
           this.deleteSubFormOnApi(JSONDictionary, item);
         } else {
           this.deleteSubFormOffline(JSONDictionary, item);
@@ -422,24 +425,24 @@ export class SubformComponent implements AfterViewInit {
   deleteSubFormOnApi(JSONDictionary: IPageStructure, item: any) {
     this.http.delete(environment.backendUrl + '/' + JSONDictionary.config.apiUrl + '/' + item.id).pipe(takeUntil(this.ngUnsubscribe)).subscribe({
       next: (response) => {
-          this.deleteSubFormOffline(JSONDictionary, item);
-          this.matSnackBar.open('Item deletado com sucesso!', 'Fechar', {
-            duration: 2000,
-          });
-        },
-        error: (err) => {
-          this.matSnackBar.open('Erro ao deletar item!', 'Fechar', {
-            duration: 2000,
-          });
-        }
-      });
+        this.deleteSubFormOffline(JSONDictionary, item);
+        this.matSnackBar.open('Item deletado com sucesso!', 'Fechar', {
+          duration: 2000,
+        });
+      },
+      error: (err) => {
+        this.matSnackBar.open('Erro ao deletar item!', 'Fechar', {
+          duration: 2000,
+        });
+      }
+    });
   }
 
   private getAttributesToSubForm(JSONDictionary: IPageStructure) {
     let itemDisplayedOnSubFormType = [];
     let objectDisplayedValueOnSubForm = [];
     let attributesOnSubForm = [];
-    
+
     JSONDictionary.attributes.forEach((element) => {
       itemDisplayedOnSubFormType.push(element.type);
       objectDisplayedValueOnSubForm.push(element.fieldDisplayedInLabel);
@@ -453,7 +456,7 @@ export class SubformComponent implements AfterViewInit {
   private setCurrentAction() {
     if (this.activatedRoute.snapshot.url[0].path == "new")
       this.currentAction = "new"
-    else{
+    else {
       this.currentAction = "edit";
       this.displayDataOnEdit();
     }
@@ -466,7 +469,7 @@ export class SubformComponent implements AfterViewInit {
         this.itemsDisplayed = items;
         let nameClass = this.dataToCreatePage.attributes[this.index].className;
         nameClass = nameClass.charAt(0).toLowerCase() + nameClass.slice(1);
-    
+
         let jsonPath = environment.jsonPath + nameClass + ".json";
 
         this.formGeneratorService.getJSONFromDicionario(jsonPath).pipe(takeUntil(this.ngUnsubscribe)).subscribe((JSONDictionary: IPageStructure) => {
@@ -486,8 +489,8 @@ export class SubformComponent implements AfterViewInit {
   }
 
   private getFatherReferenceName(JSONDictionary: IPageStructure) {
-    for(let attribute of JSONDictionary.attributes){
-      if(attribute.className == this.className){
+    for (let attribute of JSONDictionary.attributes) {
+      if (attribute.className == this.className) {
         return attribute.name;
       }
     }

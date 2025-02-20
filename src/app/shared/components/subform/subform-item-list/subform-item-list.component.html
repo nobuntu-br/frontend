@@ -1,0 +1,21 @@
+<div class="subform-list">
+  <div class="list-item">
+    <div class="item-content">
+      <!-- Conteúdo dinâmico renderizado -->
+      <ng-container #placeToRender></ng-container>
+      <!-- Valor do campo especificado em fieldDisplayedInLabel -->
+      <div *ngIf="itemDisplayed && itemDisplayed[fieldDisplayedInLabel]">
+        {{ itemDisplayed[fieldDisplayedInLabel] }}
+      </div>
+    </div>
+
+    <div class="item-actions">
+      <button mat-icon-button class="action-btn edit-btn">
+        <mat-icon>edit</mat-icon>
+      </button>
+      <button mat-icon-button class="action-btn delete-btn">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
+  </div>
+</div>

@@ -18,6 +18,7 @@ export class SubFormField implements FormField {
  
       let createdComponent = createComponentData.target.createComponent(SubformComponent).instance;
       createdComponent.apiUrl = this.dataToCreatePage.attributes[createComponentData.index].apiUrl;
+      createdComponent.fieldDisplayedInLabel = this.dataToCreatePage.attributes[createComponentData.index].fieldDisplayedInLabel;
       createdComponent.columnsQuantity = 2;
       createdComponent.resourceForm = createComponentData.resourceForm;
       createdComponent.index = createComponentData.index;

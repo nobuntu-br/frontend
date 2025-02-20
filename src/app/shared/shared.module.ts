@@ -91,6 +91,7 @@ import { UserMenuModule } from './components/user-menu/user-menu.module';
 import { TenantMenuModule } from './components/tenant-menu/tenant-menu.module';
 import { AvaliacaoFieldComponent } from './components/avaliacao-field/avaliacao-field.component';
 import { AvaliacaoUnicaFieldComponent } from './components/avaliacao-unica-field/avaliacao-unica-field.component';
+import { SubformItemListComponent } from './components/subform/subform-item-list/subform-item-list.component';
 
 @NgModule({
     imports: [
@@ -217,7 +218,8 @@ import { AvaliacaoUnicaFieldComponent } from './components/avaliacao-unica-field
         ChartDateFilterComponent,
         DefaultDashboardComponent,
         AvaliacaoFieldComponent,
-        AvaliacaoUnicaFieldComponent
+        AvaliacaoUnicaFieldComponent,
+        SubformItemListComponent
     ],
 })
 export class SharedModule { }
