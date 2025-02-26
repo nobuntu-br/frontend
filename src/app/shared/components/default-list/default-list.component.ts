@@ -35,6 +35,7 @@ import { ISearchableField } from '../search-input-field/search-input-field.compo
 import { IPageStructure, ITitle } from 'app/shared/models/pageStructure';
 import { ViewToggleService } from 'app/shared/services/view-toggle.service';
 import { TitleService } from 'app/shared/services/title.service';
+import { Location } from '@angular/common';
 
 export interface IDefaultListComponentDialogConfig {
   /**
@@ -124,6 +125,7 @@ export interface IDefaultListComponentDialogConfig {
 })
 export class DefaultListComponent
   implements AfterViewInit, OnDestroy, IDefaultListComponentDialogConfig {
+  private popStateListener: (event: PopStateEvent) => void;
   viewMode: string = 'list-layout'; // Definindo o modo padrão como 'list-layout'
   @Input() currentView: string; // Valor padrão é 'card'
   @Input() itemsDisplayed: any[] = [];
@@ -207,7 +209,8 @@ export class DefaultListComponent
     @Optional()
     private matDialogComponentRef: MatDialogRef<DefaultListComponent>,
     private viewToggleService: ViewToggleService,
-    private titleService: TitleService
+    private titleService: TitleService,
+    private location: Location
   ) {
     this.router = this.injector.get(Router);
     this.http = this.injector.get(HttpClient);
@@ -242,6 +245,7 @@ export class DefaultListComponent
   }
 
   ngAfterViewInit(): void {
+    this.stayOnPageInCaseOfDialog();
     //Título da página
     this.changeTitle();
     // Inscreve-se no serviço para ouvir as mudanças no modo de exibição
@@ -263,6 +267,23 @@ export class DefaultListComponent
         this.getData(this.itemsDisplayed);
       }
     }, 0);
+  }
+
+  stayOnPageInCaseOfDialog() {
+ // Adiciona um estado ao histórico quando o diálogo abre
+  history.pushState({ dialogOpen: true }, '', this.location.path());
+
+ // Listener para o evento popstate (back/forward do navegador)
+ this.popStateListener = (event: PopStateEvent) => {
+   if (event.state?.dialogOpen) {
+    if (this.matDialogComponentRef) {
+      this.matDialogComponentRef.close();
+    }
+     this.location.back(); // Remove o estado adicionado
+   }
+ };
+
+ window.addEventListener('popstate', this.popStateListener);
   }
 
   /**
@@ -593,6 +614,8 @@ export class DefaultListComponent
   }
 
   ngOnDestroy(): void {
+     // Remove o listener ao destruir o componente
+     window.removeEventListener('popstate', this.popStateListener);
     this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }

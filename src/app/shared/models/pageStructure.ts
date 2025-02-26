@@ -65,7 +65,7 @@ export interface IPageStructureAttribute {
   step?: string;
   allowedExtensions?: string[];
   icones?: IconOption[];
-
+  mask?: string;
 }
 
 export interface IPageStructureAttributesProperties {

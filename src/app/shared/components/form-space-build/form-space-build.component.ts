@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, Inject, Input, Optional, Output, QueryList, ViewChildren, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Inject, Input, OnDestroy, Optional, Output, QueryList, ViewChildren, ViewContainerRef } from '@angular/core';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatStepper } from '@angular/material/stepper';
@@ -7,6 +7,7 @@ import { IPageStructure } from 'app/shared/models/pageStructure';
 import { GeneratedSimpleFormComponent } from '../generated-simple-form/generated-simple-form.component';
 import { FormSpaceBuildService } from 'app/shared/services/form-space-build.service';
 import { TranslocoService } from '@ngneat/transloco';
+import { Location } from '@angular/common';
 
 
 export interface ICreateSpace{
@@ -29,7 +30,7 @@ export interface ICreateSpaceStepper{
   templateUrl: './form-space-build.component.html',
   styleUrls: ['./form-space-build.component.scss']
 })
-export class FormSpaceBuildComponent implements AfterViewInit {
+export class FormSpaceBuildComponent implements AfterViewInit, OnDestroy {
   /**
    * FormGroup que armazena os dados do formuário. Todas os dados vão diretamente para ele, para assim ir para as APIs.
    */
@@ -83,6 +84,8 @@ export class FormSpaceBuildComponent implements AfterViewInit {
 
   dataToCreatePageSteps: IPageStructure[] = [];
 
+  private popStateListener: (event: PopStateEvent) => void;
+
   isLoading: boolean = true;
 
   @ViewChildren('placeToRender', { read: ViewContainerRef }) target!: QueryList<ViewContainerRef>;
@@ -93,11 +96,13 @@ export class FormSpaceBuildComponent implements AfterViewInit {
     private activatedRoute: ActivatedRoute,
     protected route: ActivatedRoute,
     protected translocoService: TranslocoService,
+    private location: Location,
     @Optional() private matDialogComponentRef: MatDialogRef<GeneratedSimpleFormComponent>,
     @Optional() @Inject(MAT_DIALOG_DATA) public data?: any,
     ) { }
 
   ngAfterViewInit(): void {
+    this.stayOnPageInCaseOfDialog();
     if(this.data){
       this.setDialogData();      
     }
@@ -157,6 +162,28 @@ export class FormSpaceBuildComponent implements AfterViewInit {
     if(this.currentFormAction === "edit"){
       this.resourceForm.patchValue(this.data.itemToEdit);
     }
+  }
+
+  stayOnPageInCaseOfDialog() {
+    // Adiciona um estado ao histórico quando o diálogo abre
+     history.pushState({ dialogOpen: true }, '', this.location.path());
+   
+    // Listener para o evento popstate (back/forward do navegador)
+    this.popStateListener = (event: PopStateEvent) => {
+      if (event.state?.dialogOpen) {
+        if (this.matDialogComponentRef) {
+          this.matDialogComponentRef.close();
+        }
+        this.location.back(); // Remove o estado adicionado
+      }
+    };
+   
+    window.addEventListener('popstate', this.popStateListener);
+  }
+
+  ngOnDestroy(): void {
+     // Remove o listener ao destruir o componente
+     window.removeEventListener('popstate', this.popStateListener);
   }
 
   /**
