@@ -1,15 +1,11 @@
-import { AfterViewInit, Component, Input } from '@angular/core';
+import { AfterViewInit, Component, Injector, Input } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { TranslocoService } from '@ngneat/transloco';
 import { IFieldFile } from 'app/shared/models/file.model';
 import { FileService } from 'app/shared/services/file.service';
+import { BaseFieldComponent } from '../base-field/base-field.component';
+import { Subject, takeUntil } from 'rxjs';
 
-export interface ISelectorValue {
-  pt: string;
-  en: string;
-  id: string;
-}
 
 @Component({
   selector: 'app-upload-input-field',
@@ -17,12 +13,11 @@ export interface ISelectorValue {
   styleUrls: ['./upload-input-field.component.scss']
 })
 
-export class UploadInputFieldComponent implements AfterViewInit {
+export class UploadInputFieldComponent extends BaseFieldComponent implements AfterViewInit {
   /**
    * Título que será apresentado no componente
    */
   @Input() label: string;
-  @Input() valuesList: ISelectorValue[];
   /**
    * Quantidade limite de itens que podem ser selecionados
    */
@@ -31,6 +26,14 @@ export class UploadInputFieldComponent implements AfterViewInit {
    * Lista de extensões de arquivo permitidas
    */
   @Input() allowedExtensions: string[] = []; // Exemplo de extensões permitidas
+  /**
+   * Nome da classe que pertence esse campo.
+   */
+  @Input() className: string;
+    /**
+     * Subject responsável por remover os observadores que estão rodando na pagina no momento do componente ser deletado.
+     */
+    private ngUnsubscribe = new Subject();
 
   public inputValue = new FormControl<string>(null);
   fileName: string = '';
@@ -40,9 +43,12 @@ export class UploadInputFieldComponent implements AfterViewInit {
   isRequired: boolean = true;
   svgIcon: string = 'upload'; // Exemplo de ícone
 
-  constructor(private translocoService: TranslocoService, private fileService: FileService, private matSnackBar: MatSnackBar) { }
+  constructor(private fileService: FileService, private matSnackBar: MatSnackBar, protected injector: Injector) {
+    super(injector);
+   }
 
   ngAfterViewInit(): void {
+    this.setLabel();
     // this.limitSelectedItems(); // Mantém a limitação de itens
   }
 
@@ -55,7 +61,6 @@ export class UploadInputFieldComponent implements AfterViewInit {
     if (file) {
       const extension = file.name.split('.').pop().toLowerCase(); // Obtém a extensão do arquivo
       if (this.allowedExtensions.includes(extension)) {
-        this.inputValue.setValue(file.name);
         this.fileName = file.name;
         this.displayedLabel = this.fileName;
         const base64 = await this.fileService.convertFileToBase64(file);
@@ -69,8 +74,8 @@ export class UploadInputFieldComponent implements AfterViewInit {
             base64: base64
           }]
         };
-        console.log(fieldFile);
         this.fileService.uploadFile(fieldFile).subscribe((response) => {
+          this.inputValue.setValue(response);
           this.matSnackBar.open('Arquivo enviado com sucesso', 'Fechar', {
             duration: 2000
           });
@@ -96,6 +101,23 @@ export class UploadInputFieldComponent implements AfterViewInit {
       if (values.length > this.selectItemsLimit && this.selectItemsLimit > 1) {
         this.inputValue.setValue(values.slice(0, this.selectItemsLimit));
       }
+    });
+  }
+
+  setLabel() {
+    this.setTranslation(this.className, this.label).pipe(takeUntil(this.ngUnsubscribe)).subscribe({
+      next: (translatedLabel: string) => {
+        if(translatedLabel === (this.className+"."+this.label)){
+          const formattedLabel = this.formatDefaultVariableName(this.label);
+          this.displayedLabel = this.setCharactersLimit(formattedLabel, this.charactersLimit);
+        } else {
+          this.displayedLabel = this.setCharactersLimit(translatedLabel, this.charactersLimit);
+        }
+      },
+      error: (error) => {
+        // console.log("erro do transloco:"+error)
+        this.displayedLabel = this.setCharactersLimit(this.label, this.charactersLimit);
+      },
     });
   }
   
