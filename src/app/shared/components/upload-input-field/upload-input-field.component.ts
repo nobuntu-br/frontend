@@ -34,6 +34,10 @@ export class UploadInputFieldComponent extends BaseFieldComponent implements Aft
      * Subject responsável por remover os observadores que estão rodando na pagina no momento do componente ser deletado.
      */
     private ngUnsubscribe = new Subject();
+  /**
+   * Maximo de tamanho do arquivo
+    */
+  @Input() maxFileSize: number; // Exemplo de tamanho máximo de arquivo
 
   public inputValue = new FormControl<string>(null);
   fileName: string = '';
@@ -59,6 +63,10 @@ export class UploadInputFieldComponent extends BaseFieldComponent implements Aft
     const file: File = event.target.files[0];
 
     if (file) {
+      if (!this.checkMaxFileSize(file)) {
+        event.target.value = ''; // Limpa o input se o arquivo for muito grande
+        return;
+      }
       const extension = file.name.split('.').pop().toLowerCase(); // Obtém a extensão do arquivo
       if (this.allowedExtensions.includes(extension)) {
         this.fileName = file.name;
@@ -115,10 +123,20 @@ export class UploadInputFieldComponent extends BaseFieldComponent implements Aft
         }
       },
       error: (error) => {
-        // console.log("erro do transloco:"+error)
         this.displayedLabel = this.setCharactersLimit(this.label, this.charactersLimit);
       },
     });
+  }
+
+  checkMaxFileSize(file: File): boolean {
+    if (!this.maxFileSize) return true;
+    if (file.size > this.maxFileSize) {
+      this.matSnackBar.open(`Tamanho máximo permitido: ${this.maxFileSize / 1000000}MB`, 'Fechar', {
+        duration: 2000
+      });
+      return false;
+    }
+    return true;
   }
   
   // Define a posição do ícone (função opcional)

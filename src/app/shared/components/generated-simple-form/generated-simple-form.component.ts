@@ -69,7 +69,8 @@ export class GeneratedSimpleFormComponent implements AfterViewInit {
           optionList: attribute.optionList,
           selectItemsLimit: attribute.selectItemsLimit,
           allowedExtensions: attribute.allowedExtensions,
-          mask: this.maskService.getMaskPattern(attribute.mask)
+          mask: this.maskService.getMaskPattern(attribute.mask),
+          maxFileSize: attribute.maxFileSize,
         }
 
         this.formGenerator.createComponent(createComponentData)
