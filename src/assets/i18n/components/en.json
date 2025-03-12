@@ -134,8 +134,8 @@
         "manage-your-account": "Manage your account"
     },
     "tenant-menu-component": {
-        "add-tenant": "Adicionar Tenant",
-        "manage-tenants": "Gerenciar Tenants"
+        "add-tenant": "Add Tenant",
+        "manage-tenants": "Manage Tenants"
     },
     "location-field": {
         "select": "Select Location",

@@ -35,6 +35,7 @@ import { ISearchableField } from '../search-input-field/search-input-field.compo
 import { IPageStructure, ITitle } from 'app/shared/models/pageStructure';
 import { ViewToggleService } from 'app/shared/services/view-toggle.service';
 import { TitleService } from 'app/shared/services/title.service';
+import { SelectableListItemComponent } from '../selectable-list-item/selectable-list-item.component';
 
 export interface IDefaultListComponentDialogConfig {
   /**
@@ -242,6 +243,7 @@ export class DefaultListComponent
   }
 
   ngAfterViewInit(): void {
+
     //Título da página
     this.changeTitle();
     // Inscreve-se no serviço para ouvir as mudanças no modo de exibição
@@ -254,6 +256,9 @@ export class DefaultListComponent
         // Defina outra quantidade de colunas para outros modos, por exemplo, 3
         this.columnsQuantity = 3;
       }
+
+      this.removeAllComponentsOnView();
+      this.createItemsOnList(this.itemsDisplayed);
 
     });
     setTimeout(() => {
@@ -331,12 +336,13 @@ export class DefaultListComponent
     for (let index = 0; index < itemsDisplayed.length; index++) {
       let componentCreated;
       if (this.isSelectable == true) {
-        componentCreated = this.target.createComponent(
-          SelectableCardComponent
-        ).instance;
+        if (this.viewMode === 'card-layout') {
+          componentCreated = this.target.createComponent(SelectableCardComponent).instance;
+        } else {
+          componentCreated = this.target.createComponent(SelectableListItemComponent).instance;
+        }
       } else {
-        componentCreated =
-          this.target.createComponent(DefaultCardComponent).instance;
+        componentCreated = this.target.createComponent(DefaultCardComponent).instance;
       }
 
       this.componentsCreatedList.push(componentCreated);
@@ -356,13 +362,9 @@ export class DefaultListComponent
       // Passa o viewMode para o SelectableCardComponent
       componentCreated.viewMode = this.viewMode;
       if (this.isSelectable == true) {
-        this.selectableFieldController(componentCreated);
+        this.createListenerForSelectableFields(componentCreated);
         componentCreated.isEditable = this.isAbleToEdit;
-        componentCreated.eventClickToEdit
-          .pipe(takeUntil(this.ngUnsubscribe))
-          .subscribe((data) => {
-            this.editItem(data);
-          });
+        this.createListenerForEditableFields(componentCreated);
       } else {
         componentCreated.eventClick
           .pipe(takeUntil(this.ngUnsubscribe))
@@ -466,8 +468,12 @@ export class DefaultListComponent
     this.router.navigate([this.route + '/new']);
   }
 
-  selectableFieldController(componentCreated: SelectableCardComponent) {
-    if (this.selectedItemsLimit == null) {
+  /**
+   * Criará um escutador que irá ficar ouvindo quando alguém selecionar o item da lista e é retornado e chamado alguma função a partir dessa ação de selecionar.
+   * @param componentCreated Componente criado
+   */
+  createListenerForSelectableFields(componentCreated: SelectableCardComponent | SelectableListItemComponent) {
+    if (this.selectedItemsLimit == null || this.selectedItemsLimit == undefined) {
       this.selectedItemsLimit = this.itemsDisplayed.length;
     }
 
@@ -475,6 +481,19 @@ export class DefaultListComponent
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((data) => {
         this.checkItem(this.selectedItemsLimit, componentCreated, data);
+      });
+  }
+
+  /**
+   * Criará um escutador que irá ficar ouvindo quando alguém clickar no botão de edição do item da lista e é retornado e chamado alguma função a partir dessa ação de selecionar.
+   * @param componentCreated Componente criado
+   */
+  createListenerForEditableFields(componentCreated: SelectableCardComponent | SelectableListItemComponent) {
+    //Ficará escutando quando será chamado o evento para editar o item apresentado no componente
+    componentCreated.eventClickToEdit
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((data: any) => {
+        this.editItem(data);
       });
   }
 

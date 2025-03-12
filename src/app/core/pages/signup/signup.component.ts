@@ -8,7 +8,7 @@ import { INameForm } from './name-form/name-form.component';
 import { IBirthDayAndGenderForm } from './birth-day-and-gender-form/birth-day-and-gender-form.component';
 import { IPasswordForm } from './password-form/password-form.component';
 import { IUser } from 'app/core/auth/user.model';
-import { TenantService } from 'app/core/tenant/tenant.service';
+import { TenantService } from 'app/core/pages/tenant/tenant.service';
 import { UserService } from 'app/core/auth/user.service';
 
 /**

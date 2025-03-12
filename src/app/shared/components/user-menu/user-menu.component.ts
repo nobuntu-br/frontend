@@ -58,7 +58,7 @@ export class UserMenuComponent implements OnInit {
   }
 
   updateUserState() {
-    this.authService.check().subscribe((res) => {
+    this.authService.isAuthenticated().subscribe((res) => {
       if (res) {
         this.isLoggedIn = true;
       }
@@ -69,12 +69,12 @@ export class UserMenuComponent implements OnInit {
     this.router.navigate(['signin']);
   }
 
-  goToEditUserPage(): void {
-    this.router.navigate(['editProfile']);
+  goToManageAccountPage(): void{
+    this.router.navigate(['account']);
   }
 
-  goToManageAccountPage(): void{
-    
+  goToConfigurationPage(): void {
+    this.router.navigate(['configuration']);
   }
 
   isCurrentUser(user: IUser): boolean {

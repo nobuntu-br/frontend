@@ -44,6 +44,7 @@ import { InputDateFieldComponent } from './components/input-date-field/input-dat
 import { ForeignKeyInputFieldComponent } from './components/foreign-key-input-field/foreign-key-input-field.component';
 import { SelectorInputFieldComponent } from './components/selector-input-field/selector-input-field.component';
 import { SelectableCardComponent } from './components/selectable-card/selectable-card.component';
+import { SelectableListItemComponent } from './components/selectable-list-item/selectable-list-item.component';
 import { InputImageFieldComponent } from './components/input-image-field/input-image-field.component';
 import { DefaultListComponent } from './components/default-list/default-list.component';
 import { DefaultCardComponent } from './components/default-card/default-card.component';
@@ -174,6 +175,7 @@ import { AvaliacaoUnicaFieldComponent } from './components/avaliacao-unica-field
         ForeignKeyInputFieldComponent,
         SelectorInputFieldComponent,
         SelectableCardComponent,
+        SelectableListItemComponent,
         InputImageFieldComponent,
         DefaultListComponent,
         DefaultCardComponent,

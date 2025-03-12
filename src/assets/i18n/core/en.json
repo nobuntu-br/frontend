@@ -91,9 +91,12 @@
     "manage-access": "Manage access",
     "create-new-tenant": "Create new Tenant",
     "manage": "Gerenciar",
-    "databaseCredential": "Database credentials"
+    "databaseCredential": "Database credentials",
+    "no-data-message": "No data available"
   },
   "tenant-form": {
+    "tittle":"Criação de Base de dados",
+    "description":"Cada base de dados criada, é possível cadastrar várias credenciais para acesso ao banco de dados.",
     "name": "Name",
     "button-save": "Save"
   },
@@ -119,6 +122,14 @@
     "button-cancel": "Cancelar",
     "button-save": "Criar"
   },
+  "database-credential-list-component":{
+    "tittle":"Credencias de banco de dados",
+    "description":"Registros para acesso a banco de dados",
+    "new-database-credential":"Registrar nova credencial de acesso ao banco de dados",
+    "id":"id",
+    "actions":"Ações",
+    "edit":"Alterar"
+  },
   "database-credential-form":{
     "create-new-database-credential-tittle": "Registrar credenciais da base de dados",
     "name":"Nome",
@@ -143,5 +154,13 @@
   },
   "error-500-component": {
     "error-message": "Internal server error"
+  },
+  "configuration-menu-component": {
+    "tittle":"Configurations",
+    "description":"Configurations description"
+  },
+  "account-management-component": {
+    "tittle":"Account management",
+    "description":"Account management description"
   }
 }

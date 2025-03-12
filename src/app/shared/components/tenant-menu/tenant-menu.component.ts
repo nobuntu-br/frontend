@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from 'app/core/auth/auth.service';
-import { DatabasePermission } from 'app/core/tenant/databasePermission.model';
-import { ITenant } from 'app/core/tenant/tenant.model';
-import { TenantService } from 'app/core/tenant/tenant.service';
+import { DatabasePermission } from 'app/core/pages/tenant/databaseCredential/databasePermission.model';
+import { ITenant } from 'app/core/pages/tenant/tenant.model';
+import { TenantService } from 'app/core/pages/tenant/tenant.service';
 
 
 @Component({

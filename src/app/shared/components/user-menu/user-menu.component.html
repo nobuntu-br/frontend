@@ -2,8 +2,12 @@
 <ng-container *transloco="let t; read: 'componentsBase.user-menu-component'">
 
   <!-- Opções para quando o usuário estiver logado -->
-  <button mat-icon-button [matMenuTriggerFor]="menu">
-    <mat-icon>account_circle</mat-icon>
+  <button mat-icon-button [matMenuTriggerFor]="menu" *ngIf="isLoggedIn == false">
+     <mat-icon>account_circle</mat-icon>
+  </button>
+
+  <button mat-icon-button id="user-image-thumbnail" [matMenuTriggerFor]="menu" *ngIf="userProfilePhotoEnabled == false && isLoggedIn == true">
+    <span class="letter">{{ currentUser.firstName[0] }}</span>
   </button>
 
   <mat-menu #menu="matMenu">
@@ -100,7 +104,7 @@
 
       </mat-expansion-panel>
 
-      <button mat-menu-item>
+      <button mat-menu-item (click)="goToConfigurationPage()">
         <mat-icon>settings</mat-icon>
         {{t("settings")}}
       </button>
@@ -111,11 +115,11 @@
     <div *ngIf="!isLoggedIn">
       <button mat-menu-item (click)="goToSignInPage()">
         <mat-icon>login</mat-icon>
-        <span>Entrar</span>
+        <span>{{t("signIn")}}</span>
       </button>
       <button mat-menu-item (click)="createUser()">
         <mat-icon>person_add</mat-icon>
-        <span>Criar conta</span>
+        <span>{{t("signUp")}}</span>
       </button>
     </div>
   </mat-menu>

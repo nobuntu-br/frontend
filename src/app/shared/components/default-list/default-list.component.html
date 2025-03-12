@@ -33,12 +33,12 @@
         t("selector-list.selectedValues")
       }}</ng-container>
     </p>
-    <!-- mudança de card, list, grid -->
+    <!-- mudança de card, list -->
     <app-view-toggle></app-view-toggle>
   </div>
 
   <!-- Cards criados -->
-  <div [ngClass]="viewMode" style="display:flex; flex: 1; overflow-y: auto; overflow-x: auto;">
+  <div [ngClass]="viewMode">
     <ng-container #placeToRender></ng-container>
   </div>
 

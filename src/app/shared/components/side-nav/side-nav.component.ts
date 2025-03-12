@@ -180,7 +180,7 @@ export class SideNavComponent implements OnInit, OnDestroy {
 
   showLogOutButton() {
     this.authService
-      .check()
+      .isAuthenticated()
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe({
         next: (isAuthorized: boolean) => {

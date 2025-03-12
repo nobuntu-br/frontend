@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { catchError, firstValueFrom, from, Observable, of, switchMap, take, throwError } from 'rxjs';
 import { Router } from '@angular/router';
 import { IUser, SignupDTO } from './user.model';
-import { TenantService } from '../tenant/tenant.service';
+import { TenantService } from '../pages/tenant/tenant.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'environments/environment';
 import { UserService } from './user.service';
@@ -157,7 +157,7 @@ export class AuthService {
   /**
    * Check the authentication status
    */
-  check(): Observable<boolean> {
+  isAuthenticated(): Observable<boolean> {
 
     if (this.currentUser != null &&
       this.tenantService.currentTenant != null) {
@@ -180,7 +180,7 @@ export class AuthService {
   }
 
   checkEmailExist(email: string): Observable<boolean> {
-    return this.httpClient.post<boolean>(`${this.url}/check-email-exist`, { email });
+    return this.httpClient.post<boolean>(`${this.url}/check-user-exist`, { email });
   }
 
   sendVerificationEmailCodeToEmail(email: string): Observable<any> {

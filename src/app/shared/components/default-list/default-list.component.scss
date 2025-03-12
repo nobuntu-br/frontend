@@ -11,7 +11,7 @@ $breakpoint-extra-large: 1200px; // Exemplo: monitores grandes
   right: 50px;
 }
 
-#fixedButtons > * {
+#fixedButtons>* {
   margin-left: 10px;
 }
 
@@ -24,29 +24,25 @@ $breakpoint-extra-large: 1200px; // Exemplo: monitores grandes
 }
 
 // Estilos para dispositivos médios (exemplo: tablets)
-@media screen and (min-width: $breakpoint-medium) and (max-width: $breakpoint-large) {
-}
+@media screen and (min-width: $breakpoint-medium) and (max-width: $breakpoint-large) {}
 
 // Estilos para dispositivos grandes (exemplo: laptops/desktops)
-@media screen and (min-width: $breakpoint-large) and (max-width: $breakpoint-extra-large) {
-}
+@media screen and (min-width: $breakpoint-large) and (max-width: $breakpoint-extra-large) {}
 
 // Estilos para dispositivos extra grandes (exemplo: monitores grandes)
-@media screen and (min-width: $breakpoint-extra-large) {
-}
+@media screen and (min-width: $breakpoint-extra-large) {}
 
 .list-layout {
   display: flex;
   flex-direction: column;
-  overflow-x: auto;
-  gap: 10px
+  gap: 10px;
 }
+
 .card-layout {
-  // background-color: yellow;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 15px; /* Espaçamento entre os cards */
-  box-sizing: border-box;  
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+  box-sizing: border-box;
 }
 
 .custom-table {

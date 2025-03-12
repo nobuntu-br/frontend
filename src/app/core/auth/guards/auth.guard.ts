@@ -4,6 +4,7 @@ import { catchError, Observable, of, switchMap, take } from 'rxjs';
 import { AuthService } from 'app/core/auth/auth.service';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from 'environments/environment';
+import { TenantService } from 'app/core/pages/tenant/tenant.service';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +14,8 @@ export class AuthGuard implements CanMatch {
    * Constructor
    */
   constructor(
-    private _authService: AuthService,
+    private authService: AuthService,
+    private tenantService: TenantService,
     private _router: Router,
     private httpClient: HttpClient
   ) {
@@ -46,25 +48,61 @@ export class AuthGuard implements CanMatch {
   private _check(segments: UrlSegment[]): Observable<boolean | UrlTree> {
     // Check the authentication status
 
-    return this._authService.check().pipe(
+    if (this.authService.currentUser == null) {
+      this.authService.handleToken().pipe(take(1)).subscribe({
+        next: (value) => {
+
+          if (value == true) {
+
+            // Permite o acesso a pagina
+            // return of(true);
+
+          } else {
+            //Se não conseguir o token ele é jogado fora
+            localStorage.clear();
+            return this.redirectToSignIn(segments);
+          }
+
+        },
+      });
+    }
+    
+    // Verificar se o usuário tem algum tenant para acessar. Se não tiver ele é direcionado para criação de tenant
+    if(this.tenantService.getAnyTenantFromLocalStorage() == null && segments[0].path != "tenant"){
+      this._router.navigate(['/tenant/add']);
+    }
+
+    // return of(false);
+    return of(true);
+
+    //Verificar se a pessoa tem acesso a rota pela API
+
+    /*
+    return this.authService.check().pipe(
 
       switchMap((authenticated) => {
 
         // Se o usuário não estiver autenticado
         if (!authenticated) {
 
-          return this._authService.handleToken().pipe(take(1),
-            switchMap((success) => {
-              if (success) {
+          
+          //Tenta obter o token de acesso
+          this.authService.handleToken().pipe(take(1)).subscribe({
+            next: (value) => {
+
+              if (value == true) {
+
+                // Permite o acesso a pagina
                 return of(true);
+
+              } else {
+                //Se não conseguir o token ele é jogado fora
+                localStorage.clear();
+                return this.redirectToSignIn(segments);
               }
 
-              return this.redirectToSignIn(segments);
-            }),
-            catchError(() => {
-              return this.redirectToSignIn(segments);
-            })
-          );
+            },
+          });
 
         }
 
@@ -73,6 +111,7 @@ export class AuthGuard implements CanMatch {
       }),
       take(1)
     );
+    */
   }
 
   private saveRedirectURL(redirectURL: string) {
@@ -91,24 +130,5 @@ export class AuthGuard implements CanMatch {
     return of(false);
   }
 
-  //TODO ao verificar o acesso a página, obter o JSON de contrução de página relacionado a pagina requisitada e a role do usuário
-  verifyAcessToPage(segments: UrlSegment[]) {
-    //No momento que a pessoa for acessar a rota, preciso ler o JSON do menu e pegar o caminho da API
-    this.httpClient.get<any>(environment.menuPath).pipe(take(1)).subscribe({
-      next: (data) => {
-        const routeobj = data["itens"].find((item) => item.routeUrl === segments.join('/'));
 
-        if (routeobj == null) return;
-
-        const _params = new HttpParams()
-          .set('method', "GET")
-          .set('apiUrl', "/cartaoConsumo");
-
-        this.httpClient.get<any>(environment.backendUrl + "/api/guard", { params: _params }).subscribe({
-          next: (data) => console.log(data),
-        })
-
-      }
-    })
-  }
 }

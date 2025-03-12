@@ -30,7 +30,7 @@ export class ListAppsComponent implements OnInit {
     this.fetchApps();
     
     this.authService
-      .check()
+      .isAuthenticated()
       .pipe(take(1))
       .subscribe({
         next: (isAuthorized: boolean) => {

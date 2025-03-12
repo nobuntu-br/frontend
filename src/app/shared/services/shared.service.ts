@@ -57,6 +57,21 @@ export abstract class BaseResourceService<T extends BaseResourceModel> {
     );
   }
 
+  createWithCustomParameter(resource: any): Observable<T> {
+    if (!this.isOnline) {
+      this.offlineStorageService.saveCreateOperation(this.apiPath, resource);
+      return new Observable(observer => {
+        observer.next(resource);
+        observer.complete();
+      });
+    }
+
+    return this.http.post(this.apiPath, resource).pipe(
+      map(this.jsonDataToResource.bind(this)),
+      catchError(this.handleError)
+    );
+  }
+
   update(id: string, resource: T): Observable<T> {
     if (!this.isOnline) {
       this.offlineStorageService.saveUpdateOperation(this.apiPath, id, resource);

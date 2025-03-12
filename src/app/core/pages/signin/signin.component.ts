@@ -6,7 +6,7 @@ import { TranslocoService } from '@ngneat/transloco';
 import { AuthService } from 'app/core/auth/auth.service';
 import { IUser } from 'app/core/auth/user.model';
 import { UserService } from 'app/core/auth/user.service';
-import { TenantService } from 'app/core/tenant/tenant.service';
+import { TenantService } from 'app/core/pages/tenant/tenant.service';
 import { finalize, take } from 'rxjs';
 
 /**
@@ -142,13 +142,7 @@ export class SigninComponent {
     
         const signInSuccessMessage = this.translocoService.translate("core.sign-in-component.signIn-sucess");
         
-        this.snackBar.open(signInSuccessMessage, closeMessage, {
-          duration: 3000,
-        }).afterDismissed().pipe(take(1)).subscribe({
-          next: (value) => {
-            this.router.navigate(['/home']);
-          }
-        });
+        this.router.navigate(['/home']);
       },
 
       error: (error) => {

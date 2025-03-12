@@ -1,0 +1,45 @@
+<!-- Componente que chama função de tradução para dentro dos componentes -->
+<ng-container *transloco="let t; read: 'core.tenant-invite-user-form-component'">
+  <!-- Formulário para inserção do contato -->
+  <div id="contact-form">
+
+    <h2>{{t("insert-user-contact")}}</h2>
+
+    <mat-form-field appearance="outline" [formGroup]="inviteFormGroup" style="display: block;">
+      <mat-label>{{t("contact")}}</mat-label>
+
+      <input matInput type="email" id="email" formControlName="contact" name="email" placeholder="youEmailhere@domain.com"
+        (keydown.enter)="sendInvite()">
+
+      <mat-error *ngIf="inviteFormGroup.get('contact').hasError('required')">{{t("error-contact-required")}}</mat-error>
+      <mat-error *ngIf="inviteFormGroup.get('contact').hasError('minlength') ">
+        {{t("error-contact-minlength")}}
+      </mat-error>
+      <mat-error *ngIf="inviteFormGroup.get('contact').hasError('maxlength') ">
+        {{t("error-contact-maxlength")}}
+      </mat-error>
+      <mat-error *ngIf="inviteFormGroup.get('contact').hasError('contact')">
+        {{t("error-contact-format")}}
+      </mat-error>
+
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" style="display: flex; flex-direction: column;" [formGroup]="inviteFormGroup">
+      <mat-label>{{ t('databaseCredential') }}</mat-label>
+      <mat-select formControlName="databaseCredentialId">
+        <mat-option *ngFor="let databaseCredential of databaseCredentials" [value]="databaseCredential.id">
+          {{ databaseCredential.name }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <div class="buttonsColumn" *ngIf="isLoading == false">
+      <button mat-raised-button color="primary" [disabled]="!inviteFormGroup.valid" id="sendInviteButton" type="submit"
+        (click)="sendInvite()">{{t("send-invite")}}</button>
+    </div>
+
+    <mat-spinner style="margin: auto;" *ngIf="isLoading == true"></mat-spinner>
+  </div>
+
+  
+</ng-container>
