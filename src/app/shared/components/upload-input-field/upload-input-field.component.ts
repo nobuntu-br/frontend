@@ -5,6 +5,7 @@ import { IFieldFile } from 'app/shared/models/file.model';
 import { FileService } from 'app/shared/services/file.service';
 import { BaseFieldComponent } from '../base-field/base-field.component';
 import { Subject, takeUntil } from 'rxjs';
+import { BaseUpoadFieldComponent } from '../base-field/base-upload-field.component';
 
 
 @Component({
@@ -13,7 +14,7 @@ import { Subject, takeUntil } from 'rxjs';
   styleUrls: ['./upload-input-field.component.scss']
 })
 
-export class UploadInputFieldComponent extends BaseFieldComponent implements AfterViewInit {
+export class UploadInputFieldComponent extends BaseUpoadFieldComponent implements AfterViewInit {
   /**
    * Título que será apresentado no componente
    */
@@ -47,9 +48,9 @@ export class UploadInputFieldComponent extends BaseFieldComponent implements Aft
   isRequired: boolean = true;
   svgIcon: string = 'upload'; // Exemplo de ícone
 
-  constructor(private fileService: FileService, private matSnackBar: MatSnackBar, protected injector: Injector) {
-    super(injector);
-   }
+  constructor(protected injector: Injector, protected fileService: FileService, protected matSnackBar: MatSnackBar) {
+    super(injector, fileService, matSnackBar);
+  }
 
   ngAfterViewInit(): void {
     this.setLabel();
@@ -63,41 +64,10 @@ export class UploadInputFieldComponent extends BaseFieldComponent implements Aft
     const file: File = event.target.files[0];
 
     if (file) {
-      if (!this.checkMaxFileSize(file)) {
-        event.target.value = ''; // Limpa o input se o arquivo for muito grande
-        return;
-      }
-      const extension = file.name.split('.').pop().toLowerCase(); // Obtém a extensão do arquivo
-      if (this.allowedExtensions.includes(extension)) {
+      this.saveFile(file, this.maxFileSize, this.allowedExtensions).then((response: string) => {
+        this.inputValue.setValue(response);
         this.fileName = file.name;
-        this.displayedLabel = this.fileName;
-        const base64 = await this.fileService.convertFileToBase64(file);
-        const fieldFile: IFieldFile = {
-          fieldType: 'file',
-          files: [{
-            name: file.name,
-            size: file.size,
-            extension: extension,
-            dataBlob: file,
-            base64: base64
-          }]
-        };
-        this.fileService.uploadFile(fieldFile).subscribe((response) => {
-          this.inputValue.setValue(response);
-          this.matSnackBar.open('Arquivo enviado com sucesso', 'Fechar', {
-            duration: 2000
-          });
-        }, (error) => {
-          this.matSnackBar.open('Erro ao enviar arquivo', 'Fechar', {
-            duration: 2000
-          });
-        });
-      } else {
-        this.matSnackBar.open(`Extensão de arquivo inválida. Permitido: ${this.allowedExtensions.join(', ')}`, 'Fechar', {
-          duration: 2000
-        });
-        event.target.value = ''; // Limpa o input se a extensão for inválida
-      }
+      });
     }
   }
 
@@ -126,17 +96,6 @@ export class UploadInputFieldComponent extends BaseFieldComponent implements Aft
         this.displayedLabel = this.setCharactersLimit(this.label, this.charactersLimit);
       },
     });
-  }
-
-  checkMaxFileSize(file: File): boolean {
-    if (!this.maxFileSize) return true;
-    if (file.size > this.maxFileSize) {
-      this.matSnackBar.open(`Tamanho máximo permitido: ${this.maxFileSize / 1000000}MB`, 'Fechar', {
-        duration: 2000
-      });
-      return false;
-    }
-    return true;
   }
   
   // Define a posição do ícone (função opcional)
