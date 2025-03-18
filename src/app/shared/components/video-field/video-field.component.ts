@@ -4,17 +4,20 @@ import { FormControl } from '@angular/forms';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { IFieldFile } from 'app/shared/models/file.model';
 import { FileService } from 'app/shared/services/file.service';
+import { BaseUpoadFieldComponent } from '../base-field/base-upload-field.component';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-video-field',
   templateUrl: './video-field.component.html',
   styleUrls: ['./video-field.component.scss']
 })
-export class VideoFieldComponent extends BaseFieldComponent implements OnInit {
+export class VideoFieldComponent extends BaseUpoadFieldComponent implements OnInit {
 
   @Input() label: string;
   @Input() isRequired: boolean = false;
   @Input() className: string;
+  @Input() maxFileSize: number; // Exemplo de tamanho máximo de arquivo
 
   @ViewChild('videoElement') videoElementRef: ElementRef<HTMLVideoElement>;
 
@@ -28,11 +31,8 @@ export class VideoFieldComponent extends BaseFieldComponent implements OnInit {
   showVideoUrl: boolean = false;
   isVideoSaved: boolean = false;
 
-  constructor(protected injector: Injector, 
-    private sanitizer: DomSanitizer, 
-    private cdr: ChangeDetectorRef,
-    private fileService: FileService) {
-    super(injector);
+  constructor(protected injector: Injector, protected fileService: FileService, protected matSnackBar: MatSnackBar, private sanitizer: DomSanitizer, private cdr: ChangeDetectorRef) {
+    super(injector, fileService, matSnackBar);
   }
 
   ngOnInit(): void {}
@@ -76,9 +76,6 @@ export class VideoFieldComponent extends BaseFieldComponent implements OnInit {
   saveVideo() {
     const videoUrl = this.inputValue.value;
     if (videoUrl) {
-      localStorage.setItem('savedVideo', videoUrl);
-      alert('Video saved successfully!');
-      console.log("video saved");
       this.savedVideoUrl = this.sanitizer.bypassSecurityTrustUrl(videoUrl);
       this.showVideoUrl = true; // Set showVideoUrl to true
       this.isVideoSaved = true; // Set isVideoSaved to true
@@ -92,20 +89,13 @@ export class VideoFieldComponent extends BaseFieldComponent implements OnInit {
         .then(res => res.blob())
         .then(blob => {
           const file = new File([blob], fileName, { type: fileType });
-          const fieldFile: IFieldFile = {
-            fieldType: 'string',
-            files: [{
-              name: file.name,
-              size: file.size,
-              extension: 'mp4',
-              dataBlob: file,
-            }]
-          };
-          this.fileService.uploadFile(fieldFile).subscribe((response) => {
-            console.log("Valor do arquivo: ", response);
+          this.saveFile(file, this.maxFileSize).then((response) => {
+              this.inputValue.setValue(response);
           }, (error) => {
-            console.log(error);
-            alert('Erro ao fazer upload do arquivo');
+              console.error('Error saving video: ', error);
+              this.matSnackBar.open('Erro ao salvar vídeo', 'Fechar', {
+                duration: 2000
+              });
           });
         });
     }

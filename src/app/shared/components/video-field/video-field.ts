@@ -10,6 +10,7 @@ export class VideoField implements FormField {
         createdComponent.instance.label = createComponentData.labelTittle;
         createdComponent.instance.isRequired = createComponentData.isRequired;
         createdComponent.instance.className = createComponentData.className;
+        createdComponent.instance.maxFileSize = createComponentData.maxFileSize;
         return createdComponent.instance.inputValue;
       }
 }
