@@ -1,27 +1,38 @@
 import { Component, Injector, Input, OnInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { BaseFieldComponent } from '../base-field/base-field.component';
-import { FormControl } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { IFieldFile } from 'app/shared/models/file.model';
 import { FileService } from 'app/shared/services/file.service';
-import { BaseUpoadFieldComponent } from '../base-field/base-upload-field.component';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-video-field',
   templateUrl: './video-field.component.html',
   styleUrls: ['./video-field.component.scss']
 })
-export class VideoFieldComponent extends BaseUpoadFieldComponent implements OnInit {
+export class VideoFieldComponent extends BaseFieldComponent implements OnInit {
 
   @Input() label: string;
   @Input() isRequired: boolean = false;
   @Input() className: string;
-  @Input() maxFileSize: number; // Exemplo de tamanho máximo de arquivo
+  /**
+    * Condicao de visibilidade do campo.
+    */
+  @Input() conditionalVisibility: { field: string, values: string[] }
+  /**
+  * FormGroup do formulario.
+  */
+  @Input() resourceForm: FormGroup<any>;
+
+  /**
+   * Subject responsável por remover os observadores que estão rodando na pagina no momento do componente ser deletado.
+   */
+  private ngUnsubscribe = new Subject();
 
   @ViewChild('videoElement') videoElementRef: ElementRef<HTMLVideoElement>;
 
-  inputValue = new FormControl();  
+  inputValue = new FormControl();
   isCameraOpen = false;
   videoStream: MediaStream | null = null;
   isFrontCamera = true;
@@ -31,11 +42,65 @@ export class VideoFieldComponent extends BaseUpoadFieldComponent implements OnIn
   showVideoUrl: boolean = false;
   isVideoSaved: boolean = false;
 
-  constructor(protected injector: Injector, protected fileService: FileService, protected matSnackBar: MatSnackBar, private sanitizer: DomSanitizer, private cdr: ChangeDetectorRef) {
-    super(injector, fileService, matSnackBar);
+  constructor(protected injector: Injector,
+    private sanitizer: DomSanitizer,
+    private cdr: ChangeDetectorRef,
+    private fileService: FileService) {
+    super(injector);
   }
+  ngOnInit(): void {
+    this.checkConditional();
+}
 
-  ngOnInit(): void {}
+checkConditional() {
+    if (this.conditionalVisibility) {
+        // Verifica o valor inicial
+        let initialFieldValue = this.resourceForm.get(this.conditionalVisibility.field)?.value;
+        if (initialFieldValue && typeof initialFieldValue === 'object' && initialFieldValue.id) {
+            initialFieldValue = initialFieldValue.id;
+        }
+        if (initialFieldValue !== null && typeof initialFieldValue !== 'string') {
+            initialFieldValue = initialFieldValue.toString();
+        }
+        console.log('Initial field value:', initialFieldValue);
+        if (this.conditionalVisibility.values.includes(initialFieldValue)) {
+            if (this.inputValue.disabled) {
+                this.inputValue.enable();
+                console.log('Input enabled');
+            }
+        } else {
+            if (this.inputValue.enabled) {
+                this.inputValue.disable();
+                console.log('Input disabled');
+            }
+        }
+
+        // Observa mudanças no valor do resourceForm
+        this.resourceForm.valueChanges.pipe(takeUntil(this.ngUnsubscribe)).subscribe(formValues => {
+            // Verifica todas as alterações dos campos de input 
+            let fieldValue = formValues[this.conditionalVisibility.field];
+            // Verifica se o valor é um objeto e pega o id
+            if (fieldValue && typeof fieldValue === 'object' && fieldValue.id) {
+                fieldValue = fieldValue.id;
+            }
+            // Transforma em string caso nao seja
+            const fieldValueStr = fieldValue?.toString();
+            console.log('Field value changed:', fieldValueStr);
+            if (this.conditionalVisibility.values.includes(fieldValueStr)) {
+                // Caso o valor do fieldValue seja igual a algum de dentro do values ai é habilitado
+                if (this.inputValue.disabled) {
+                    this.inputValue.enable();
+                    console.log('Input enabled');
+                }
+            } else {
+                if (this.inputValue.enabled) {
+                    this.inputValue.disable();
+                    console.log('Input disabled');
+                }
+            }
+        });
+    }
+}
 
   // Open the camera
   async openCamera() {
@@ -72,10 +137,13 @@ export class VideoFieldComponent extends BaseUpoadFieldComponent implements OnIn
       };
     }
   }
-  
+
   saveVideo() {
     const videoUrl = this.inputValue.value;
     if (videoUrl) {
+      localStorage.setItem('savedVideo', videoUrl);
+      alert('Video saved successfully!');
+      console.log("video saved");
       this.savedVideoUrl = this.sanitizer.bypassSecurityTrustUrl(videoUrl);
       this.showVideoUrl = true; // Set showVideoUrl to true
       this.isVideoSaved = true; // Set isVideoSaved to true
@@ -89,13 +157,20 @@ export class VideoFieldComponent extends BaseUpoadFieldComponent implements OnIn
         .then(res => res.blob())
         .then(blob => {
           const file = new File([blob], fileName, { type: fileType });
-          this.saveFile(file, this.maxFileSize).then((response) => {
-              this.inputValue.setValue(response);
+          const fieldFile: IFieldFile = {
+            fieldType: 'string',
+            files: [{
+              name: file.name,
+              size: file.size,
+              extension: 'mp4',
+              dataBlob: file,
+            }]
+          };
+          this.fileService.uploadFile(fieldFile).subscribe((response) => {
+            console.log("Valor do arquivo: ", response);
           }, (error) => {
-              console.error('Error saving video: ', error);
-              this.matSnackBar.open('Erro ao salvar vídeo', 'Fechar', {
-                duration: 2000
-              });
+            console.log(error);
+            alert('Erro ao fazer upload do arquivo');
           });
         });
     }

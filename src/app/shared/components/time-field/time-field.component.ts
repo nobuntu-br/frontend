@@ -1,5 +1,5 @@
 import { Component, Inject, Injector, Input, OnDestroy, OnInit, AfterViewInit } from '@angular/core';
-import { FormControl, Validators } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { BaseFieldComponent } from '../base-field/base-field.component';
@@ -18,13 +18,21 @@ export class TimeFieldComponent extends BaseFieldComponent implements OnInit, On
    * Valor padrão do campo
    */
   @Input() defaultValue: string;
+  /**
+     * Condicao de visibilidade do campo.
+     */
+  @Input() conditionalVisibility: { field: string, values: string[] }
+  /**
+  * FormGroup do formulario.
+  */
+  @Input() resourceForm: FormGroup<any>;
   displayedLabel: string;
   selectedTime: string = ''; // Initial value or set based on requirements
 
   inputValue = new FormControl<string | null>(null, [
     Validators.pattern(/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/)
   ]);
-  
+
   private ngUnsubscribe = new Subject();
 
   constructor(protected injector: Injector, private dialog: MatDialog) {
@@ -34,6 +42,53 @@ export class TimeFieldComponent extends BaseFieldComponent implements OnInit, On
   ngOnInit(): void {
     this.getDefaultValue();
     this.setLabel();
+    this.checkConditional();
+  }
+
+  checkConditional() {
+    if (this.conditionalVisibility) {
+      // Verifica o valor inicial
+      let initialFieldValue = this.resourceForm.get(this.conditionalVisibility.field)?.value;
+      console.log('Initial field value:', initialFieldValue);
+      if (initialFieldValue && typeof initialFieldValue === 'object' && initialFieldValue.id) {
+        initialFieldValue = initialFieldValue.id;
+      }
+      if (initialFieldValue !== null && typeof initialFieldValue !== 'string') {
+        initialFieldValue = initialFieldValue.toString();
+      }
+      if (this.conditionalVisibility.values.includes(initialFieldValue)) {
+        if (this.inputValue.disabled) {
+          this.inputValue.enable();
+        }
+      } else {
+        if (this.inputValue.enabled) {
+          this.inputValue.disable();
+        }
+      }
+
+
+      // Observa mudanças no valor do resourceForm
+      this.resourceForm.valueChanges.pipe(takeUntil(this.ngUnsubscribe)).subscribe(formValues => {
+        // Verifica todas as alterações dos campos de input 
+        let fieldValue = formValues[this.conditionalVisibility.field];
+        // Verifica se o valor é um objeto e pega o id
+        if (fieldValue && typeof fieldValue === 'object' && fieldValue.id) {
+          fieldValue = fieldValue.id;
+        }
+        // Transforma em string caso nao seja
+        const fieldValueStr = fieldValue?.toString();
+        if (this.conditionalVisibility.values.includes(fieldValueStr)) {
+          // Caso o valor do fieldValue seja igual a algum de dentro do values ai é habilitado
+          if (this.inputValue.disabled) {
+            this.inputValue.enable();
+          }
+        } else {
+          if (this.inputValue.enabled) {
+            this.inputValue.disable();
+          }
+        }
+      });
+    }
   }
 
   openDialog(): void {
@@ -86,7 +141,7 @@ export class TimeFieldComponent extends BaseFieldComponent implements OnInit, On
   formatTimeInput(value: string): string {
     // Remove any non-digit characters
     const cleanedValue = value.replace(/[^0-9]/g, '');
-  
+
     if (cleanedValue.length <= 2) {
       // If only the hour part is present (1-2 digits)
       return cleanedValue;
@@ -103,7 +158,7 @@ export class TimeFieldComponent extends BaseFieldComponent implements OnInit, On
     const regex = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/;
     return regex.test(value);
   }
-  
+
   ngOnDestroy(): void {
     this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
@@ -171,7 +226,7 @@ export class TimePickerDialogComponent {
 
   adjustTime(amount: number, unit: 'hour' | 'minute'): void {
     let [hour, minute] = this.selectedTime.split(':').map(Number);
-  
+
     if (unit === 'hour') {
       hour = (hour + amount) % 24; // Ajusta o valor da hora
       if (hour < 0) hour = 23;
@@ -179,7 +234,7 @@ export class TimePickerDialogComponent {
       minute = (minute + amount) % 60; // Ajusta o valor do minuto
       if (minute < 0) minute = 59;
     }
-  
+
     this.selectedTime = `${this.padNumber(hour)}:${this.padNumber(minute)}`;
   }
 
@@ -187,7 +242,7 @@ export class TimePickerDialogComponent {
     const regex = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/;
     return regex.test(value);
   }
-  
+
   padNumber(value: number): string {
     return value.toString().padStart(2, '0');
   }

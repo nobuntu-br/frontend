@@ -1,13 +1,9 @@
 <mat-form-field style="width: 100%;" appearance="outline">
-
     <mat-label>{{ label }}</mat-label>
-    <!-- <input matInput [formControl]="inputValue" [value]="fieldDisplayedInLabel" required readonly> -->
-    <input matInput [value]="displayedValue" required readonly>
-
+    <input matInput [formControl]="inputValue" [placeholder]="placeholder" required>
     <button mat-icon-button matSuffix [matMenuTriggerFor]="menu" class="h-full flex flex-col">
         <mat-icon svgIcon="feather:more-vertical"></mat-icon>
     </button>
-
     <mat-menu #menu="matMenu">
         <button mat-menu-item (click)="openDefaultListToSelectItems()">
             <mat-icon svgIcon="feather:search"></mat-icon>
@@ -26,6 +22,4 @@
             <ng-container *transloco='let t; read:"componentsBase"'>{{ t('foreign-key-input-field.clean') }}</ng-container>
         </button>
     </mat-menu>
-
 </mat-form-field>
-

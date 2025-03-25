@@ -1,0 +1,31 @@
+<mat-form-field style="width: 100%;" appearance="outline">
+  <mat-label>{{displayedLabel}}</mat-label>
+  <input 
+    matInput 
+    placeholder="{{placeholder}}" 
+    [formControl]="inputValue" 
+    [attr.maxlength]="charactersLimit ? charactersLimit : null" 
+    [required]="isRequired" 
+    [mask]="mask">
+  
+  <!-- Ícone de telefone ou calculadora -->
+  <mat-icon 
+    (click)="actionOnClickInIcon && actionOnClickInIcon()" 
+    *ngIf="svgIcon != null && setIconPosition() == 'start'" 
+    matPrefix>
+    {{svgIcon}}
+  </mat-icon>
+  
+  <mat-icon 
+    (click)="actionOnClickInIcon && actionOnClickInIcon()" 
+    *ngIf="svgIcon != null && setIconPosition() == 'end'" 
+    matSuffix>
+    {{svgIcon}}
+  </mat-icon>
+
+  <!-- Error Message Display -->
+  <mat-error *ngIf="inputValue.invalid && inputValue.touched">
+    <span *ngIf="inputValue.hasError('required')">This field is required.</span>
+    <span *ngIf="inputValue.hasError('pattern')">Please enter a valid decimal number.</span>
+  </mat-error>
+</mat-form-field>

@@ -58,6 +58,9 @@ export class GeneratedSimpleFormComponent implements AfterViewInit {
           className: this.className,
           fieldName: attribute.name,
           fieldType: attribute.type,
+          conditionalVisibility: attribute.conditionalVisibility, //criado novo
+          locationMarker: attribute.locationMarker, //criado novo
+          numberOfIcons: attribute.numberOfIcons,  //criado novo
           isRequired: attribute.isRequired ? attribute.isRequired : false,
           value: {propertiesAttributes: attribute.properties, apiUrl: attribute.apiUrl},
           labelTittle: attribute.name,
@@ -71,6 +74,8 @@ export class GeneratedSimpleFormComponent implements AfterViewInit {
           allowedExtensions: attribute.allowedExtensions,
           mask: this.maskService.getMaskPattern(attribute.mask),
           maxFileSize: attribute.maxFileSize,
+          maskType: attribute.mask, //criado novo
+          needMaskValue: attribute.needMaskValue //criado novo
         }
 
         this.formGenerator.createComponent(createComponentData)

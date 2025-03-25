@@ -91,6 +91,7 @@ import { UserMenuModule } from './components/user-menu/user-menu.module';
 import { TenantMenuModule } from './components/tenant-menu/tenant-menu.module';
 import { AvaliacaoFieldComponent } from './components/avaliacao-field/avaliacao-field.component';
 import { AvaliacaoUnicaFieldComponent } from './components/avaliacao-unica-field/avaliacao-unica-field.component';
+import { NumberFieldComponent } from './components/number-field/number-field.component';
 
 @NgModule({
     imports: [
@@ -158,7 +159,7 @@ import { AvaliacaoUnicaFieldComponent } from './components/avaliacao-unica-field
         TranslocoModule,
         DinamicBaseResourceFormComponent,
         LanguagesComponent,
-
+        NumberFieldComponent
     ],
     declarations: [
         BaseResourceFilterComponent,
@@ -217,7 +218,8 @@ import { AvaliacaoUnicaFieldComponent } from './components/avaliacao-unica-field
         ChartDateFilterComponent,
         DefaultDashboardComponent,
         AvaliacaoFieldComponent,
-        AvaliacaoUnicaFieldComponent
+        AvaliacaoUnicaFieldComponent,
+        NumberFieldComponent
     ],
 })
 export class SharedModule { }
