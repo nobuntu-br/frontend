@@ -25,14 +25,19 @@ export class NumberFieldComponent extends BaseFieldComponent implements OnInit, 
   @Input() actionOnClickInIcon: () => void = null;
   @Input() conditionalVisibility: { field: string, values: string[] }
   @Input() resourceForm: FormGroup<any>;
+
   displayedLabel: string;
 
   public inputValue = new FormControl<string | number | null>(null);
   private ngUnsubscribe = new Subject();
   public errorMessage: string = ''; // Para exibir a mensagem de erro
+  private inputSubscription: any = null;
+  private decimalSeparator: string;
 
-  constructor(protected injector: Injector, private dialog: MatDialog){
+
+  constructor(protected injector: Injector, private dialog: MatDialog) {
     super(injector);
+    this.setDecimalSeparator();
   }
 
   ngOnInit(): void {
@@ -41,53 +46,118 @@ export class NumberFieldComponent extends BaseFieldComponent implements OnInit, 
     this.checkConditional();
     this.setIconPhone();
     this.checkValue();
+
+    this.setupMaskAndListener(); // Configura tudo inicialmente
+    this.listenToLangChange();   // Escuta mudança de idioma ao vivo// escuta a troca de idioma ao vivo
+
+    this.inputValue.valueChanges.subscribe(value => {
+      if (value) {
+        const invalidChar = this.decimalSeparator === ',' ? '.' : ',';
+        if (value.toString().includes(invalidChar)) {
+          const corrected = value.toString().replace(invalidChar, this.decimalSeparator);
+          this.inputValue.setValue(corrected, { emitEvent: false });
+        }
+      }
+    });
   }
 
   ngOnChanges(): void {
     this.checkValue();
   }
-// Inside your component
 
-checkValue() {
-  // Update value and validity before applying the validator
-  this.inputValue.updateValueAndValidity();
-  
-  // Check if the maskType is 'double'
-  if (this.maskType?.toLowerCase() === 'double') {
-    // Set the validator to ensure the value is a valid double (with decimal point)
-    this.inputValue.setValidators([
-      Validators.pattern(/^[-+]?[0-9]+\.[0-9]+$/)  // This ensures a decimal point is required
-    ]);
-  } else {
-    // If not 'double', clear the validators
-    this.inputValue.clearValidators();
+  setDecimalSeparator() {
+    const lang = this.translocoService.getActiveLang();
+    this.decimalSeparator = lang === 'pt' ? ',' : '.';
   }
 
-  // Manually update validity after setting the validators
-  this.inputValue.updateValueAndValidity();
-}
+  setupMaskAndListener() {
+    // Define separador
+    const lang = this.translocoService.getActiveLang();
+    this.decimalSeparator = lang === 'pt' ? ',' : '.';
 
+    // Remove listener antigo antes de adicionar outro
+    if (this.inputSubscription) {
+      this.inputSubscription.unsubscribe();
+    }
 
-validateInput(): boolean {
-  // Update and check validity of the form control
-  this.inputValue.updateValueAndValidity();
-  
-  // Return whether the input is valid
-  return this.inputValue.valid;
-}
-
-onSave() {
-  if (this.validateInput()) {
-    // Proceed with saving the value if valid
-    console.log('Saving value:', this.inputValue.value);
-  } else {
-    // Show an error message if invalid
-    console.log('Invalid input, cannot save');
-    this.errorMessage = 'Please enter a valid decimal number.';
+    // Adiciona listener novo com o separador atualizado
+    this.inputSubscription = this.inputValue.valueChanges.subscribe(value => {
+      if (value) {
+        const invalidChar = this.decimalSeparator === ',' ? '.' : ',';
+        if (value.toString().includes(invalidChar)) {
+          const corrected = value.toString().replace(invalidChar, this.decimalSeparator);
+          this.inputValue.setValue(corrected, { emitEvent: false });
+        }
+      }
+    });
   }
-}
 
-  
+  listenToLangChange() {
+    this.translocoService.events$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(event => {
+      if (event.type === 'langChanged') {
+        this.setupMaskAndListener(); // recria tudo ao trocar idioma
+      }
+    });
+  }
+
+  addSeparatorRestriction() {
+    this.inputValue.valueChanges.pipe(takeUntil(this.ngUnsubscribe)).subscribe(value => {
+      if (value) {
+        // sempre verifica o idioma atual
+        this.setDecimalSeparator();
+
+        const invalidChar = this.decimalSeparator === ',' ? '.' : ',';
+
+        if (value.toString().includes(invalidChar)) {
+          const corrected = value.toString().replace(invalidChar, this.decimalSeparator);
+          this.inputValue.setValue(corrected, { emitEvent: false });
+        }
+      }
+    });
+  }
+
+
+  checkValue() {
+    this.inputValue.updateValueAndValidity();
+
+    if (this.maskType?.toLowerCase() === 'double') {
+      this.inputValue.setValidators([
+        Validators.pattern(/^[-+]?[0-9]*[.,]?[0-9]+$/)
+      ]);
+    } else if (this.maskType?.toLowerCase() === 'integer') {
+      this.inputValue.setValidators([
+        Validators.pattern(/^[-+]?[0-9]+$/)  
+      ]);
+    } else {
+      this.inputValue.clearValidators();
+    }
+
+    this.inputValue.updateValueAndValidity();
+  }
+
+
+  validateInput(): boolean {
+    this.inputValue.updateValueAndValidity();
+
+    return this.inputValue.valid;
+  }
+
+  onSave() {
+    if (this.validateInput()) {
+      console.log('Saving value:', this.inputValue.value);
+    } else {
+      console.log('Invalid input, cannot save');
+      if (this.maskType?.toLowerCase() === 'double') {
+        this.errorMessage = 'Por favor coloque um número decimal válido.';
+      } else if (this.maskType?.toLowerCase() === 'integer') {
+        this.errorMessage = 'Por favor coloque um número inteiro válido.';
+      } else {
+        this.errorMessage = 'Entrada inválida.';
+      }
+    }
+  }
+
+
 
   checkConditional() {
     if (this.conditionalVisibility) {
@@ -148,7 +218,7 @@ onSave() {
   setLabel() {
     this.setTranslation(this.className, this.label).pipe(takeUntil(this.ngUnsubscribe)).subscribe({
       next: (translatedLabel: string) => {
-        if(translatedLabel === (this.className + "." + this.label)){
+        if (translatedLabel === (this.className + "." + this.label)) {
           const formattedLabel = this.formatDefaultVariableName(this.label);
           this.displayedLabel = this.setCharactersLimit(formattedLabel, this.charactersLimit);
         } else {

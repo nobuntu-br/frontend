@@ -3,6 +3,7 @@ import { FormControl } from '@angular/forms';
 import { ICreateComponentParams } from 'app/shared/services/form-generator.service';
 import { NumberFieldComponent } from './number-field.component';
 import { Injector } from '@angular/core';
+import { TranslocoService } from '@ngneat/transloco';
 
 export class NumberField implements FormField {
 
@@ -17,10 +18,17 @@ export class NumberField implements FormField {
     createdComponent.isRequired = createComponentData.isRequired;
     createdComponent.defaultValue = createComponentData.defaultValue;
     createdComponent.className = createComponentData.className;
-    createdComponent.mask = createComponentData.mask;
+    const translocoService = this.injector.get(TranslocoService);
+    const currentLang = translocoService.getActiveLang();
+
+    if (currentLang === 'pt') {
+      createdComponent.mask = 'separator.2'; // vai usar vírgula automaticamente
+    } else {
+      createdComponent.mask = 'separator.2'; // depois aplicamos o customização no config pra usar ponto
+    } 
     createdComponent.maskType = createComponentData.maskType;
+
     createdComponent.charactersLimit = createComponentData.charactersLimit;
-    console.log(createdComponent.inputValue);
     // novos campos 
     createdComponent.conditionalVisibility = createComponentData.conditionalVisibility
     createdComponent.resourceForm = createComponentData.resourceForm;

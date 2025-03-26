@@ -2,6 +2,7 @@
   <mat-label>{{displayedLabel}}</mat-label>
   <input 
     matInput 
+    style="text-align: right;" 
     placeholder="{{placeholder}}" 
     [formControl]="inputValue" 
     [attr.maxlength]="charactersLimit ? charactersLimit : null" 
@@ -26,6 +27,7 @@
   <!-- Error Message Display -->
   <mat-error *ngIf="inputValue.invalid && inputValue.touched">
     <span *ngIf="inputValue.hasError('required')">This field is required.</span>
-    <span *ngIf="inputValue.hasError('pattern')">Please enter a valid decimal number.</span>
+    <span *ngIf="inputValue.hasError('pattern') && maskType?.toLowerCase() === 'double'">Por favor insira um número decimal.</span>
+    <span *ngIf="inputValue.hasError('pattern') && maskType?.toLowerCase() === 'integer'">Por favor insira um número inteiro.</span>
   </mat-error>
 </mat-form-field>
