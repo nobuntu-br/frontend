@@ -65,7 +65,8 @@ export interface IPageStructureAttribute {
   step?: string;
   allowedExtensions?: string[];
   icones?: IconOption[];
-
+  mask?: string;
+  maxFileSize?: number;
 }
 
 export interface IPageStructureAttributesProperties {

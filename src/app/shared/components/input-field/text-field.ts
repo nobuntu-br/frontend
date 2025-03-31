@@ -12,6 +12,7 @@ export class TextField implements FormField {
     createdComponent.instance.isRequired = createComponentData.isRequired;
     createdComponent.instance.className = createComponentData.className;
     createdComponent.instance.defaultValue = createComponentData.defaultValue;
+    createdComponent.instance.mask = createComponentData.mask;
     return createdComponent.instance.inputValue;
   }
 }

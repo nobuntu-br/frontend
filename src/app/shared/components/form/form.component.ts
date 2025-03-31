@@ -121,14 +121,14 @@ export abstract class BaseResourceFormComponent<T extends BaseResourceModel> imp
         }
       }
     }
+    console.log("childrenData: ", childrenData);
     if (this.currentAction == "new"){
       this.objectTratament(this.resourceForm.value);
     
       const resource: T = this.jsonDataToResourceFn(this.resourceForm.value);
-  
       this.resourceService.create(resource).subscribe({
         next: (response) => {
-          const className = (this.resource.constructor as any).name;
+            const className = (this.resource.constructor as any).name.slice(1);
           this.localStorageFormService.remove("new"+className);
           if(childrenData.length == 0){
             this.actionsForSuccess(response);
@@ -136,7 +136,10 @@ export abstract class BaseResourceFormComponent<T extends BaseResourceModel> imp
           }
           //salvar os childrenData no banco de dados usando o id da entidade pai que foi salva antes
           for(let i = 0; i < childrenData.length; i++){
+            console.log(response.id);
+            console.log(className); 
             childrenData[i].item[className] = response.id;
+            console.log(childrenData[i].item[className]);
             let url = environment.backendUrl + '/' + childrenData[i].apiUrl;
             this.objectTratament(childrenData[i].item);
             this.http.post(url, childrenData[i].item).subscribe({
@@ -176,7 +179,7 @@ export abstract class BaseResourceFormComponent<T extends BaseResourceModel> imp
       return;
     }
     //salvar os childrenData no banco de dados usando o id da entidade pai que foi salva antes
-    const className = (this.resource.constructor as any).name;
+    const className = (this.resource.constructor as any).name.slice(1);
     for(let i = 0; i < childrenData.length; i++){
       childrenData[i].item[className] = this.resource.id;
       let url = environment.backendUrl + '/' + childrenData[i].apiUrl;
@@ -202,7 +205,7 @@ export abstract class BaseResourceFormComponent<T extends BaseResourceModel> imp
 
   private loadResorceWithLocalStorage() {
     const resourceId = this.route.snapshot.params['id'];
-    const className = (this.resource.constructor as any).name;
+    const className = (this.resource.constructor as any).name.slice(1);
 
     const dataStoredInLocalStore = this.localStorageFormService.getDataFromLocalStorage(resourceId, className, this.currentAction);
 
@@ -261,7 +264,7 @@ export abstract class BaseResourceFormComponent<T extends BaseResourceModel> imp
     this.resourceService.create(resource).subscribe({
       next: (response) => {
         this.actionsForSuccess(response);
-        const className = (this.resource.constructor as any).name;
+        const className = (this.resource.constructor as any).name.slice(1);
         this.localStorageFormService.remove("new"+className);
       },
       error: (error) => this.actionsForError(error)
@@ -269,7 +272,7 @@ export abstract class BaseResourceFormComponent<T extends BaseResourceModel> imp
   }
 
   protected updateResource() {
-
+    console.log("ResourceForm: ", this.resourceForm.value);
     this.objectTratament(this.resourceForm.value);
 
     const resource: T = this.jsonDataToResourceFn(this.resourceForm.value);

@@ -46,7 +46,8 @@ export interface ICreateComponentParams {
   dataType?: string,
   language?: string,
   icones?: IconOption[]
-
+  mask?: string;
+  maxFileSize?: number;
 }
 
 /**

@@ -200,10 +200,10 @@ export class ForeignKeyInputFieldComponent implements OnDestroy, AfterViewInit {
     }
 
     const dialogRef = this.matDialog.open(DefaultListComponent, {
-      width: '100%',
-      height: '100%',
+      // width: '100%',
+      // height: '100%',
       maxWidth: '100vw',
-      maxHeight: '100vh',
+      maxHeight: '80vh',
       panelClass: 'full-screen-dialog',
       data: config,
     });

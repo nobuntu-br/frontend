@@ -2,6 +2,7 @@ import { AfterViewInit, Component, EventEmitter, Input, Output, Renderer2, ViewC
 import { FormGroup } from '@angular/forms';
 import { FormGeneratorService, ICreateComponentParams } from 'app/shared/services/form-generator.service';
 import { IPageStructure } from 'app/shared/models/pageStructure';
+import { MaskService } from 'app/shared/services/mask.service';
 
 /**
  * Componente que fará a geração do formulário. Sendo esse formulário o com estrutura simples.
@@ -36,7 +37,8 @@ export class GeneratedSimpleFormComponent implements AfterViewInit {
   @ViewChild('placeToRender', { read: ViewContainerRef }) target!: ViewContainerRef;
 
   constructor(
-    public formGenerator: FormGeneratorService
+    public formGenerator: FormGeneratorService,
+    private maskService: MaskService
   ) { }
 
   ngAfterViewInit(): void {
@@ -67,6 +69,8 @@ export class GeneratedSimpleFormComponent implements AfterViewInit {
           optionList: attribute.optionList,
           selectItemsLimit: attribute.selectItemsLimit,
           allowedExtensions: attribute.allowedExtensions,
+          mask: this.maskService.getMaskPattern(attribute.mask),
+          maxFileSize: attribute.maxFileSize,
         }
 
         this.formGenerator.createComponent(createComponentData)
