@@ -75,7 +75,9 @@ export class GeneratedSimpleFormComponent implements AfterViewInit {
           mask: this.maskService.getMaskPattern(attribute.mask),
           maxFileSize: attribute.maxFileSize,
           maskType: attribute.mask, //criado novo
-          needMaskValue: attribute.needMaskValue //criado novo
+          needMaskValue: attribute.needMaskValue, //criado novo
+          numberOfDecimals: attribute.numberOfDecimals, //criado novo
+          decimalSeparator: attribute.decimalSeparator, //criado novo
         }
 
         this.formGenerator.createComponent(createComponentData)

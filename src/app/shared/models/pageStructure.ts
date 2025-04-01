@@ -80,6 +80,8 @@ export interface IPageStructureAttribute {
   conditionalVisibility?: { field: string, values: string[] }; //criado novo
   locationMarker?: { lat: number, lng: number, quadrant?: string }; //criado novo?
   needMaskValue?: boolean; //criado novo
+  numberOfDecimals?: number; //criado novo
+  decimalSeparator?: string; //criado novo
 }
 
 export interface IPageStructureAttributesProperties {

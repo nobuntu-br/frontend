@@ -5,11 +5,11 @@
     style="text-align: right;" 
     placeholder="{{placeholder}}" 
     [formControl]="inputValue" 
+    (blur)="applyFinalFormatting()"
     [attr.maxlength]="charactersLimit ? charactersLimit : null" 
     [required]="isRequired" 
     [mask]="mask">
   
-  <!-- Ícone de telefone ou calculadora -->
   <mat-icon 
     (click)="actionOnClickInIcon && actionOnClickInIcon()" 
     *ngIf="svgIcon != null && setIconPosition() == 'start'" 
@@ -24,7 +24,6 @@
     {{svgIcon}}
   </mat-icon>
 
-  <!-- Error Message Display -->
   <mat-error *ngIf="inputValue.invalid && inputValue.touched">
     <span *ngIf="inputValue.hasError('required')">This field is required.</span>
     <span *ngIf="inputValue.hasError('pattern') && maskType?.toLowerCase() === 'double'">Por favor insira um número decimal.</span>

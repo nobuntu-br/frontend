@@ -54,6 +54,8 @@ export interface ICreateComponentParams {
   conditionalVisibility?: { field: string, values: string[] };  //criado novo
   locationMarker?: { lat: number, lng: number, quadrant?: string }; //criado novo
   needMaskValue?: boolean; //criado novo
+  numberOfDecimals?: number; //criado novo
+  decimalSeparator?: string; //criado novo
 }
 
 /**
@@ -153,6 +155,9 @@ export class FormGeneratorService {
         conditionalVisibility: attribute.conditionalVisibility,  //criado novo
         locationMarker: attribute.locationMarker, //criado novo
         maskType: attribute.mask, //criado novo
+        needMaskValue: attribute.needMaskValue, //criado novo
+        numberOfDecimals: attribute.numberOfDecimals, //criado novo
+        decimalSeparator: attribute.decimalSeparator, //criado novo
       });
     });
   }

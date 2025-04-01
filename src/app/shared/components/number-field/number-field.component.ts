@@ -10,7 +10,7 @@ import { CalculatorComponent } from '../calculator/calculator.component';
   templateUrl: './number-field.component.html',
   styleUrls: ['./number-field.component.scss']
 })
-export class NumberFieldComponent extends BaseFieldComponent implements OnInit, OnDestroy, OnChanges {
+export class NumberFieldComponent extends BaseFieldComponent implements OnInit, OnDestroy {
 
   @Input() className: string;
   @Input() label: string;
@@ -25,19 +25,19 @@ export class NumberFieldComponent extends BaseFieldComponent implements OnInit, 
   @Input() actionOnClickInIcon: () => void = null;
   @Input() conditionalVisibility: { field: string, values: string[] }
   @Input() resourceForm: FormGroup<any>;
+  @Input() numberOfDecimals: number; // criado novo
+  @Input() decimalSeparator: string; // criado novo
 
   displayedLabel: string;
 
   public inputValue = new FormControl<string | number | null>(null);
   private ngUnsubscribe = new Subject();
-  public errorMessage: string = ''; // Para exibir a mensagem de erro
+  public errorMessage: string = '';
   private inputSubscription: any = null;
-  private decimalSeparator: string;
-
+  valueForSaving: any;
 
   constructor(protected injector: Injector, private dialog: MatDialog) {
     super(injector);
-    this.setDecimalSeparator();
   }
 
   ngOnInit(): void {
@@ -45,124 +45,34 @@ export class NumberFieldComponent extends BaseFieldComponent implements OnInit, 
     this.setLabel();
     this.checkConditional();
     this.setIconPhone();
-    this.checkValue();
-
-    this.setupMaskAndListener(); // Configura tudo inicialmente
-    this.listenToLangChange();   // Escuta mudança de idioma ao vivo// escuta a troca de idioma ao vivo
-
-    this.inputValue.valueChanges.subscribe(value => {
-      if (value) {
-        const invalidChar = this.decimalSeparator === ',' ? '.' : ',';
-        if (value.toString().includes(invalidChar)) {
-          const corrected = value.toString().replace(invalidChar, this.decimalSeparator);
-          this.inputValue.setValue(corrected, { emitEvent: false });
-        }
-      }
-    });
+    this.setupMaskAndListener();
   }
 
-  ngOnChanges(): void {
-    this.checkValue();
-  }
-
-  setDecimalSeparator() {
-    const lang = this.translocoService.getActiveLang();
-    this.decimalSeparator = lang === 'pt' ? ',' : '.';
-  }
-
-  setupMaskAndListener() {
-    // Define separador
-    const lang = this.translocoService.getActiveLang();
-    this.decimalSeparator = lang === 'pt' ? ',' : '.';
-
-    // Remove listener antigo antes de adicionar outro
-    if (this.inputSubscription) {
-      this.inputSubscription.unsubscribe();
-    }
-
-    // Adiciona listener novo com o separador atualizado
-    this.inputSubscription = this.inputValue.valueChanges.subscribe(value => {
-      if (value) {
-        const invalidChar = this.decimalSeparator === ',' ? '.' : ',';
-        if (value.toString().includes(invalidChar)) {
-          const corrected = value.toString().replace(invalidChar, this.decimalSeparator);
-          this.inputValue.setValue(corrected, { emitEvent: false });
-        }
-      }
-    });
-  }
-
-  listenToLangChange() {
-    this.translocoService.events$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(event => {
-      if (event.type === 'langChanged') {
-        this.setupMaskAndListener(); // recria tudo ao trocar idioma
-      }
-    });
-  }
-
-  addSeparatorRestriction() {
-    this.inputValue.valueChanges.pipe(takeUntil(this.ngUnsubscribe)).subscribe(value => {
-      if (value) {
-        // sempre verifica o idioma atual
-        this.setDecimalSeparator();
-
-        const invalidChar = this.decimalSeparator === ',' ? '.' : ',';
-
-        if (value.toString().includes(invalidChar)) {
-          const corrected = value.toString().replace(invalidChar, this.decimalSeparator);
-          this.inputValue.setValue(corrected, { emitEvent: false });
-        }
-      }
-    });
-  }
-
-
-  checkValue() {
-    this.inputValue.updateValueAndValidity();
-
-    if (this.maskType?.toLowerCase() === 'double') {
-      this.inputValue.setValidators([
-        Validators.pattern(/^[-+]?[0-9]*[.,]?[0-9]+$/)
-      ]);
-    } else if (this.maskType?.toLowerCase() === 'integer') {
-      this.inputValue.setValidators([
-        Validators.pattern(/^[-+]?[0-9]+$/)  
-      ]);
-    } else {
-      this.inputValue.clearValidators();
-    }
-
-    this.inputValue.updateValueAndValidity();
-  }
-
-
-  validateInput(): boolean {
-    this.inputValue.updateValueAndValidity();
-
-    return this.inputValue.valid;
-  }
-
-  onSave() {
-    if (this.validateInput()) {
-      console.log('Saving value:', this.inputValue.value);
-    } else {
-      console.log('Invalid input, cannot save');
-      if (this.maskType?.toLowerCase() === 'double') {
-        this.errorMessage = 'Por favor coloque um número decimal válido.';
-      } else if (this.maskType?.toLowerCase() === 'integer') {
-        this.errorMessage = 'Por favor coloque um número inteiro válido.';
-      } else {
-        this.errorMessage = 'Entrada inválida.';
-      }
+  getDefaultValue() {
+    if (this.defaultValue != null) {
+      this.inputValue.setValue(this.defaultValue);
     }
   }
 
-
+  setLabel() {
+    this.setTranslation(this.className, this.label).pipe(takeUntil(this.ngUnsubscribe)).subscribe({
+      next: (translatedLabel: string) => {
+        if (translatedLabel === (this.className + "." + this.label)) {
+          const formattedLabel = this.formatDefaultVariableName(this.label);
+          this.displayedLabel = this.setCharactersLimit(formattedLabel, this.charactersLimit);
+        } else {
+          this.displayedLabel = this.setCharactersLimit(translatedLabel, this.charactersLimit);
+        }
+      },
+      error: () => {
+        this.displayedLabel = this.setCharactersLimit(this.label, this.charactersLimit);
+      },
+    });
+  }
 
   checkConditional() {
     if (this.conditionalVisibility) {
       let initialFieldValue = this.resourceForm.get(this.conditionalVisibility.field)?.value;
-      console.log('Initial field value:', initialFieldValue);
       if (initialFieldValue && typeof initialFieldValue === 'object' && initialFieldValue.id) {
         initialFieldValue = initialFieldValue.id;
       }
@@ -197,10 +107,10 @@ export class NumberFieldComponent extends BaseFieldComponent implements OnInit, 
       });
     }
   }
-
+  
   setIconPhone() {
     if (this.maskType?.toLowerCase() === 'phone') {
-      this.svgIcon = 'phone'; // Defina o ícone de telefone do Material Icons aqui
+      this.svgIcon = 'phone';
       this.actionOnClickInIcon = () => {
         const phone = this.inputValue.value;
         if (phone) {
@@ -208,27 +118,53 @@ export class NumberFieldComponent extends BaseFieldComponent implements OnInit, 
         }
       };
     } else {
-      this.svgIcon = 'calculate'; // Ícone de calculadora do Material Icons
+      this.svgIcon = 'calculate';
       this.actionOnClickInIcon = () => {
         this.openCalculatorDialog();
       };
     }
   }
 
-  setLabel() {
-    this.setTranslation(this.className, this.label).pipe(takeUntil(this.ngUnsubscribe)).subscribe({
-      next: (translatedLabel: string) => {
-        if (translatedLabel === (this.className + "." + this.label)) {
-          const formattedLabel = this.formatDefaultVariableName(this.label);
-          this.displayedLabel = this.setCharactersLimit(formattedLabel, this.charactersLimit);
-        } else {
-          this.displayedLabel = this.setCharactersLimit(translatedLabel, this.charactersLimit);
+  setupMaskAndListener() {
+    if (this.inputSubscription) {
+      this.inputSubscription.unsubscribe();
+    }
+
+    this.inputSubscription = this.inputValue.valueChanges.subscribe(value => {
+      if (value) {
+        const invalidChar = this.decimalSeparator === ',' ? '.' : ',';
+        let corrected = value.toString();
+
+        if (corrected.includes(invalidChar)) {
+          corrected = corrected.replace(invalidChar, this.decimalSeparator);
+          console.log('Corrected value for display:', corrected);
         }
-      },
-      error: () => {
-        this.displayedLabel = this.setCharactersLimit(this.label, this.charactersLimit);
-      },
+
+        let valueForSaving = corrected.replace(this.decimalSeparator, '.');
+
+        const numericValue = parseFloat(valueForSaving);
+        if (!isNaN(numericValue) && this.numberOfDecimals != null) {
+          const factor = Math.pow(10, this.numberOfDecimals);
+          const roundedValue = Math.round(numericValue * factor) / factor;
+          valueForSaving = roundedValue.toFixed(this.numberOfDecimals);
+        }
+
+        console.log('Value for saving:', valueForSaving);
+
+        this.valueForSaving = valueForSaving;
+      }
     });
+  }
+
+  applyFinalFormatting() {
+    if (this.valueForSaving != null) {
+      this.inputValue.setValue(this.valueForSaving, { emitEvent: false });
+    }
+  }
+
+  validateInput(): boolean {
+    this.inputValue.updateValueAndValidity();
+    return this.inputValue.valid;
   }
 
   setIconPosition(): string {
@@ -237,12 +173,6 @@ export class NumberFieldComponent extends BaseFieldComponent implements OnInit, 
       return this.iconPosition;
     }
     return "end";
-  }
-
-  getDefaultValue() {
-    if (this.defaultValue != null) {
-      this.inputValue.setValue(this.defaultValue);
-    }
   }
 
   openCalculatorDialog() {
