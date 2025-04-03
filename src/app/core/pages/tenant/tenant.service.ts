@@ -165,6 +165,8 @@ export class TenantService extends BaseResourceService<ITenant> {
   getAnyTenantFromLocalStorage(): DatabasePermission | null{
     const storedDatabasePermissions: DatabasePermission[] = this.getTenantsFromLocalstorage();
     
+    console.log("dados de tenant obtidos do localstorage: ", storedDatabasePermissions);
+
     if(storedDatabasePermissions == null || storedDatabasePermissions.length == 0){
       return null;
     }

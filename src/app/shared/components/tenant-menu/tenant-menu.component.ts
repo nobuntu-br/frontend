@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthService } from 'app/core/auth/auth.service';
 import { DatabasePermission } from 'app/core/pages/tenant/databaseCredential/databasePermission.model';
 import { ITenant } from 'app/core/pages/tenant/tenant.model';
 import { TenantService } from 'app/core/pages/tenant/tenant.service';
@@ -23,23 +22,21 @@ export class TenantMenuComponent implements OnInit {
 
   constructor(
     private tenantService: TenantService,
-    private authService: AuthService,
     private router: Router
   ) {
 
   }
 
   ngOnInit(): void {
+    console.log("tenant-menu é inicializado agora e chama os tenants no localstorage para apresentar");
     //Obtem o Tenant atual para manipular o componente
     this.currentTenant = this.tenantService.currentTenant;
     this.getTenants();
   }
 
   async getTenants() {
-  
     this.currentTenant = this.tenantService.currentTenant;
     this.tenants = this.tenantService.getTenantsFromLocalstorage();
-
   }
 
   goToAddTenantPage() {

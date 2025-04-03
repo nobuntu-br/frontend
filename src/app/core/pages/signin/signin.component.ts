@@ -129,19 +129,18 @@ export class SigninComponent {
     let user: IUser;
 
     const closeMessage = this.translocoService.translate('core.sign-in-component.close');
+    // const signInSuccessMessage = this.translocoService.translate("core.sign-in-component.signIn-sucess");
 
     this.authService.signin(this.emailFormGroup.value.email, this.passwordFormGroup.value.password).pipe(take(1)).subscribe({
-      next:(value) => {
+      next:async (value) => {
         user = value;
 
         this.userService.addUserOnLocalStorage(user);
         this.userService.setCurrentUserOnLocalStorage(user);
         this.userService.moveUserToFirstPositionOnLocalStorage(user.UID);
         this.authService.currentUser = user;
-        this.tenantService.getTenantsAndSaveInLocalStorage(user.UID);
+        await this.tenantService.getTenantsAndSaveInLocalStorage(user.UID);
     
-        const signInSuccessMessage = this.translocoService.translate("core.sign-in-component.signIn-sucess");
-        
         this.router.navigate(['/home']);
       },
 

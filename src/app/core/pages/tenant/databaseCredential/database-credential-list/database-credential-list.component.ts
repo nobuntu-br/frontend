@@ -6,6 +6,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { DatabaseCredentialService } from '../databaseCredential.service';
 import { take } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
+import { FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-database-credential-list',
@@ -25,6 +26,8 @@ export class DatabaseCredentialListComponent {
 
   databaseCredentials: DatabaseCredential[] = [];
 
+  nameSearchForm: FormControl = new FormControl<string>("");
+
   constructor(
     public dialog: MatDialog,
     private databaseCredentialService: DatabaseCredentialService,
@@ -34,25 +37,34 @@ export class DatabaseCredentialListComponent {
 
   ngOnInit(): void {
 
+    this.getTenantIdByRouteParam();
+
+    this.getDatabaseCretentials(this.tenantId);
+
+  }
+
+  getTenantIdByRouteParam() {
     //Pegar o ID do tenant da rota
     this.route.paramMap.pipe(take(1)).subscribe(params => {
       this.tenantId = Number(params.get('id'));
     });
+  }
 
-    this.databaseCredentialService.getByTenantId(this.tenantId).pipe(take(1)).subscribe({
+  async getDatabaseCretentials(tenantId: number) {
+
+    this.databaseCredentialService.getByTenantId(tenantId).pipe(take(1)).subscribe({
       next: (databaseCredentials: DatabaseCredential[]) => {
         this.databaseCredentials = databaseCredentials;
         console.log(databaseCredentials);
         this.dataSource.data = this.databaseCredentials;
       },
-    })
+    });
 
   }
 
-  async getDatabaseCretentials(userUID: string) {
-    // this.databaseCredentials = await this.databaseCredentialService.
+  getDatabaseCredentialsByName(){
 
-    // console.log("tenants obtidos: ",this.tenants)
+    this.databaseCredentialService.getByTenantId
   }
 
   /** Whether the number of selected elements matches the total number of rows. */
@@ -81,6 +93,6 @@ export class DatabaseCredentialListComponent {
   }
 
   goToCreateNewDatabaseCredentialPage(tenantId: number) {
-    this.router.navigate(['tenant', tenantId ,'databaseCredential', 'add']);
+    this.router.navigate(['tenant', tenantId, 'databaseCredential', 'add']);
   }
 }
