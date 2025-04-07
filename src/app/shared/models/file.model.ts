@@ -15,12 +15,13 @@ export interface IFile extends BaseResourceModel {
     base64?: string;
 }
 
-export class FieldFile implements IFieldFile {
+export class FieldFile extends BaseResourceModel implements IFieldFile {
     fieldType: string;
     files: IFile[];
     user?: User;
 
     constructor() {
+        super();
         this.fieldType = 'file';
         this.files = [];
     }

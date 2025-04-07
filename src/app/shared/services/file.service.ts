@@ -28,8 +28,8 @@ export class FileService {
    * Atualiza um FieldFile
    * @param fieldFile FieldFile
    */
-  async updateFile(fieldFile: IFieldFile) {
-    return this.http.put<IFieldFile>(`${this.url}/${fieldFile.id}`, fieldFile);
+  updateFile(fieldFile: IFieldFile, id: number): Observable<string> {
+    return this.http.put<string>(`${this.url}/${id}`, fieldFile);
   }
 
   /**
@@ -89,5 +89,14 @@ export class FileService {
       reader.onload = () => resolve(reader.result as string);
       reader.onerror = error => reject(error);
     });
+  }
+
+  /**
+   * Busca um FieldFile pelo ID
+   * @param fileId ID do FieldFile
+   * @returns FieldFile
+  */
+  getFile(fileId: string): Observable<IFieldFile> {
+    return this.http.get<IFieldFile>(`${this.url}/files/${fileId}`);
   }
 }

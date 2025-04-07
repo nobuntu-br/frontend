@@ -1,11 +1,12 @@
 import { AfterViewInit, Component, Injector, Input } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { IFieldFile } from 'app/shared/models/file.model';
+import { FieldFile, IFieldFile } from 'app/shared/models/file.model';
 import { FileService } from 'app/shared/services/file.service';
 import { BaseFieldComponent } from '../base-field/base-field.component';
 import { Subject, takeUntil } from 'rxjs';
 import { BaseUpoadFieldComponent } from '../base-field/base-upload-field.component';
+import { ActivatedRoute } from '@angular/router';
 
 
 @Component({
@@ -39,8 +40,16 @@ export class UploadInputFieldComponent extends BaseUpoadFieldComponent implement
    * Maximo de tamanho do arquivo
     */
   @Input() maxFileSize: number; // Exemplo de tamanho máximo de arquivo
+  /**
+   * Ação atual
+   */
+  currentAction: string;
+  /**
+   * Arquivo que está sendo editado
+   */
+  fileEdit: IFieldFile;
 
-  public inputValue = new FormControl<string>(null);
+  public inputValue = new FormControl<string | FieldFile>(null);
   fileName: string = '';
   displayedLabel: string = 'Upload de Arquivo';
   placeholder: string = 'Selecione um arquivo';
@@ -48,13 +57,13 @@ export class UploadInputFieldComponent extends BaseUpoadFieldComponent implement
   isRequired: boolean = true;
   svgIcon: string = 'upload'; // Exemplo de ícone
 
-  constructor(protected injector: Injector, protected fileService: FileService, protected matSnackBar: MatSnackBar) {
+  constructor(protected injector: Injector, protected fileService: FileService, protected matSnackBar: MatSnackBar, private activatedRoute: ActivatedRoute) {
     super(injector, fileService, matSnackBar);
   }
 
   ngAfterViewInit(): void {
     this.setLabel();
-    // this.limitSelectedItems(); // Mantém a limitação de itens
+    this.setCurrentAction();
   }
 
   /**
@@ -62,24 +71,16 @@ export class UploadInputFieldComponent extends BaseUpoadFieldComponent implement
    */
   async onFileSelected(event: any) {
     const file: File = event.target.files[0];
-
     if (file) {
-      this.saveFile(file, this.maxFileSize, this.allowedExtensions).then((response: string) => {
-        this.inputValue.setValue(response);
-        this.fileName = file.name;
-      });
-    }
-  }
-
-  /**
-   * Limita a quantidade de itens selecionados
-   */
-  private limitSelectedItems(): void {
-    this.inputValue.valueChanges.subscribe((values) => {
-      if (values.length > this.selectItemsLimit && this.selectItemsLimit > 1) {
-        this.inputValue.setValue(values.slice(0, this.selectItemsLimit));
+      if(this.currentAction == "edit"){
+        this.updateFile(file, this.fileEdit.id, this.maxFileSize, this.allowedExtensions);
+      } else {
+        this.saveFile(file, this.maxFileSize, this.allowedExtensions).then((response: any) => {
+          this.inputValue.setValue(response);
+          this.fileName = file.name;
+        });
       }
-    });
+    }
   }
 
   setLabel() {
@@ -97,6 +98,27 @@ export class UploadInputFieldComponent extends BaseUpoadFieldComponent implement
       },
     });
   }
+
+ async displayDataOnEdit() {
+    this.inputValue.valueChanges.subscribe(async (value) => {
+      if (value) {
+        if (typeof value !== 'string' && value?.id) {
+          this.fileEdit = await this.getFile(value.id);
+          this.fileName = this.setFieldDisplayName(this.fileEdit.files);
+          console.log(this.fileEdit);
+        }
+      }
+    });
+  }
+
+  private setCurrentAction() {
+    const id = this.activatedRoute.snapshot.paramMap.get('id');
+    this.currentAction = id ? 'edit' : 'new';    
+    if (this.currentAction == 'edit') {
+      this.displayDataOnEdit();
+    }
+  }
+  
   
   // Define a posição do ícone (função opcional)
   setIconPosition() {

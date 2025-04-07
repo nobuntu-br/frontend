@@ -114,6 +114,7 @@ export abstract class BaseResourceFormComponent<T extends BaseResourceModel> imp
     this.submittingForm = true;
     for(let field in this.resourceForm.value){
       if(this.resourceForm.value[field] instanceof Array){
+        console.log("field: ", field);
         for(let i = 0; i < this.resourceForm.value[field].length; i++){
           if(this.resourceForm.value[field][i].fatherName){
             childrenData.push({item: this.resourceForm.value[field][i].item, apiUrl: this.resourceForm.value[field][i].apiUrl, fatherName: this.resourceForm.value[field][i].fatherName});
@@ -121,14 +122,13 @@ export abstract class BaseResourceFormComponent<T extends BaseResourceModel> imp
         }
       }
     }
-    console.log("childrenData: ", childrenData);
     if (this.currentAction == "new"){
       this.objectTratament(this.resourceForm.value);
-    
+      
       const resource: T = this.jsonDataToResourceFn(this.resourceForm.value);
       this.resourceService.create(resource).subscribe({
         next: (response) => {
-            const className = (this.resource.constructor as any).name.slice(1);
+          const className = (this.resource.constructor as any).name.slice(1);
           this.localStorageFormService.remove("new"+className);
           if(childrenData.length == 0){
             this.actionsForSuccess(response);
@@ -139,7 +139,6 @@ export abstract class BaseResourceFormComponent<T extends BaseResourceModel> imp
             console.log(response.id);
             console.log(className); 
             childrenData[i].item[className] = response.id;
-            console.log(childrenData[i].item[className]);
             let url = environment.backendUrl + '/' + childrenData[i].apiUrl;
             this.objectTratament(childrenData[i].item);
             this.http.post(url, childrenData[i].item).subscribe({

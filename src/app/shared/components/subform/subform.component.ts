@@ -317,11 +317,12 @@ export class SubformComponent implements AfterViewInit {
   openFormOnDialog() {
     let nameClass = this.dataToCreatePage.attributes[this.index].className;
     nameClass = nameClass.charAt(0).toLowerCase() + nameClass.slice(1);
-
+    
     let jsonPath = environment.jsonPath + nameClass + ".json";
-
+    
     this.formGeneratorService.getJSONFromDicionario(jsonPath).pipe(takeUntil(this.ngUnsubscribe)).subscribe((JSONDictionary: any) => {
-
+      console.log("JSONDictionary: ", JSONDictionary);
+      
       const dialogRef = this.matDialog.open(FormSpaceBuildComponent, {
         id: this.dataToCreatePage.attributes[this.index].name,
         maxHeight: '95vh', // Altura máxima de 90% da tela
@@ -344,6 +345,7 @@ export class SubformComponent implements AfterViewInit {
   }
 
   submitForm(JSONDictionary: IPageStructure, item: FormGroup) {
+    console.log("item: ", item);  
     if (item == null) return;
     this.createSubFormOffline(JSONDictionary, item);
   }
@@ -352,20 +354,38 @@ export class SubformComponent implements AfterViewInit {
    * Realizar uma alteração nos dados do formulário, removendo objetos e substituindo somente pelos IDs
    * @param item Formulário
    */
-  objectTratament(item){
-    for(let field in item){
-      if(item[field] instanceof Object){
-        if(item[field] instanceof Array){
-          item[field] = item[field].map((value) => value.id == undefined || value.id == null ? value : value.id);
+  /**
+   * Realizar uma alteração nos dados do formulário, removendo objetos e substituindo somente pelos IDs
+   * @param resourceForm Formulário
+   */
+  objectTratament(resourceForm): any{
+    console.log("resourceForm: ", resourceForm);
+    for(let field in resourceForm){
+      if(resourceForm[field] instanceof Object){
+        // console.log("é um objeto o campo: ", resourceForm[field]);
+        if(resourceForm[field] instanceof Array){
+          resourceForm[field] = resourceForm[field].map((value) => {
+            console.log("é um array o campo: ", value);
+            if(value.id == undefined || value.id == null){
+              return value;
+            }
+            return value.id == undefined || value.id == null ? value : value.id
+          });
         } else {
-          if(item[field].id == undefined || item[field].id == null){
+          if(resourceForm[field].id == undefined || resourceForm[field].id == null){
+            console.log("não é um array o campo: ", resourceForm[field]);
             continue;
           }
-          item[field] = item[field].id;
+          resourceForm[field] = resourceForm[field].id;
         }
       }
+      // if(resourceForm[field] instanceof Array){
+      //   console.log("é um array o campo: ", resourceForm[field]);
+      //   resourceForm[field] = resourceForm[field][0];
+      //   continue;
+      // }
     }
-    return item;
+    return resourceForm;
   }
 
   createSubFormOffline(JSONDictionary: IPageStructure, item: FormGroup) {
@@ -382,7 +402,7 @@ export class SubformComponent implements AfterViewInit {
     this.itemsDisplayed.push(item);
     let { itemDisplayedOnSubFormType, objectDisplayedValueOnSubForm, attributesOnSubForm } = this.getAttributesToSubForm(JSONDictionary);
     this.createItemsOnList(this.itemsDisplayed, itemDisplayedOnSubFormType, objectDisplayedValueOnSubForm, attributesOnSubForm);
-    let valueToInput = {item: item, apiUrl: JSONDictionary.config.apiUrl, fatherName: this.getFatherReferenceName(JSONDictionary)};
+    let valueToInput = this.objectTratament({ ...item });
 
     const currentValue = this.inputValue.value || [];
     this.inputValue.setValue([...currentValue, valueToInput]);
