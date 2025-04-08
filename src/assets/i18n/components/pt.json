@@ -80,6 +80,7 @@
         "deleteSuccessMessage": "Exclusão bem-sucedida",
         "defaultSuccessMessage": "Operação bem-sucedida",
         "defaultErrorMessage": "Erro ao realizar a operação",
+        "errorMessageLimitation": "Quantidade de caracteres excedida",
         "rememberToSave": "Tem certeza de que deseja sair? Suas alterações podem não ser salvas",
         "deselectMessage": "Os itens foram removido da seleção"
     },

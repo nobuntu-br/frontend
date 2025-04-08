@@ -32,6 +32,7 @@ export interface ICreateComponentParams {
   className: string,
   fieldName: string,
   fieldType: string,
+  limiteOfChars: number, //criado novo
   isRequired: boolean,
   value,
   labelTittle: string,
@@ -138,6 +139,7 @@ export class FormGeneratorService {
         className: attribute.className,
         fieldName: attribute.name,
         fieldType: attribute.type,
+        limiteOfChars: attribute.limiteOfChars, //criado novo
         isRequired: attribute.isRequired,
         value: attribute.apiUrl,
         labelTittle: attribute.name,

@@ -42,6 +42,10 @@ export class InputFieldComponent extends BaseFieldComponent implements OnInit, O
     */
   @Input() needMaskValue: boolean;
   /**
+    * Verifica a quantidade de caracteres limites.\
+    */
+  @Input() limiteOfChars: number;
+  /**
    * Ícone svg para ser apresentado no campo.
    */
   @Input() svgIcon: string | null;
@@ -97,11 +101,28 @@ export class InputFieldComponent extends BaseFieldComponent implements OnInit, O
     this.checkEmailValidation();
     this.setEmailIcon();
     this.applyMaskToValue();
+    this.checkCharacterLimit(); 
   }
 
   ngOnChanges(): void {
     this.checkEmailValidation();
+    this.checkCharacterLimit();
     this.applyMaskToValue();
+  }
+
+  checkCharacterLimit() {
+    if (this.limiteOfChars) {
+      this.inputValue.setValidators([
+        ...this.inputValue.validator ? [this.inputValue.validator] : [],
+        (control: FormControl) => {
+          const value = control.value || '';
+          return value.length <= this.limiteOfChars
+            ? null
+            : { characterLimitExceeded: true };
+        }
+      ]);
+      this.inputValue.updateValueAndValidity();
+    }
   }
 
   checkEmailValidation() {

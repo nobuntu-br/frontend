@@ -20,13 +20,13 @@ export class NumberField implements FormField {
     createdComponent.className = createComponentData.className;
     const translocoService = this.injector.get(TranslocoService);
     const currentLang = translocoService.getActiveLang();
-    createdComponent.mask = createComponentData.mask; // vai usar vírgula automaticamente
+    createdComponent.mask = createComponentData.mask; 
     createdComponent.maskType = createComponentData.maskType;
 
     createdComponent.charactersLimit = createComponentData.charactersLimit;
+    createdComponent.limiteOfChars = createComponentData.limiteOfChars; //criado novo
     createdComponent.numberOfDecimals = createComponentData.numberOfDecimals;
     createdComponent.decimalSeparator = createComponentData.decimalSeparator;
-    // novos campos 
     createdComponent.conditionalVisibility = createComponentData.conditionalVisibility
     createdComponent.resourceForm = createComponentData.resourceForm;
     // O ícone da calculadora e o click já estão hardcoded no componente 
