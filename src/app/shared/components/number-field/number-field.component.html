@@ -1,0 +1,32 @@
+<mat-form-field style="width: 100%;" appearance="outline">
+  <mat-label>{{displayedLabel}}</mat-label>
+  <input 
+    matInput 
+    style="text-align: right;" 
+    placeholder="{{placeholder}}" 
+    [formControl]="inputValue" 
+    (blur)="applyFinalFormatting()"
+    [attr.maxlength]="charactersLimit ? charactersLimit : null" 
+    [required]="isRequired" 
+    [mask]="mask">
+  
+  <mat-icon 
+    (click)="actionOnClickInIcon && actionOnClickInIcon()" 
+    *ngIf="svgIcon != null && setIconPosition() == 'start'" 
+    matPrefix>
+    {{svgIcon}}
+  </mat-icon>
+  
+  <mat-icon 
+    (click)="actionOnClickInIcon && actionOnClickInIcon()" 
+    *ngIf="svgIcon != null && setIconPosition() == 'end'" 
+    matSuffix>
+    {{svgIcon}}
+  </mat-icon>
+
+  <mat-error *ngIf="inputValue.invalid && inputValue.touched">
+    <span *ngIf="inputValue.hasError('required')">This field is required.</span>
+    <span *ngIf="inputValue.hasError('pattern') && maskType?.toLowerCase() === 'double'">Por favor insira um número decimal.</span>
+    <span *ngIf="inputValue.hasError('pattern') && maskType?.toLowerCase() === 'integer'">Por favor insira um número inteiro.</span>
+  </mat-error>
+</mat-form-field>

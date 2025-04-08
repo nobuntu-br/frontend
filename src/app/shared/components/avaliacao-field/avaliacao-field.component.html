@@ -1,17 +1,25 @@
-<div class="rating-container">
-    <label>{{ label }}</label>
-    <div class="rating">
-      <ng-container *ngFor="let star of stars; let i = index">
+<div class="avaliacao-unica-container">
+  <label class="avaliacao-unica-label">{{ label }}</label>
+  <mat-form-field style="width: 100%;" appearance="outline">
+    <div class="icon-selector" *ngIf="showSelector">
+      <ng-container *ngFor="let star of numberOfIcons; let i = index">
         <mat-icon
-          class="star"
-          [class.filled]="i < inputValue.value"
-          (click)="rate(i + 1)"
+          class="icon"
+          (click)="selectIcon(star)"
         >
-          {{ i < inputValue.value ? 'star' : 'star_border' }}
+          {{ icones[0].nome }}
         </mat-icon>
       </ng-container>
     </div>
+    <div class="selected-icon" *ngIf="!showSelector" (click)="showIconSelector()">
+      <ng-container *ngFor="let i of [].constructor(valueSelected)">
+        <mat-icon>{{ icones[0].nome }}</mat-icon>
+      </ng-container>
+      
+    </div>
+    <input matInput [formControl]="inputValue" hidden>
     <mat-error *ngIf="inputValue.invalid && inputValue.touched">
-      Please provide a rating.
+      Please select an icon.
     </mat-error>
-  </div>
+  </mat-form-field>
+</div>

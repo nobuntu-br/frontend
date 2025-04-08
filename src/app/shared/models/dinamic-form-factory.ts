@@ -4,7 +4,7 @@ import { TextField } from "../components/input-field/text-field";
 import { FormFactory } from "./form-Factory";
 import { ICreateComponentParams } from "../services/form-generator.service";
 import { ForeignKeyField } from "../components/foreign-key-input-field/foreignKey-field";
-import { NumberField } from "../components/input-field/number-field";
+import { NumberField } from "../components/number-field/number-field";
 import { SelectorField } from "../components/selector-input-field/selector-field";
 import { SubFormField } from "../components/subform/subform-field";
 import { FormField } from "./form-field";

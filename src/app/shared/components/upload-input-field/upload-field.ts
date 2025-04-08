@@ -4,8 +4,8 @@ import { ICreateComponentParams } from 'app/shared/services/form-generator.servi
 import { UploadInputFieldComponent } from './upload-input-field.component';
 
 export class UploadField implements FormField {
-	createFormField(createComponentData: ICreateComponentParams): FormControl {
-		let createdComponent = createComponentData.target.createComponent(UploadInputFieldComponent);
+    createFormField(createComponentData: ICreateComponentParams): FormControl {
+        let createdComponent = createComponentData.target.createComponent(UploadInputFieldComponent);
         const component = createdComponent.instance;
 
         component.label = createComponentData.labelTittle;
@@ -14,6 +14,8 @@ export class UploadField implements FormField {
         component.className = createComponentData.className;
         component.maxFileSize = createComponentData.maxFileSize;
         component.ngAfterViewInit();
-		return createdComponent.instance.inputValue;
-	}
+        component.conditionalVisibility = createComponentData.conditionalVisibility
+        component.resourceForm = createComponentData.resourceForm;
+        return createdComponent.instance.inputValue;
+    }
 }

@@ -4,12 +4,14 @@ import { ICreateComponentParams } from 'app/shared/services/form-generator.servi
 import { TimeFieldComponent } from './time-field.component';
 
 export class TimeField implements FormField {
-	createFormField(createComponentData: ICreateComponentParams): FormControl {
+  createFormField(createComponentData: ICreateComponentParams): FormControl {
 
-        let createdComponent = createComponentData.target.createComponent(TimeFieldComponent);
-        createdComponent.instance.label = createComponentData.labelTittle;
-        createdComponent.instance.isRequired = createComponentData.isRequired;
-        createdComponent.instance.className = createComponentData.className;
-        return createdComponent.instance.inputValue;
-      }
+    let createdComponent = createComponentData.target.createComponent(TimeFieldComponent);
+    createdComponent.instance.label = createComponentData.labelTittle;
+    createdComponent.instance.isRequired = createComponentData.isRequired;
+    createdComponent.instance.className = createComponentData.className;
+    createdComponent.instance.conditionalVisibility = createComponentData.conditionalVisibility
+    createdComponent.instance.resourceForm = createComponentData.resourceForm;
+    return createdComponent.instance.inputValue;
+  }
 }

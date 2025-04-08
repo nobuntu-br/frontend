@@ -15,7 +15,9 @@ export class ForeignKeyField implements FormField {
         createdComponent.instance.fieldDisplayedInLabel = createComponentData.fieldDisplayedInLabel;
         createdComponent.instance.className = createComponentData.className;
         createdComponent.instance.index = createComponentData.index;
-        
+        createdComponent.instance.conditionalVisibility = createComponentData.conditionalVisibility
+        createdComponent.instance.resourceForm = createComponentData.resourceForm;
+
         return createdComponent.instance.inputValue;
     }
 }

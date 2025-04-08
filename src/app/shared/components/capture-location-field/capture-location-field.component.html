@@ -1,9 +1,21 @@
 <mat-form-field style="width: 100%;" appearance="outline">
-    <mat-label>{{ displayedLabel }}</mat-label>
-    <!-- Input field to display the selected location -->
-    <input matInput [formControl]="inputValue" placeholder="Select a location on the map" readonly>
-  </mat-form-field>
+  <mat-label>{{ displayedLabel }}</mat-label>
+  <input 
+    matInput 
+    placeholder="{{ placeholder }}" 
+    [formControl]="inputValue" 
+    [maxlength]="charactersLimit" 
+    [required]="isRequired" 
+    [mask]="mask"
+    readonly
+    (click)="getCurrentLocation()"
+  >
   
-  <!-- Div to hold the Leaflet map -->
-  <div id="map" style="height: 400px; width: 100%;"></div>
-  
+  <!-- Ícone de captura de localização -->
+  <mat-icon 
+    (click)="getCurrentLocation()" 
+    *ngIf="svgIcon != null && setIconPosition() == 'end'" 
+    [matIconSuffix] 
+    svgIcon="{{ svgIcon }}"
+  ></mat-icon>
+</mat-form-field>
