@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, Input, Output, Renderer2, ViewChild, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, Component, ChangeDetectorRef, EventEmitter, Input, Output, Renderer2, ViewChild, ViewContainerRef } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { FormGeneratorService, ICreateComponentParams } from 'app/shared/services/form-generator.service';
 import { IPageStructure } from 'app/shared/models/pageStructure';
@@ -38,7 +38,8 @@ export class GeneratedSimpleFormComponent implements AfterViewInit {
 
   constructor(
     public formGenerator: FormGeneratorService,
-    private maskService: MaskService
+    private maskService: MaskService,
+    private cdr: ChangeDetectorRef
   ) { }
 
   ngAfterViewInit(): void {
@@ -85,6 +86,7 @@ export class GeneratedSimpleFormComponent implements AfterViewInit {
 
       });
       this.formIsReady.emit(true);
+      this.cdr.detectChanges();
     }, 0);
   }
 }
