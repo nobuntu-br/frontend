@@ -12,8 +12,9 @@ export class TextField implements FormField {
     createdComponent.instance.className = createComponentData.className;
     createdComponent.instance.defaultValue = createComponentData.defaultValue;
     createdComponent.instance.mask = createComponentData.mask;
-    createdComponent.instance.maskType = createComponentData.maskType; 
-    createdComponent.instance.needMaskValue = createComponentData.needMaskValue; 
+    createdComponent.instance.maskType = createComponentData.maskType; //criado novo
+    createdComponent.instance.needMaskValue = createComponentData.needMaskValue; //criado novo
+    createdComponent.instance.limiteOfChars = createComponentData.limiteOfChars; //criado novo
     createdComponent.instance.conditionalVisibility = createComponentData.conditionalVisibility
     createdComponent.instance.resourceForm = createComponentData.resourceForm;
     return createdComponent.instance.inputValue;

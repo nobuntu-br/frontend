@@ -20,6 +20,16 @@
   text-align: right;
 }
 
+.input-error {
+  mat-form-field {
+    border-color: red;
+  }
+
+  input {
+    border: 1px solid red;
+  }
+}
+
 .calculator-buttons {
   display: grid;
   grid-template-columns: repeat(4, 1fr);

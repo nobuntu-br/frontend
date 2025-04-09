@@ -78,6 +78,7 @@
         "deleteSuccessMessage": "Delete successful",
         "defaultSuccessMessage": "Operation successful",
         "defaultErrorMessage": "Operation error",
+        "errorMessageLimitation": "Limitation is not valid",
         "rememberToSave": "Are you sure you want to exit? Your changes may not be saved",
         "deselectMessage": "The items have been removed from the selection"
     },

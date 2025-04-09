@@ -13,6 +13,7 @@ export interface IPageStructureConfig {
   modified: Date;
   description: string;
   name: string;
+  limiteOfChars: number; //criado novo
   apiUrl: string;
   route: string;
   title: ITitle;
@@ -34,6 +35,8 @@ export interface IPageStructureConfig {
   conditionalVisibility?: { field: string, values: string[] }; //criado novo
   locationMarker?: { lat: number, lng: number, quadrant?: string }; //criado novo?
   needMaskValue?: boolean; //criado novo
+  numberOfDecimals?: number; //criado novo
+  decimalSeparator?: string; //criado novo
 }
 
 export interface ITitle {
@@ -49,6 +52,7 @@ export interface ISearchableField {
 export interface IPageStructureAttribute {
   name: string;
   type: string;
+  limiteOfChars: number; //criado novo
   isRequired: boolean,
   className: string;
   many: boolean;

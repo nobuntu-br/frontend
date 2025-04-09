@@ -58,6 +58,7 @@ export class GeneratedSimpleFormComponent implements AfterViewInit {
           className: this.className,
           fieldName: attribute.name,
           fieldType: attribute.type,
+          limiteOfChars: attribute.limiteOfChars, //criado novo
           conditionalVisibility: attribute.conditionalVisibility, //criado novo
           locationMarker: attribute.locationMarker, //criado novo
           numberOfIcons: attribute.numberOfIcons,  //criado novo

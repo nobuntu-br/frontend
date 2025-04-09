@@ -1,4 +1,4 @@
-import { Component, Injector, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
+import { Component, Injector, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { BaseFieldComponent } from '../base-field/base-field.component';
 import { Subject, takeUntil } from 'rxjs';
@@ -25,6 +25,7 @@ export class NumberFieldComponent extends BaseFieldComponent implements OnInit, 
   @Input() actionOnClickInIcon: () => void = null;
   @Input() conditionalVisibility: { field: string, values: string[] }
   @Input() resourceForm: FormGroup<any>;
+  @Input() limiteOfChars: number; // criado novo
   @Input() numberOfDecimals: number; // criado novo
   @Input() decimalSeparator: string; // criado novo
 
@@ -35,6 +36,7 @@ export class NumberFieldComponent extends BaseFieldComponent implements OnInit, 
   public errorMessage: string = '';
   private inputSubscription: any = null;
   valueForSaving: any;
+  
 
   constructor(protected injector: Injector, private dialog: MatDialog) {
     super(injector);
@@ -46,6 +48,27 @@ export class NumberFieldComponent extends BaseFieldComponent implements OnInit, 
     this.checkConditional();
     this.setIconPhone();
     this.setupMaskAndListener();
+    this.checkCharacterLimit(); 
+  }
+
+  checkCharacterLimit() {
+    if (this.limiteOfChars) {
+      this.inputValue.setValidators([
+        ...this.inputValue.validator ? [this.inputValue.validator] : [],
+        (control: FormControl) => {
+          const value = control.value || '';
+          const valueString = value.toString().trim(); 
+          const separatorIndex = valueString.indexOf(this.decimalSeparator || '.');
+          const limitedChars = this.limiteOfChars+this.numberOfDecimals+1; 
+          const integerPart = separatorIndex !== -1 ? valueString.substring(0, separatorIndex) : valueString;
+  
+          return integerPart.length <= limitedChars
+            ? null
+            : { characterLimitExceeded: true };
+        }
+      ]);
+      this.inputValue.updateValueAndValidity(); 
+    }
   }
 
   getDefaultValue() {
