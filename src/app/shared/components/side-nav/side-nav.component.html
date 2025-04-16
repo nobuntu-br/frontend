@@ -2,44 +2,39 @@
   style="height: 100%">
   <mat-sidenav #drawer [mode]="(isHandset$ | async) ? 'over' : 'side'" [opened]="sideNavBarIsOpened">
     <mat-toolbar>{{ menuTitle }}</mat-toolbar>
-    <mat-nav-list *ngFor="let option of navListOptions">
-      <ng-container *transloco="let t">
-        <div *ngIf="option.isSubmenu">
-          <mat-expansion-panel [class.mat-elevation-z0]="true">
-            <mat-expansion-panel-header>
-              <mat-panel-title>
-                <mat-icon *ngIf="option.icon" class="icon-menu">{{
-                  option.icon
-                  }}</mat-icon>
-                <span>{{
-                  t(option.optionName + "." + option.optionName)
-                  }}</span>
-              </mat-panel-title>
-              <mat-icon *ngIf="!option.icon" matSuffix>keyboard_arrow_down</mat-icon>
-            </mat-expansion-panel-header>
-            <mat-nav-list>
-              <ng-container *ngFor="let subOption of option.subMenu">
-                <a mat-list-item [routerLink]="subOption.routeUrl" (mouseup)="closeSideNavBar()" class="custom-button"
-                  style="margin: auto;">
-                  <mat-icon mat-list-icon class="icon-menu">{{
-                    subOption.icon
-                    }}</mat-icon>
-                  <span>{{ subOption.name }}</span>
-                </a>
-              </ng-container>
-            </mat-nav-list>
-          </mat-expansion-panel>
-        </div>
-        <div *ngIf="!option.isSubmenu">
-          <a mat-list-item [routerLink]="option.routeUrl" (mouseup)="closeSideNavBar()" class="custom-button">
-            <mat-icon mat-list-icon *ngIf="option.icon" class="icon-menu">{{
-              option.icon
-              }}</mat-icon>
-            <span>{{ t(option.optionName + "." + option.optionName) }}</span>
-          </a>
-        </div>
-      </ng-container>
-    </mat-nav-list>
+  
+    <!-- Template recursivo para a árvore de navegação -->
+    <ng-template #recursiveMenu let-options>
+      <mat-nav-list>
+        <ng-container *ngFor="let option of options">
+          <!-- Se o item tiver subMenu, renderiza um expansion panel -->
+          <div *ngIf="option.subMenu && option.subMenu.length > 0">
+            <mat-expansion-panel [class.mat-elevation-z0]="true">
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  <!-- Ícone e nome do item -->
+                  <mat-icon *ngIf="option.icon" class="icon-menu">{{ option.icon }}</mat-icon>
+                  <span>{{ option.name }}</span>
+                </mat-panel-title>
+              </mat-expansion-panel-header>
+              <!-- Chamada recursiva do mesmo template para renderizar o subMenu -->
+              <ng-container *ngTemplateOutlet="recursiveMenu; context: { $implicit: option.subMenu }"></ng-container>
+            </mat-expansion-panel>
+          </div>
+  
+          <!-- Caso o item não tenha subMenu, renderiza como um link simples -->
+          <div *ngIf="!option.subMenu || option.subMenu.length === 0">
+            <a mat-list-item [routerLink]="option.routeUrl" (mouseup)="closeSideNavBar()" class="custom-button">
+              <mat-icon mat-list-icon *ngIf="option.icon" class="icon-menu">{{ option.icon }}</mat-icon>
+              <span>{{ option.name }}</span>
+            </a>
+          </div>
+        </ng-container>
+      </mat-nav-list>
+    </ng-template>
+  
+    <!-- Inicia a renderização da árvore com a lista principal -->
+    <ng-container *ngTemplateOutlet="recursiveMenu; context: { $implicit: navListOptions }"></ng-container>
   </mat-sidenav>
   <mat-sidenav-content class="sidenav-content">
     <mat-toolbar id="toolbar" class="flex-container">
