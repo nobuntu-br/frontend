@@ -29,6 +29,11 @@
 
       <!-- Botões apresentados quando só se tem um usuário com acesso na aplicação -->
       <div>
+        <!-- Botão para trocar o menu caso o usuário tenha mais de um menu -->
+        <button mat-menu-item *ngIf="menus.length > 1" [matMenuTriggerFor]="switchMenu">
+          <mat-icon>swap_horiz</mat-icon>
+          {{t("switch-menu")}}
+        </button>
         <!-- Botão para fazer acesso a outra conta -->
         <button mat-menu-item (click)="goToSignInPage()">
           <mat-icon>add</mat-icon>
@@ -120,3 +125,9 @@
     </div>
   </mat-menu>
 </ng-container>
+
+<mat-menu #switchMenu="matMenu" [overlapTrigger]="false" [hasBackdrop]="true">
+  <button mat-menu-item *ngFor="let menu of menus" (click)="setCurrentMenu(menu)" [disabled]="menu.id === currentMenuId">
+    <span>{{menu.fileName}}</span>
+  </button>
+</mat-menu>
