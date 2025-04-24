@@ -132,7 +132,8 @@
         "signed-out": "Signed out",
         "settings": "Settings",
         "hi": "Hi",
-        "manage-your-account": "Manage your account"
+        "manage-your-account": "Manage your account",
+        "switch-menu": "Trocar menu"
     },
     "tenant-menu-component": {
         "add-tenant": "Adicionar Tenant",

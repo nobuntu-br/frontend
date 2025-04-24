@@ -59,7 +59,7 @@ export class UserMenuComponent implements OnInit {
   }
 
   setCurrentMenu(menu: {id: string, fileName: string}) {
-    localStorage.setItem('currentMenu', JSON.stringify(menu.id));
+    localStorage.setItem('currentMenu', JSON.stringify(menu));
     window.location.reload();
   }
 
