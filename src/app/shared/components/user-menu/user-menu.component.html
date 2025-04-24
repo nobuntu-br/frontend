@@ -127,7 +127,7 @@
 </ng-container>
 
 <mat-menu #switchMenu="matMenu" [overlapTrigger]="false" [hasBackdrop]="true">
-  <button mat-menu-item *ngFor="let menu of menus" (click)="setCurrentMenu(menu)" [disabled]="menu.id === currentMenuId">
+  <button mat-menu-item *ngFor="let menu of menus" (click)="setCurrentMenu(menu)" [disabled]="menu.id === currentMenuId.id">
     <span>{{menu.fileName}}</span>
   </button>
 </mat-menu>

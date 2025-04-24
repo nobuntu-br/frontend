@@ -143,11 +143,13 @@ export class SideNavComponent implements OnInit, OnDestroy {
    */
   getDataToMenu(): Observable<INavList[]> {
     if (localStorage.getItem('currentMenu')) {
+      console.log("Menu From localStorage", JSON.parse(localStorage.getItem('currentMenu')));
       return this.getDataToMenuLocalStorage(JSON.parse(localStorage.getItem('currentMenu')));
     }
     return this.menuService.getMenuByRole().pipe(
       tap({
         next: (data: INavList[]) => {
+          console.log(data)
           this.menuAccessible(data);
         },
         error: (error) => {
@@ -162,9 +164,11 @@ export class SideNavComponent implements OnInit, OnDestroy {
    * @returns Retorna um array com informações para criar o menu de navegação.
    */
   getDataToMenuLocalStorage(menu: {fileName: string, id: string}): Observable<INavList[]> {
+    console.log("Menu From localStorage", menu);
     return this.menuService.getMenuByFileName(menu.fileName).pipe(
       tap({
       next: (data: INavList) => {
+        console.log("Menu From localStorage", data);
         let dataInArray = [data];
         this.menuAccessible(dataInArray);
       },

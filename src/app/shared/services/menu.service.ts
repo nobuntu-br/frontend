@@ -17,7 +17,6 @@ export class MenuService {
 
   getMenuByRole(): Observable<INavList[] | INavList> {
     const rolesId = this.getRolesId();
-
     if(!rolesId || rolesId.length === 0) {
       return this.getDefaultMenu();
     }
