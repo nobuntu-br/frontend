@@ -7,7 +7,7 @@
     <mat-checkbox [checked]="isSelected" (change)="selectItem($event)"
       *ngIf="isSelectable == true && isCheckBox == true"></mat-checkbox>
 
-    <div class="expandable">
+    <div class="expandable" [ngStyle]="gridStyles">
       <ng-container #placeToRender></ng-container>
     </div>
 
