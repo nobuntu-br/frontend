@@ -1,6 +1,6 @@
 <mat-form-field style="width: 100%;" appearance="outline">
     <mat-label>{{ label }}</mat-label>
-    <input matInput [formControl]="inputValue" [placeholder]="placeholder" required>
+    <input matInput [formControl]="displayedValue" [placeholder]="placeholder" required>
     <button mat-icon-button matSuffix [matMenuTriggerFor]="menu" class="h-full flex flex-col">
         <mat-icon svgIcon="feather:more-vertical"></mat-icon>
     </button>
