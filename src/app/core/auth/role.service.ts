@@ -1,8 +1,5 @@
 import { Injectable } from '@angular/core';
-import { catchError, firstValueFrom, from, Observable, of, switchMap, take, throwError } from 'rxjs';
-import { Router } from '@angular/router';
-import { IUser, SignupDTO } from './user.model';
-import { TenantService } from '../tenant/tenant.service';
+import { catchError, of } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'environments/environment';
 import { UserService } from './user.service';

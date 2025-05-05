@@ -519,7 +519,7 @@ export class DefaultListComponent
 
   checkItem(
     selectedItemsLimit: number,
-    componentCreated: SelectableCardComponent,
+    componentCreated: SelectableCardComponent | SelectableListItemComponent,
     data
   ) {
     const dataIsSelected: boolean = this.selectedItems.some(
