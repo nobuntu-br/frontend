@@ -109,7 +109,8 @@ export class GeneratedStepperFormComponent implements AfterViewInit{
             labelTittle: attribute.name,
             dataToCreatePage: this.dataToCreatePage,
             fieldDisplayedInLabel: attribute.fieldDisplayedInLabel,
-            valuesList: null
+            valuesList: null,
+            limiteOfChars: attribute.limiteOfChars, //criado novo
           }
           if (attribute.formTab == stepName) {
             this.formGenerator.createComponent(createComponentData);

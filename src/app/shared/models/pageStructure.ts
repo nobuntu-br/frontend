@@ -13,6 +13,7 @@ export interface IPageStructureConfig {
   modified: Date;
   description: string;
   name: string;
+  limiteOfChars: number; //criado novo
   apiUrl: string;
   route: string;
   title: ITitle;
@@ -27,6 +28,15 @@ export interface IPageStructureConfig {
   isFormStepper: boolean;
   isLinearFormStepper: boolean;
   icones?: IconOption[];
+  mask?: string;
+  maskType?: string; // criado novo
+  charactersLimit?: number;
+  numberOfIcons?: number[];  //criado novo
+  conditionalVisibility?: { field: string, values: string[] }; //criado novo
+  locationMarker?: { lat: number, lng: number, quadrant?: string }; //criado novo?
+  needMaskValue?: boolean; //criado novo
+  numberOfDecimals?: number; //criado novo
+  decimalSeparator?: string; //criado novo
 }
 
 export interface ITitle {
@@ -42,6 +52,7 @@ export interface ISearchableField {
 export interface IPageStructureAttribute {
   name: string;
   type: string;
+  limiteOfChars: number; //criado novo
   isRequired: boolean,
   className: string;
   many: boolean;
@@ -67,6 +78,14 @@ export interface IPageStructureAttribute {
   icones?: IconOption[];
   mask?: string;
   maxFileSize?: number;
+  maskType?: string; // criado novo
+  charactersLimit?: number;
+  numberOfIcons?: number[];  //criado novo
+  conditionalVisibility?: { field: string, values: string[] }; //criado novo
+  locationMarker?: { lat: number, lng: number, quadrant?: string }; //criado novo?
+  needMaskValue?: boolean; //criado novo
+  numberOfDecimals?: number; //criado novo
+  decimalSeparator?: string; //criado novo
 }
 
 export interface IPageStructureAttributesProperties {
@@ -77,6 +96,8 @@ export interface IPageStructureAttributesProperties {
   visibleFilter: boolean;
   visibleList: boolean;
   visibleForm: boolean;
+  conditionalVisibility?: { field: string, values: string[] };  //criado novo
+  locationMarker?: { lat: number, lng: number, quadrant?: string }; //criado novo
 }
 
 export class PageStructure implements IPageStructure {

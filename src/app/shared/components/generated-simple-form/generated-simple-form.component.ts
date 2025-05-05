@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, Input, Output, Renderer2, ViewChild, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, Component, ChangeDetectorRef, EventEmitter, Input, Output, Renderer2, ViewChild, ViewContainerRef } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { FormGeneratorService, ICreateComponentParams } from 'app/shared/services/form-generator.service';
 import { IPageStructure } from 'app/shared/models/pageStructure';
@@ -38,7 +38,8 @@ export class GeneratedSimpleFormComponent implements AfterViewInit {
 
   constructor(
     public formGenerator: FormGeneratorService,
-    private maskService: MaskService
+    private maskService: MaskService,
+    private cdr: ChangeDetectorRef
   ) { }
 
   ngAfterViewInit(): void {
@@ -58,6 +59,10 @@ export class GeneratedSimpleFormComponent implements AfterViewInit {
           className: this.className,
           fieldName: attribute.name,
           fieldType: attribute.type,
+          limiteOfChars: attribute.limiteOfChars, //criado novo
+          conditionalVisibility: attribute.conditionalVisibility, //criado novo
+          locationMarker: attribute.locationMarker, //criado novo
+          numberOfIcons: attribute.numberOfIcons,  //criado novo
           isRequired: attribute.isRequired ? attribute.isRequired : false,
           value: {propertiesAttributes: attribute.properties, apiUrl: attribute.apiUrl},
           labelTittle: attribute.name,
@@ -71,12 +76,17 @@ export class GeneratedSimpleFormComponent implements AfterViewInit {
           allowedExtensions: attribute.allowedExtensions,
           mask: this.maskService.getMaskPattern(attribute.mask),
           maxFileSize: attribute.maxFileSize,
+          maskType: attribute.mask, //criado novo
+          needMaskValue: attribute.needMaskValue, //criado novo
+          numberOfDecimals: attribute.numberOfDecimals, //criado novo
+          decimalSeparator: attribute.decimalSeparator, //criado novo
         }
 
         this.formGenerator.createComponent(createComponentData)
 
       });
       this.formIsReady.emit(true);
+      this.cdr.detectChanges();
     }, 0);
   }
 }

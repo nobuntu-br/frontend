@@ -4,6 +4,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { TranslocoService } from '@ngneat/transloco';
 import { AuthService } from 'app/core/auth/auth.service';
+import { RoleService } from 'app/core/auth/role.service';
 import { IUser } from 'app/core/auth/user.model';
 import { UserService } from 'app/core/auth/user.service';
 import { TenantService } from 'app/core/pages/tenant/tenant.service';
@@ -60,6 +61,7 @@ export class SigninComponent {
     private userService: UserService,
     private tenantService: TenantService,
     private translocoService: TranslocoService,
+    private roleService: RoleService,
     private router: Router,
     private _formBuilder: FormBuilder,
     private snackBar: MatSnackBar,
@@ -139,6 +141,7 @@ export class SigninComponent {
         this.userService.setCurrentUserOnLocalStorage(user);
         this.userService.moveUserToFirstPositionOnLocalStorage(user.UID);
         this.authService.currentUser = user;
+        this.roleService.getRolesUserByIdInLocalStorage(user.id);
         await this.tenantService.getTenantsAndSaveInLocalStorage(user.UID);
     
         this.router.navigate(['/home']);

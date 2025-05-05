@@ -1,5 +1,5 @@
-import { Component, Injector, Input, OnDestroy, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { Component, Injector, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { BaseFieldComponent } from '../base-field/base-field.component';
 import { Subject, takeUntil } from 'rxjs';
 
@@ -8,7 +8,7 @@ import { Subject, takeUntil } from 'rxjs';
   templateUrl: './input-field.component.html',
   styleUrls: ['./input-field.component.scss']
 })
-export class InputFieldComponent extends BaseFieldComponent implements OnInit, OnDestroy {
+export class InputFieldComponent extends BaseFieldComponent implements OnInit, OnDestroy, OnChanges {
 
   /**
    * Nome da classe que pertence esse campo.
@@ -22,7 +22,7 @@ export class InputFieldComponent extends BaseFieldComponent implements OnInit, O
    * Quantidade máxima de letras.\
    * Exemplo: 255.
    */
-  @Input() charactersLimit : number;
+  @Input() charactersLimit: number;
   /**
    * Texto que é apresentado caso o campo esteja vazio.\
    * Exemplo: "Insira o valor aqui".
@@ -33,6 +33,18 @@ export class InputFieldComponent extends BaseFieldComponent implements OnInit, O
    * Exemplo: "0*.0*" no caso é uma sequência de números, um ponto e seguido de uma sequência de números
    */
   @Input() mask: string;
+  /**
+  * Tipo de mascara pra fazer a validacao do campo.\
+  */
+  @Input() maskType: string;
+  /**
+    * Verifica se é necessario salvar com a formatação da mascara.\
+    */
+  @Input() needMaskValue: boolean;
+  /**
+    * Verifica a quantidade de caracteres limites.\
+    */
+  @Input() limiteOfChars: number;
   /**
    * Ícone svg para ser apresentado no campo.
    */
@@ -55,6 +67,14 @@ export class InputFieldComponent extends BaseFieldComponent implements OnInit, O
    * Valor padrão do campo.
    */
   @Input() defaultValue: string | number | null = null;
+  /**
+    * Condicao de visibilidade do campo.
+    */
+  @Input() conditionalVisibility: { field: string, values: string[] }
+  /**
+  * FormGroup do formulario.
+  */
+  @Input() resourceForm: FormGroup<any>;
 
   display = new FormControl<string | null>(null);
 
@@ -70,19 +90,155 @@ export class InputFieldComponent extends BaseFieldComponent implements OnInit, O
    */
   private ngUnsubscribe = new Subject();
 
-  constructor(protected injector: Injector){
+  constructor(protected injector: Injector) {
     super(injector);
   }
 
   ngOnInit(): void {
     this.getDefaultValue();
     this.setLabel();
+    this.checkConditional();
+    this.checkEmailValidation();
+    this.setEmailIcon();
+    this.applyMaskToValue();
+    this.checkCharacterLimit(); 
+  }
+
+  ngOnChanges(): void {
+    this.checkEmailValidation();
+    this.checkCharacterLimit();
+    this.applyMaskToValue();
+  }
+
+  checkCharacterLimit() {
+    if (this.limiteOfChars) {
+      this.inputValue.setValidators([
+        ...this.inputValue.validator ? [this.inputValue.validator] : [],
+        (control: FormControl) => {
+          const value = control.value || '';
+          return value.length <= this.limiteOfChars
+            ? null
+            : { characterLimitExceeded: true };
+        }
+      ]);
+      this.inputValue.updateValueAndValidity();
+    }
+  }
+
+  checkEmailValidation() {
+    if (this.maskType?.toLowerCase() === 'email') {
+      this.inputValue.setValidators([Validators.email]);
+    } else {
+      this.inputValue.clearValidators();
+    }
+    this.inputValue.updateValueAndValidity();
+  }
+
+  setEmailIcon() {
+    if (this.maskType?.toLowerCase() === 'email') {
+      this.svgIcon = 'email'; // Defina o ícone de email do Material Icons aqui
+      this.actionOnClickInIcon = () => {
+        const email = this.inputValue.value;
+        if (email) {
+          window.location.href = `mailto:${email}`;
+        }
+      };
+    }
+  }
+  applyMaskToValue() {
+    if (this.mask) {
+      this.inputValue.valueChanges.pipe(takeUntil(this.ngUnsubscribe)).subscribe(newValue => {
+        if (newValue !== null && newValue !== undefined) {
+          let formattedValue: string | number = newValue.toString();
+          if (this.needMaskValue) {
+            // Implementação da lógica de formatação da máscara aqui
+            formattedValue = this.formatValueWithMask(formattedValue.toString(), this.mask);
+
+            this.inputValue.setValue(formattedValue, { emitEvent: false });
+          }
+
+        }
+      });
+    }
+  }
+
+  formatValueWithMask(value: string, mask: string): string {
+    let formattedValue = '';
+    let valueIndex = 0;
+    let maskIndex = 0;
+
+    while (maskIndex < mask.length && valueIndex < value.length) {
+      if (mask[maskIndex] === '0') {
+        if (/\d/.test(value[valueIndex])) {
+          formattedValue += value[valueIndex];
+          valueIndex++;
+        }
+      } else if (mask[maskIndex] === '*') {
+        formattedValue += value[valueIndex];
+        valueIndex++;
+      } else if (mask[maskIndex] === '.') {
+        formattedValue += '.';
+      } else if (mask[maskIndex] === '-') {
+        formattedValue += '-';
+      } else if (mask[maskIndex] === '(') {
+        formattedValue += '(';
+      } else if (mask[maskIndex] === ')') {
+        formattedValue += ')';
+      } else if (mask[maskIndex] === '/') {
+        formattedValue += '/';
+      } else if (mask[maskIndex] === ',') {
+        formattedValue += ',';
+      }
+
+      maskIndex++;
+    }
+
+    return formattedValue;
+  }
+
+  checkConditional() {
+    if (this.conditionalVisibility) {
+      let initialFieldValue = this.resourceForm.get(this.conditionalVisibility.field)?.value;
+      console.log('Initial field value:', initialFieldValue);
+      if (initialFieldValue && typeof initialFieldValue === 'object' && initialFieldValue.id) {
+        initialFieldValue = initialFieldValue.id;
+      }
+      if (initialFieldValue !== null && typeof initialFieldValue !== 'string') {
+        initialFieldValue = initialFieldValue.toString();
+      }
+      if (this.conditionalVisibility.values.includes(initialFieldValue)) {
+        if (this.inputValue.disabled) {
+          this.inputValue.enable();
+        }
+      } else {
+        if (this.inputValue.enabled) {
+          this.inputValue.disable();
+        }
+      }
+
+      this.resourceForm.valueChanges.pipe(takeUntil(this.ngUnsubscribe)).subscribe(formValues => {
+        let fieldValue = formValues[this.conditionalVisibility.field];
+        if (fieldValue && typeof fieldValue === 'object' && fieldValue.id) {
+          fieldValue = fieldValue.id;
+        }
+        const fieldValueStr = fieldValue?.toString();
+        if (this.conditionalVisibility.values.includes(fieldValueStr)) {
+          if (this.inputValue.disabled) {
+            this.inputValue.enable();
+          }
+        } else {
+          if (this.inputValue.enabled) {
+            this.inputValue.disable();
+          }
+        }
+      });
+    }
   }
 
   setLabel() {
     this.setTranslation(this.className, this.label).pipe(takeUntil(this.ngUnsubscribe)).subscribe({
       next: (translatedLabel: string) => {
-        if(translatedLabel === (this.className+"."+this.label)){
+        if (translatedLabel === (this.className + "." + this.label)) {
           const formattedLabel = this.formatDefaultVariableName(this.label);
           this.displayedLabel = this.setCharactersLimit(formattedLabel, this.charactersLimit);
         } else {
@@ -90,7 +246,6 @@ export class InputFieldComponent extends BaseFieldComponent implements OnInit, O
         }
       },
       error: (error) => {
-        // console.log("erro do transloco:"+error)
         this.displayedLabel = this.setCharactersLimit(this.label, this.charactersLimit);
       },
     });
@@ -121,6 +276,11 @@ export class InputFieldComponent extends BaseFieldComponent implements OnInit, O
     if (this.defaultValue != null) {
       this.inputValue.setValue(this.defaultValue);
     }
+  }
+
+  validateInput(): boolean { //verificar para salvar
+    this.inputValue.updateValueAndValidity();
+    return this.inputValue.valid;
   }
 
   ngOnDestroy(): void {

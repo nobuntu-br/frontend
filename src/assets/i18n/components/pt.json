@@ -80,6 +80,7 @@
         "deleteSuccessMessage": "Exclusão bem-sucedida",
         "defaultSuccessMessage": "Operação bem-sucedida",
         "defaultErrorMessage": "Erro ao realizar a operação",
+        "errorMessageLimitation": "Quantidade de caracteres excedida",
         "rememberToSave": "Tem certeza de que deseja sair? Suas alterações podem não ser salvas",
         "deselectMessage": "Os itens foram removido da seleção"
     },
@@ -133,7 +134,8 @@
         "signed-out": "Signed out",
         "settings": "Configurações",
         "hi": "Hi",
-        "manage-your-account": "Gerencie sua conta"
+        "manage-your-account": "Gerencie sua conta",
+        "switch-menu": "Trocar menu"
     },
     "tenant-menu-component": {
         "add-tenant": "Adicionar Tenant",

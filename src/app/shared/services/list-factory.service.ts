@@ -29,7 +29,7 @@ export class ListFactoryService {
 
       const createdComponent = target.createComponent(DefaultListComponent).instance;
       createdComponent.apiUrl = pageData.config.apiUrl;
-      createdComponent.columnsQuantity = 2;
+      createdComponent.columnsQuantity = pageData.config.columnsQuantity;
       createdComponent.title = pageData.config.title;
       createdComponent.displayedfieldsName = pageData.attributes.map(attribute => attribute.name);
       createdComponent.fieldsType = pageData.attributes.map(attribute => attribute.type);

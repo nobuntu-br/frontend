@@ -130,7 +130,7 @@ export class DefaultListComponent
   viewMode: string = 'list-layout'; // Definindo o modo padrão como 'list-layout'
   @Input() currentView: string; // Valor padrão é 'card'
   @Input() itemsDisplayed: any[] = [];
-  @Input() columnsQuantity: number = 1;
+  @Input() columnsQuantity;
   @Input() displayedfieldsName: string[] | null;
   @Input() fieldsType: string[];
   @Input() objectDisplayedValue: string[];
@@ -254,10 +254,10 @@ export class DefaultListComponent
       this.viewMode = mode;
       // Se o modo de visualização for 'card', definir columnsQuantity para 1
       if (this.viewMode === 'card-layout') {
-        this.columnsQuantity = 1;
+        // this.columnsQuantity = 1;
       } else {
         // Defina outra quantidade de colunas para outros modos, por exemplo, 3
-        this.columnsQuantity = 3;
+        // this.columnsQuantity = 3;
       }
 
       this.removeAllComponentsOnView();

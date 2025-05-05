@@ -9,6 +9,8 @@ export class CehckboxField implements FormField {
         const component = createdComponent.instance;
         component.defaultValue = createComponentData.defaultValue;
         component.label = createComponentData.labelTittle;
+        component.conditionalVisibility = createComponentData.conditionalVisibility
+        component.resourceForm = createComponentData.resourceForm;
         return createdComponent.instance.inputValue;
 	}
 }

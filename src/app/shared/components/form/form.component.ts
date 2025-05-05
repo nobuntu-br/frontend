@@ -325,20 +325,27 @@ export abstract class BaseResourceFormComponent<T extends BaseResourceModel> imp
   }
 
   protected actionsForError(error) {
-
+    console.log("Erro recebido:", error);
     this.submittingForm = false;
-
-     if(error.status === 400){
-        alert(error.error.errors);
-        return
+  
+    if (error.status === 400 || error.status === 500) {
+      const errorMessage = error.error?.message;
+  
+      if (errorMessage && errorMessage.includes("Validation error")) {
+        alert(this.translocoService.translate("componentsBase.Alerts.errorMessageLimitation"));
+      } else {
+        alert(errorMessage || this.translocoService.translate("componentsBase.Alerts.defaultErrorMessage"));
+      }
+      return;
     }
-    
+  
     alert(this.translocoService.translate("componentsBase.Alerts.defaultErrorMessage"));
-
-    if (error.status === 422)
+  
+    if (error.status === 422) {
       this.serverErrorMessages = JSON.parse(error._body).errors;
-    else
-      this.serverErrorMessages = ["Falha na comunicação com o servidor. Por favor, tente mais tarde."]
+    } else {
+      this.serverErrorMessages = ["Falha na comunicação com o servidor. Por favor, tente mais tarde."];
+    }
   }
 
   protected abstract buildResourceForm(): void;

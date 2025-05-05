@@ -1,5 +1,5 @@
-import { AfterViewInit, Component, Injector, Input } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { AfterViewInit, Component, Injector, Input, OnInit } from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { IFieldFile } from 'app/shared/models/file.model';
 import { FileService } from 'app/shared/services/file.service';
@@ -14,7 +14,7 @@ import { BaseUpoadFieldComponent } from '../base-field/base-upload-field.compone
   styleUrls: ['./upload-input-field.component.scss']
 })
 
-export class UploadInputFieldComponent extends BaseUpoadFieldComponent implements AfterViewInit {
+export class UploadInputFieldComponent extends BaseUpoadFieldComponent implements OnInit, AfterViewInit {
   /**
    * Título que será apresentado no componente
    */
@@ -31,14 +31,22 @@ export class UploadInputFieldComponent extends BaseUpoadFieldComponent implement
    * Nome da classe que pertence esse campo.
    */
   @Input() className: string;
-    /**
-     * Subject responsável por remover os observadores que estão rodando na pagina no momento do componente ser deletado.
-     */
-    private ngUnsubscribe = new Subject();
+  /**
+   * Subject responsável por remover os observadores que estão rodando na pagina no momento do componente ser deletado.
+   */
+  private ngUnsubscribe = new Subject();
   /**
    * Maximo de tamanho do arquivo
     */
   @Input() maxFileSize: number; // Exemplo de tamanho máximo de arquivo
+  /**
+      * Condicao de visibilidade do campo.
+      */
+  @Input() conditionalVisibility: { field: string, values: string[] }
+  /**
+  * FormGroup do formulario.
+  */
+  @Input() resourceForm: FormGroup<any>;
 
   public inputValue = new FormControl<string>(null);
   fileName: string = '';
@@ -56,6 +64,52 @@ export class UploadInputFieldComponent extends BaseUpoadFieldComponent implement
     this.setLabel();
     // this.limitSelectedItems(); // Mantém a limitação de itens
   }
+
+  ngOnInit(): void {
+    this.checkConditional();
+  }
+
+  
+  checkConditional() {
+    if (this.conditionalVisibility) {
+      let initialFieldValue = this.resourceForm.get(this.conditionalVisibility.field)?.value;
+      console.log('Initial field value:', initialFieldValue);
+      if (initialFieldValue && typeof initialFieldValue === 'object' && initialFieldValue.id) {
+        initialFieldValue = initialFieldValue.id;
+      }
+      if (initialFieldValue !== null && typeof initialFieldValue !== 'string') {
+        initialFieldValue = initialFieldValue.toString();
+      }
+      if (this.conditionalVisibility.values.includes(initialFieldValue)) {
+        if (this.inputValue.disabled) {
+          this.inputValue.enable();
+        }
+      } else {
+        if (this.inputValue.enabled) {
+          this.inputValue.disable();
+        }
+      }
+  
+      this.resourceForm.valueChanges.pipe(takeUntil(this.ngUnsubscribe)).subscribe(formValues => {
+        let fieldValue = formValues[this.conditionalVisibility.field];
+        if (fieldValue && typeof fieldValue === 'object' && fieldValue.id) {
+          fieldValue = fieldValue.id;
+        }
+        const fieldValueStr = fieldValue?.toString();
+        if (this.conditionalVisibility.values.includes(fieldValueStr)) {
+          if (this.inputValue.disabled) {
+            this.inputValue.enable();
+          }
+        } else {
+          if (this.inputValue.enabled) {
+            this.inputValue.disable();
+          }
+        }
+      });
+    }
+  }
+
+
 
   /**
    * Método disparado quando um arquivo é selecionado
@@ -85,7 +139,7 @@ export class UploadInputFieldComponent extends BaseUpoadFieldComponent implement
   setLabel() {
     this.setTranslation(this.className, this.label).pipe(takeUntil(this.ngUnsubscribe)).subscribe({
       next: (translatedLabel: string) => {
-        if(translatedLabel === (this.className+"."+this.label)){
+        if (translatedLabel === (this.className + "." + this.label)) {
           const formattedLabel = this.formatDefaultVariableName(this.label);
           this.displayedLabel = this.setCharactersLimit(formattedLabel, this.charactersLimit);
         } else {
@@ -97,7 +151,7 @@ export class UploadInputFieldComponent extends BaseUpoadFieldComponent implement
       },
     });
   }
-  
+
   // Define a posição do ícone (função opcional)
   setIconPosition() {
     return 'start'; // Ou 'end', conforme necessário

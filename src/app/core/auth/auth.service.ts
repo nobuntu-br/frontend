@@ -6,6 +6,7 @@ import { TenantService } from '../pages/tenant/tenant.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'environments/environment';
 import { UserService } from './user.service';
+import { RoleService } from './role.service';
 
 @Injectable({
   providedIn: 'root',
@@ -25,7 +26,8 @@ export class AuthService {
     private router: Router,
     // private userSessionService: UserSessionService,
     private tenantService: TenantService,
-    private userService: UserService
+    private userService: UserService,
+    private roleService: RoleService,
   ) {
 
     this.url = environment.backendUrl + "/api/authentication";
@@ -87,6 +89,9 @@ export class AuthService {
       //Armazena no local storage a nova sessão de usuário ativa
       this.userService.setCurrentUserOnLocalStorage(this.currentUser);
       this.userService.moveUserToFirstPositionOnLocalStorage(this.currentUser.UID);
+      this.roleService.getRolesUserByIdInLocalStorage(this.currentUser.id)
+      localStorage.removeItem('currentMenu');
+      localStorage.removeItem('menus');
 
       return this.currentUser;
     }
@@ -98,8 +103,11 @@ export class AuthService {
   async signOutUser(user: IUser): Promise<void> {
     try {
       await firstValueFrom(this.signout().pipe(take(1)));
+      this.roleService.deleteAllRolesFromLocalStorage();
       this.userService.deleteUserFromLocalStorage(user.UID);
       this.userService.deleteCurrentUserFromLocalStorage();
+      localStorage.removeItem('currentMenu');
+      localStorage.removeItem('menus');
       this.currentUser = null;
     } catch (error) {
       console.error("Error to signOut user.");
@@ -117,6 +125,9 @@ export class AuthService {
         // Limpa os dados do usuário do localStorage
         this.userService.deleteUserFromLocalStorage(user.UID);
         this.userService.deleteCurrentUserFromLocalStorage();
+        this.roleService.deleteAllRolesFromLocalStorage();
+        localStorage.removeItem('currentMenu');
+        localStorage.removeItem('menus');
         this.currentUser = null;
 
 

@@ -1,13 +1,18 @@
 <mat-form-field style="width: 100%;" appearance="outline"
-  [ngClass]="{ 'input-error': inputValue.invalid && inputValue.touched }">
+  [ngClass]="{ 'input-error': inputValue.hasError('characterLimitExceeded') && inputValue.touched }">
   <mat-label>{{ displayedLabel }}</mat-label>
-  <input matInput placeholder="{{ placeholder }}" [formControl]="inputValue" [maxlength]="charactersLimit"
-    [required]="isRequired" [mask]="mask" />
+  <input matInput style="text-align: right;" placeholder="{{ placeholder }}" [formControl]="inputValue"
+    (blur)="applyFinalFormatting()" [attr.maxlength]="charactersLimit ? charactersLimit : null" [required]="isRequired"
+    [mask]="mask" />
 
   <mat-icon (click)="actionOnClickInIcon && actionOnClickInIcon()"
-    *ngIf="svgIcon != null && setIconPosition() == 'start'" [matIconPrefix]>{{ svgIcon }}</mat-icon>
+    *ngIf="svgIcon != null && setIconPosition() == 'start'" matPrefix>
+    {{ svgIcon }}
+  </mat-icon>
   <mat-icon (click)="actionOnClickInIcon && actionOnClickInIcon()" *ngIf="svgIcon != null && setIconPosition() == 'end'"
-    [matIconSuffix]>{{ svgIcon }}</mat-icon>
+    matSuffix>
+    {{ svgIcon }}
+  </mat-icon>
 
   <mat-error *ngIf="inputValue.hasError('characterLimitExceeded') && inputValue.touched">
     {{ translocoService.translate('componentsBase.Alerts.errorMessageLimitation') }}

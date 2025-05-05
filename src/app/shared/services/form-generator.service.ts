@@ -32,6 +32,7 @@ export interface ICreateComponentParams {
   className: string,
   fieldName: string,
   fieldType: string,
+  limiteOfChars: number, //criado novo
   isRequired: boolean,
   value,
   labelTittle: string,
@@ -48,6 +49,14 @@ export interface ICreateComponentParams {
   icones?: IconOption[]
   mask?: string;
   maxFileSize?: number;
+  maskType?: string; // criado novo
+  charactersLimit?: number; 
+  numberOfIcons?: number[],  //criado novo
+  conditionalVisibility?: { field: string, values: string[] };  //criado novo
+  locationMarker?: { lat: number, lng: number, quadrant?: string }; //criado novo
+  needMaskValue?: boolean; //criado novo
+  numberOfDecimals?: number; //criado novo
+  decimalSeparator?: string; //criado novo
 }
 
 /**
@@ -130,6 +139,7 @@ export class FormGeneratorService {
         className: attribute.className,
         fieldName: attribute.name,
         fieldType: attribute.type,
+        limiteOfChars: attribute.limiteOfChars, //criado novo
         isRequired: attribute.isRequired,
         value: attribute.apiUrl,
         labelTittle: attribute.name,
@@ -141,7 +151,15 @@ export class FormGeneratorService {
         index: index,
         allowedExtensions: attribute.allowedExtensions,
         optionList: attribute.optionList,
-        selectItemsLimit: attribute.selectItemsLimit
+        selectItemsLimit: attribute.selectItemsLimit,
+        charactersLimit: attribute.charactersLimit,
+        numberOfIcons: attribute.numberOfIcons, //criado novo
+        conditionalVisibility: attribute.conditionalVisibility,  //criado novo
+        locationMarker: attribute.locationMarker, //criado novo
+        maskType: attribute.mask, //criado novo
+        needMaskValue: attribute.needMaskValue, //criado novo
+        numberOfDecimals: attribute.numberOfDecimals, //criado novo
+        decimalSeparator: attribute.decimalSeparator, //criado novo
       });
     });
   }

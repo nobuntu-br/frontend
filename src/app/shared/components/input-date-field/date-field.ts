@@ -11,6 +11,8 @@ export class DateField implements FormField {
     createdComponent.instance.isRequired = createComponentData.isRequired;
     createdComponent.instance.className = createComponentData.className;
     createdComponent.instance.defaultValue = createComponentData.defaultValue;
+    createdComponent.instance.conditionalVisibility = createComponentData.conditionalVisibility
+    createdComponent.instance.resourceForm = createComponentData.resourceForm;
     return createdComponent.instance.inputValue;
   }
 }

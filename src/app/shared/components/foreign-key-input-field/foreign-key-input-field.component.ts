@@ -23,7 +23,7 @@ enum ISelectionOption {
   styleUrls: ['./foreign-key-input-field.component.scss']
 })
 
-export class ForeignKeyInputFieldComponent implements OnDestroy, AfterViewInit {
+export class ForeignKeyInputFieldComponent implements OnDestroy, AfterViewInit, OnInit {
   /**
    * Titulo apresentado em cima do campo de inserção de dados
    */
@@ -70,7 +70,15 @@ export class ForeignKeyInputFieldComponent implements OnDestroy, AfterViewInit {
   /**
    * Lista de itens que foram selecionados.
    */
-  @Input()index: number;
+  @Input() index: number;
+  /**
+  * Condicao de visibilidade do campo.
+  */
+  @Input() conditionalVisibility: { field: string, values: string[] }
+  /**
+  * FormGroup do formulario.
+  */
+  @Input() resourceForm: FormGroup<any>;
   /**
    * Campo no formulário que receberá os dados dos valores selecionados.
    */
@@ -103,7 +111,7 @@ export class ForeignKeyInputFieldComponent implements OnDestroy, AfterViewInit {
   /**
    * Lista de itens que foram selecionados.
    */
-  resourceForm: any;
+  //resourceForm: any;
 
   enableToEdit: boolean = false;
 
@@ -114,15 +122,67 @@ export class ForeignKeyInputFieldComponent implements OnDestroy, AfterViewInit {
     private matSnackBar: MatSnackBar
   ) { }
 
+  ngOnInit(): void {
+    this.checkConditional();
+  }
+
+  checkConditional() {
+    if (this.conditionalVisibility) {
+      // Verifica o valor inicial
+let initialFieldValue = this.resourceForm.get(this.conditionalVisibility.field)?.value;
+console.log('Initial field value:', initialFieldValue);
+if (initialFieldValue && typeof initialFieldValue === 'object' && initialFieldValue.id) {
+  initialFieldValue = initialFieldValue.id;
+}
+if (initialFieldValue !== null && typeof initialFieldValue !== 'string') {
+  initialFieldValue = initialFieldValue.toString();
+}
+if (this.conditionalVisibility.values.includes(initialFieldValue)) {
+  if (this.inputValue.disabled) {
+    this.inputValue.enable();
+  }
+} else {
+  if (!this.inputValue.disabled) {
+    this.inputValue.disable();
+  }
+}
+
+// Observa mudanças no valor do resourceForm
+this.resourceForm.valueChanges.pipe(takeUntil(this.ngUnsubscribe)).subscribe(formValues => {
+  // Verifica todas as alterações dos campos de input 
+  let fieldValue = formValues[this.conditionalVisibility.field];
+  // Verifica se o valor é um objeto e pega o id
+  if (fieldValue && typeof fieldValue === 'object' && fieldValue.id) {
+    fieldValue = fieldValue.id;
+  }
+  // Transforma em string caso nao seja
+  const fieldValueStr = fieldValue?.toString();
+  if (this.conditionalVisibility.values.includes(fieldValueStr)) {
+    // Caso o valor do fieldValue seja igual a algum de dentro do values ai é habilitado
+    if (this.inputValue.disabled) {
+      this.inputValue.enable();
+    }
+  } else {
+    if (!this.inputValue.disabled) {
+      this.inputValue.disable();
+    }
+  }
+});
+    }
+  }
+
   ngAfterViewInit(): void {
-    if(this.inputValue.value != null){
+    if (this.inputValue.value != null) {
       this.setDisplayedValue(this.inputValue, this.fieldDisplayedInLabel);
     }
     this.inputValue.valueChanges.pipe(takeUntil(this.ngUnsubscribe)).subscribe({
       next: (data) => {
         this.setDisplayedValue(this.inputValue, this.fieldDisplayedInLabel);
       }
-    })
+    });
+  
+    // Verifica a condição de visibilidade após a inicialização da visualização
+    this.checkConditional();
   }
 
   /**
@@ -132,7 +192,7 @@ export class ForeignKeyInputFieldComponent implements OnDestroy, AfterViewInit {
    */
   setDisplayedValue(inputValue: FormControl, valueDisplayed: string) {
     var searchableProperty: string;
-    var hasProperty : boolean;
+    var hasProperty: boolean;
 
     //Se não tiver nada ele só define vazio no campo apresentável
     if (inputValue.value == null || inputValue.value.length == 0) {
@@ -220,8 +280,8 @@ export class ForeignKeyInputFieldComponent implements OnDestroy, AfterViewInit {
 
   openSelectableItemsListDialogToEditItems() {
 
-    var items : Object[] | object; 
-    if(this.inputValue.value instanceof Array == false){
+    var items: Object[] | object;
+    if (this.inputValue.value instanceof Array == false) {
       items = [this.inputValue.value];
     } else {
       items = this.inputValue.value;
@@ -294,14 +354,14 @@ export class ForeignKeyInputFieldComponent implements OnDestroy, AfterViewInit {
             dialogRef.close();
           }
         }
-      })      
-    }); 
+      })
+    });
   }
 
   submitForm(JSONDictionary: IPageStructure, item: FormGroup) {
     if (item == null) return;
 
-    if(item.invalid){
+    if (item.invalid) {
       item.markAllAsTouched();
       this.matSnackBar.open("Preencha todos os campos obrigatórios", "Fechar", {
         duration: 5000
@@ -309,7 +369,7 @@ export class ForeignKeyInputFieldComponent implements OnDestroy, AfterViewInit {
       return;
     }
 
-   item = item.value;    
+    item = item.value;
     const apiUrl = environment.backendUrl + '/' + JSONDictionary.config.apiUrl;
     item = this.objectTratament(item);
     this.http.post(apiUrl, item).pipe(take(1)).subscribe((response: any) => {
@@ -326,25 +386,25 @@ export class ForeignKeyInputFieldComponent implements OnDestroy, AfterViewInit {
     });
   }
 
-    /**
-   * Realizar uma alteração nos dados do formulário, removendo objetos e substituindo somente pelos IDs
-   * @param item Formulário
-   */
-    objectTratament(item){
-      for(let field in item){
-        if(item[field] instanceof Object){
-          if(item[field] instanceof Array){
-            item[field] = item[field].map((value) => value.id == undefined || value.id == null ? value : value.id);
-          } else {
-            if(item[field].id == undefined || item[field].id == null){
-              continue;
-            }
-            item[field] = item[field].id;
+  /**
+ * Realizar uma alteração nos dados do formulário, removendo objetos e substituindo somente pelos IDs
+ * @param item Formulário
+ */
+  objectTratament(item) {
+    for (let field in item) {
+      if (item[field] instanceof Object) {
+        if (item[field] instanceof Array) {
+          item[field] = item[field].map((value) => value.id == undefined || value.id == null ? value : value.id);
+        } else {
+          if (item[field].id == undefined || item[field].id == null) {
+            continue;
           }
+          item[field] = item[field].id;
         }
       }
-      return item;
     }
+    return item;
+  }
 
   /**
    * Função que faz o controle da seleção de itens, controlando o limite.
@@ -399,7 +459,7 @@ export class ForeignKeyInputFieldComponent implements OnDestroy, AfterViewInit {
       searchableProperty = this.getFirstNonIdKey(newItems[0]);
     }
 
-    if(newItems.length == 1){
+    if (newItems.length == 1) {
       this.inputValue.setValue(newItems[0]);
       this.displayedValue = [newItems[0][searchableProperty]];
       return;

@@ -32,7 +32,8 @@ export class UserMenuComponent implements OnInit {
    */
   currentUser: IUser;
   userProfilePhotoEnabled: boolean = false;
-
+  menus: {id: string, fileName: string}[] = JSON.parse(localStorage.getItem('menus') || '[]');
+  currentMenuId: string = JSON.parse(localStorage.getItem('currentMenu') || '[]');
   constructor(
     private authService: AuthService,
     private userService: UserService,
@@ -55,6 +56,11 @@ export class UserMenuComponent implements OnInit {
 
   checkUserExpired(user: IUser) {
     
+  }
+
+  setCurrentMenu(menu: {id: string, fileName: string}) {
+    localStorage.setItem('currentMenu', JSON.stringify(menu));
+    window.location.reload();
   }
 
   updateUserState() {

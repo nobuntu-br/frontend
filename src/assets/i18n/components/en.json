@@ -78,6 +78,7 @@
         "deleteSuccessMessage": "Delete successful",
         "defaultSuccessMessage": "Operation successful",
         "defaultErrorMessage": "Operation error",
+        "errorMessageLimitation": "Limitation is not valid",
         "rememberToSave": "Are you sure you want to exit? Your changes may not be saved",
         "deselectMessage": "The items have been removed from the selection"
     },
@@ -131,7 +132,8 @@
         "signed-out": "Signed out",
         "settings": "Settings",
         "hi": "Hi",
-        "manage-your-account": "Manage your account"
+        "manage-your-account": "Manage your account",
+        "switch-menu": "Trocar menu"
     },
     "tenant-menu-component": {
         "add-tenant": "Add Tenant",

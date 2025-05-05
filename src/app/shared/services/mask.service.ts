@@ -54,6 +54,9 @@ export class MaskService {
   constructor() { }
 
   getMaskPattern(maskType: string): string {
-    return this.maskDictionary[maskType] || '';
+    if(!maskType) {
+      return '';
+    }
+    return this.maskDictionary[maskType.toUpperCase()] || '';
   }
 }

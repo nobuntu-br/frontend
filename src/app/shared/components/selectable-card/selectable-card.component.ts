@@ -25,7 +25,7 @@ export class SelectableCardComponent implements AfterViewInit, OnInit {
    * @example "3".
    * Em telas de dispositivos móveis, sempre será 1.
    */
-  @Input() columnsQuantity: number = 1;
+  @Input() columnsQuantity: number;
   @Input() displayedfieldsName: string[];
   @Input() fieldsType: string[];
   @Input() userConfig: any;
@@ -41,8 +41,9 @@ export class SelectableCardComponent implements AfterViewInit, OnInit {
   @Output() eventClick = new EventEmitter<void>();
   @Output() eventOnSelect = new EventEmitter<void>();
   @Output() eventClickToEdit = new EventEmitter<void>();
+  
+  gridStyles = {};
 
-  columnsQuantityStyle;
   @Input() isSelected: boolean = false;
 
   @ViewChild('placeToRender', { read: ViewContainerRef }) target!: ViewContainerRef;
@@ -52,6 +53,12 @@ export class SelectableCardComponent implements AfterViewInit, OnInit {
   }
   ngOnInit(): void {
     if (this.itemDisplayed == null) throw new Error("ItemDisplayed is null");
+
+    this.gridStyles = {
+    display: 'grid',
+    gridTemplateColumns: `repeat(${this.columnsQuantity}, 1fr)`,
+    gap: '8px'
+    }
   }
 
   ngAfterViewInit(): void {
