@@ -109,9 +109,9 @@ export class FormSpaceBuildComponent implements AfterViewInit, OnDestroy {
     this.checkTypeOfForm();
   }
 
-  checkTypeOfForm() {
+  async checkTypeOfForm() {
     if(this.dataToCreatePage.config.isFormStepper){
-      this.generateStepFormList();
+      await this.generateStepFormList();
     }
     if(!this.dataToCreatePage.config.isFormStepper){
       this.generateSimpleFormList();
@@ -135,7 +135,7 @@ export class FormSpaceBuildComponent implements AfterViewInit, OnDestroy {
     let simpleForm = this.formSpaceBuild.createComponent(send);
   }
 
-  generateStepFormList() {
+  async generateStepFormList() {
     this.formStepperStructure = [];
     this.buildStepperStructure();
     this.buildDataToCreatePageSteps();

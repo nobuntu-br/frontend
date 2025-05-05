@@ -5,7 +5,7 @@ import { Injectable } from '@angular/core';
 })
 export class MaskService {
   private maskDictionary: { [key: string]: string } = {
-    'CNPJ/CPF': '000.000.000-00||00.000.000/0000-00',
+    'CPFCNPJ': '000.000.000-00||00.000.000/0000-00',
     'CPF': '000.000.000-00',
     'CNPJ': '00.000.000/0000-00',
     'RG': '00.000.000-0||00.000.000-0',
