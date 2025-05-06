@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, Inject, Input, OnDestroy, Optional, Output, QueryList, ViewChildren, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, Inject, Input, OnDestroy, Optional, Output, QueryList, ViewChildren, ViewContainerRef } from '@angular/core';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatStepper } from '@angular/material/stepper';
@@ -97,6 +97,7 @@ export class FormSpaceBuildComponent implements AfterViewInit, OnDestroy {
     protected route: ActivatedRoute,
     protected translocoService: TranslocoService,
     private location: Location,
+    private cdr: ChangeDetectorRef,
     @Optional() private matDialogComponentRef: MatDialogRef<GeneratedSimpleFormComponent>,
     @Optional() @Inject(MAT_DIALOG_DATA) public data?: any,
     ) { }
@@ -148,7 +149,12 @@ export class FormSpaceBuildComponent implements AfterViewInit, OnDestroy {
           target:this.target.toArray()[index],
           value: data,
           dataToCreatePage: data,
-          getDataFromAPIFunction: () => {this.isLoading = false; this.formIsReady.emit(true)}
+          getDataFromAPIFunction: () => {
+            if(index === this.dataToCreatePageSteps.length - 1){
+              this.isLoading = false;
+              this.formIsReady.emit(true);
+            }
+          }
         }
         
         let simpleForm = this.formSpaceBuild.createComponent(send);
@@ -242,6 +248,7 @@ export class FormSpaceBuildComponent implements AfterViewInit, OnDestroy {
     if(this.data.currentFormAction === "new"){
       this.submitFormFunction = () => {this.data.submitFormFunction(this.dataToCreatePage, this.resourceForm)};
     }
+
   }
   
   private buildDataToCreatePageSteps(){

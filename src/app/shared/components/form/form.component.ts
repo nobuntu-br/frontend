@@ -116,7 +116,7 @@ export abstract class BaseResourceFormComponent<T extends BaseResourceModel> imp
       if(this.resourceForm.value[field] instanceof Array){
         for(let i = 0; i < this.resourceForm.value[field].length; i++){
           if(this.resourceForm.value[field][i].fatherName){
-            childrenData.push({item: this.resourceForm.value[field][i].item, apiUrl: this.resourceForm.value[field][i].apiUrl, fatherName: this.resourceForm.value[field][i].fatherName});
+            childrenData.push(this.resourceForm.value[field][i].item);
           }
         }
       }
@@ -169,7 +169,7 @@ export abstract class BaseResourceFormComponent<T extends BaseResourceModel> imp
       if(this.resourceForm.value[field] instanceof Array){
         for(let i = 0; i < this.resourceForm.value[field].length; i++){
           if(this.resourceForm.value[field][i].fatherName){
-            childrenData.push({item: this.resourceForm.value[field][i].item, apiUrl: this.resourceForm.value[field][i].apiUrl, fatherName: this.resourceForm.value[field][i].fatherName});
+            childrenData.push(this.resourceForm.value[field][i].item);
           }
         }
       }

@@ -143,7 +143,6 @@ export class SideNavComponent implements OnInit, OnDestroy {
    */
   getDataToMenu(): Observable<INavList[]> {
     if (localStorage.getItem('currentMenu')) {
-      console.log("Menu From localStorage", JSON.parse(localStorage.getItem('currentMenu')));
       return this.getDataToMenuLocalStorage(JSON.parse(localStorage.getItem('currentMenu')));
     }
     return this.menuService.getMenuByRole().pipe(
@@ -164,7 +163,6 @@ export class SideNavComponent implements OnInit, OnDestroy {
    * @returns Retorna um array com informações para criar o menu de navegação.
    */
   getDataToMenuLocalStorage(menu: {fileName: string, id: string}): Observable<INavList[]> {
-    console.log("Menu From localStorage", menu);
     return this.menuService.getMenuByFileName(menu.fileName).pipe(
       tap({
       next: (data: INavList) => {
@@ -173,6 +171,14 @@ export class SideNavComponent implements OnInit, OnDestroy {
         this.menuAccessible(dataInArray);
       },
       error: (error) => {
+        this.menuService.getMenuById(menu.id).subscribe({
+        next: (data: INavList[]) => {
+          this.menuAccessible(data);
+        },
+        error: (error) => {
+          console.error('Erro ao buscar menu pelo ID:', error);
+        },
+        });
         console.error('Erro ao buscar menu pelo fileName:', error);
       },
       }),
@@ -187,7 +193,6 @@ export class SideNavComponent implements OnInit, OnDestroy {
       switchMap((data) => data.length ? [data] : this.menuService.getMenuById(menu.id).pipe(
       tap({
         next: (data: INavList[]) => {
-        console.log("Menu From localStorage", data);
         this.menuAccessible(data);
         },
         error: (error) => {

@@ -274,11 +274,15 @@ export class SubformComponent implements AfterViewInit {
       });
       return
     }
-
-    if(item.value.id != null && item.value.id != undefined){
-      this.editSubFormOnApi(JSONDictionary, item.value, itemEdited);
-    } else {
-      this.editSubFormOffline(JSONDictionary, item.value, itemEdited);
+    try {
+      if(!item.value.id){
+        this.editSubFormOffline(JSONDictionary, item, itemEdited.value);
+      }
+      else{
+        this.editSubFormOnApi(JSONDictionary, item, itemEdited.value);
+      }
+    } catch (error) {
+      this.editSubFormOffline(JSONDictionary, item, itemEdited.value);
     }
   }
 
@@ -382,7 +386,7 @@ export class SubformComponent implements AfterViewInit {
     this.itemsDisplayed.push(item);
     let { itemDisplayedOnSubFormType, objectDisplayedValueOnSubForm, attributesOnSubForm } = this.getAttributesToSubForm(JSONDictionary);
     this.createItemsOnList(this.itemsDisplayed, itemDisplayedOnSubFormType, objectDisplayedValueOnSubForm, attributesOnSubForm);
-    let valueToInput = {item: item, apiUrl: JSONDictionary.config.apiUrl, fatherName: this.getFatherReferenceName(JSONDictionary)};
+    let valueToInput = this.objectTratament({ ...item });
 
     const currentValue = this.inputValue.value || [];
     this.inputValue.setValue([...currentValue, valueToInput]);
