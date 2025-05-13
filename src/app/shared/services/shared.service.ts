@@ -43,6 +43,7 @@ export abstract class BaseResourceService<T extends BaseResourceModel> {
   }
 
   create(resource: T): Observable<T> {
+    console.log("create => ", resource);
     if (!this.isOnline) {
       this.offlineStorageService.saveCreateOperation(this.apiPath, resource);
       return new Observable(observer => {

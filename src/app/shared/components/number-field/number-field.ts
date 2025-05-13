@@ -31,7 +31,6 @@ export class NumberField implements FormField {
     createdComponent.resourceForm = createComponentData.resourceForm;
     // O ícone da calculadora e o click já estão hardcoded no componente 
     // (mas poderia receber por aqui se quiser customizar no futuro)
-    console.log('createdComponent', createdComponent);
     return createdComponent.inputValue;
   }
 }

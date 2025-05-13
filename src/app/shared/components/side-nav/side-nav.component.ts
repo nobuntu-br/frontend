@@ -148,7 +148,6 @@ export class SideNavComponent implements OnInit, OnDestroy {
     return this.menuService.getMenuByRole().pipe(
       tap({
         next: (data: INavList[]) => {
-          console.log(data)
           this.menuAccessible(data);
         },
         error: (error) => {
@@ -166,7 +165,6 @@ export class SideNavComponent implements OnInit, OnDestroy {
     return this.menuService.getMenuByFileName(menu.fileName).pipe(
       tap({
       next: (data: INavList) => {
-        console.log("Menu From localStorage", data);
         let dataInArray = [data];
         this.menuAccessible(dataInArray);
       },
@@ -187,7 +185,6 @@ export class SideNavComponent implements OnInit, OnDestroy {
     ).pipe(
       tap({
       error: () => {
-        console.log('Tentando buscar menu pelo ID após falha no fileName');
       },
       }),
       switchMap((data) => data.length ? [data] : this.menuService.getMenuById(menu.id).pipe(
@@ -279,7 +276,6 @@ export class SideNavComponent implements OnInit, OnDestroy {
   }
   
   onViewChange(viewType: string) {
-    console.log(viewType);
     this.selectedView = viewType; // Atualiza a exibição com base no botão clicado
   }
   switchAccount(): void {
