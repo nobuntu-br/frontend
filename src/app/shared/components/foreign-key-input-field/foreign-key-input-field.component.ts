@@ -370,20 +370,11 @@ this.resourceForm.valueChanges.pipe(takeUntil(this.ngUnsubscribe)).subscribe(for
     }
 
     item = item.value;
-    const apiUrl = environment.backendUrl + '/' + JSONDictionary.config.apiUrl;
     item = this.objectTratament(item);
-    this.http.post(apiUrl, item).pipe(take(1)).subscribe((response: any) => {
-      this.inputValue.setValue(response);
-      this.matDialog.getDialogById(this.dataToCreatePage.attributes[this.index].className + '-form-dialog').close();
-      this.matSnackBar.open("Item criado com sucesso", "Fechar", {
-        duration: 5000
-      });
-    }, error => {
-      console.error("Erro ao criar item", error);
-      this.matSnackBar.open("Erro ao criar item", "Fechar", {
-        duration: 5000
-      });
-    });
+    this.inputValue.setValue(item);
+    this.matDialog.getDialogById(this.dataToCreatePage.attributes[this.index].className + '-form-dialog')?.close();
+    this.displayedValue = [item[this.fieldDisplayedInLabel]];
+    console.log(this.inputValue.value);
   }
 
   /**

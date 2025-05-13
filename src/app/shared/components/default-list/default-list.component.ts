@@ -305,10 +305,7 @@ export class DefaultListComponent
       )
       .subscribe({
         next: (itemsDisplayed) => {
-          console.log('Itens obtidos na requisição: ', itemsDisplayed);
           this.itemsDisplayed = itemsDisplayed;
-
-          // console.log("Itens obtidos na requisição: ", itemsDisplayed);
 
           if (this.maxDisplayedItems > this.itemsDisplayed.length)
             this.maxDisplayedItems = this.itemsDisplayed.length;

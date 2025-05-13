@@ -82,6 +82,8 @@ export class SubformComponent implements AfterViewInit {
 
   isLoading: boolean = true;
 
+  subClassJSONDictionary: IPageStructure;
+
   @ViewChild('placeToRender', { read: ViewContainerRef }) target!: ViewContainerRef;
 
   protected router: Router;
@@ -169,6 +171,7 @@ export class SubformComponent implements AfterViewInit {
       componentCreated.attributes = attributesOnSubForm;
       componentCreated.classFather = this.className;
       componentCreated.isSubForm = true;
+      componentCreated.visibleList = this.getVisibleList();
 
       componentCreated.className = this.className;
 
@@ -227,6 +230,7 @@ export class SubformComponent implements AfterViewInit {
     let jsonPath = environment.jsonPath + nameClass + ".json";
 
     this.formGeneratorService.getJSONFromDicionario(jsonPath).pipe(takeUntil(this.ngUnsubscribe)).subscribe((JSONDictionary: any) => {
+      this.subClassJSONDictionary = JSONDictionary;
 
       const dialogRef = this.matDialog.open(FormSpaceBuildComponent, {
         id: this.dataToCreatePage.attributes[this.index].name,
@@ -293,7 +297,7 @@ export class SubformComponent implements AfterViewInit {
       }
       return element;
     });
-    let valueToInput = {apiUrl: JSONDictionary.config.apiUrl, item: item};
+    let valueToInput = this.objectTratament({ ...itemEdited });
 
     const currentValue = this.inputValue.value || [];
     this.inputValue.setValue([...currentValue, valueToInput]);
@@ -325,6 +329,8 @@ export class SubformComponent implements AfterViewInit {
     let jsonPath = environment.jsonPath + nameClass + ".json";
 
     this.formGeneratorService.getJSONFromDicionario(jsonPath).pipe(takeUntil(this.ngUnsubscribe)).subscribe((JSONDictionary: any) => {
+
+      this.subClassJSONDictionary = JSONDictionary;
 
       const dialogRef = this.matDialog.open(FormSpaceBuildComponent, {
         id: this.dataToCreatePage.attributes[this.index].name,
@@ -404,6 +410,8 @@ export class SubformComponent implements AfterViewInit {
       let jsonPath = environment.jsonPath + nameClass + ".json";
 
       this.formGeneratorService.getJSONFromDicionario(jsonPath).pipe(takeUntil(this.ngUnsubscribe)).subscribe((JSONDictionary: IPageStructure) => {
+        this.subClassJSONDictionary = JSONDictionary;
+
         if(item.id != null && item.id != undefined){
           this.deleteSubFormOnApi(JSONDictionary, item);
         } else {
@@ -474,6 +482,7 @@ export class SubformComponent implements AfterViewInit {
         let jsonPath = environment.jsonPath + nameClass + ".json";
 
         this.formGeneratorService.getJSONFromDicionario(jsonPath).pipe(takeUntil(this.ngUnsubscribe)).subscribe((JSONDictionary: IPageStructure) => {
+          this.subClassJSONDictionary = JSONDictionary;
           const { itemDisplayedOnSubFormType, objectDisplayedValueOnSubForm, attributesOnSubForm } = this.getAttributesToSubForm(JSONDictionary);
           this.createItemsOnList(this.itemsDisplayed, itemDisplayedOnSubFormType, objectDisplayedValueOnSubForm, attributesOnSubForm);
           this.eventSelectedValues.emit(data);
@@ -482,18 +491,18 @@ export class SubformComponent implements AfterViewInit {
     });
   }
 
+  private getVisibleList() {
+    let visibleList = [];
+    this.subClassJSONDictionary.attributes.forEach((element) => {
+        visibleList.push(element.visibleList);
+    });
+    return visibleList;
+  }
+
   private getItensFromApiOnEdit(data: any[], apiUrl: string): Observable<any[]> {
     const requests = data.map((element) => {
       return this.http.get(apiUrl + '/' + element.id).pipe(take(1));
     });
     return forkJoin(requests);
-  }
-
-  private getFatherReferenceName(JSONDictionary: IPageStructure) {
-    for(let attribute of JSONDictionary.attributes){
-      if(attribute.className == this.className){
-        return attribute.name;
-      }
-    }
   }
 }

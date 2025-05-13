@@ -160,7 +160,6 @@ export class NumberFieldComponent extends BaseFieldComponent implements OnInit, 
 
         if (corrected.includes(invalidChar)) {
           corrected = corrected.replace(invalidChar, this.decimalSeparator);
-          console.log('Corrected value for display:', corrected);
         }
 
         let valueForSaving = corrected.replace(this.decimalSeparator, '.');
@@ -172,7 +171,6 @@ export class NumberFieldComponent extends BaseFieldComponent implements OnInit, 
           valueForSaving = roundedValue.toFixed(this.numberOfDecimals);
         }
 
-        console.log('Value for saving:', valueForSaving);
 
         this.valueForSaving = valueForSaving;
       }
