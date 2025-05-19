@@ -7,6 +7,8 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { ConsultaFormComponent } from './consulta-form/consulta-form.component';
 import { environment } from 'environments/environment';
 import { IPageStructureAttribute } from 'app/shared/models/pageStructure';
+import * as XLSX from 'xlsx';
+import * as FileSaver from 'file-saver';
 
 @Component({
   selector: 'app-default-consulta',
@@ -54,6 +56,9 @@ export class DefaultConsultaComponent {
   isLoading: boolean = true;
   componentsCreatedList: any[] = [];
   inputValue: FormControl<object[]> = new FormControl<object[]>([]);
+  formGroup: FormGroup = new FormGroup({
+    inputValue: this.inputValue
+  });;
 
   constructor(private http: HttpClient, private matSnackBar: MatSnackBar, private matDialog: MatDialog) { }
 
@@ -155,4 +160,59 @@ export class DefaultConsultaComponent {
       this.target.clear();
     }
 
+    onNewButtonClick() {
+      if (!this.itemsDisplayed || this.itemsDisplayed.length === 0) {
+        this.matSnackBar.open('Nenhum dado disponível para exportar', 'Fechar', {
+          duration: 3000,
+        });
+        return;
+      }
+    
+      // Extract field names for column headers
+      const columnHeaders = this.return.map(field => field.fieldDisplayedInLabel || field.name);
+      
+      // Create data rows
+      const dataRows = this.itemsDisplayed.map(item => {
+        const row: any = {};
+        this.return.forEach(field => {
+          const columnLabel = field.fieldDisplayedInLabel || field.name;
+          row[columnLabel] = item[field.name] ?? '';
+        });
+        return row;
+      });
+
+      // First create an empty worksheet
+      const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet([]);
+      
+      // Add empty first row and header row in second row
+      XLSX.utils.sheet_add_aoa(worksheet, [
+        [], // Empty first row
+        columnHeaders // Headers in second row
+      ], { origin: 0 }); // Start from first row (A1)
+
+      // Add data starting from third row (row index 2, which is the third row in Excel)
+      XLSX.utils.sheet_add_json(worksheet, dataRows, {
+        origin: 2, // Start from 3rd row (index 2)
+        header: columnHeaders,
+        skipHeader: true // Don't add headers again
+      });
+      const workbook: XLSX.WorkBook = {
+        Sheets: { 'Consulta': worksheet },
+        SheetNames: ['Consulta'],
+      };
+    
+      const excelBuffer: any = XLSX.write(workbook, {
+        bookType: 'xlsx',
+        type: 'array',
+      });
+    
+      const blob: Blob = new Blob([excelBuffer], {
+        type:
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8',
+      });
+    
+      FileSaver.saveAs(blob, `${this.name || 'consulta'}-${new Date().toISOString()}.xlsx`);
+    }
+    
+    
 }
