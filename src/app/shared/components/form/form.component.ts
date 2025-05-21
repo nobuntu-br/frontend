@@ -178,19 +178,6 @@ export abstract class BaseResourceFormComponent<T extends BaseResourceModel> imp
     if(childrenData.length == 0){
       return;
     }
-    //salvar os childrenData no banco de dados usando o id da entidade pai que foi salva antes
-    const className = (this.resource.constructor as any).name.slice(1);
-    for(let i = 0; i < childrenData.length; i++){
-      childrenData[i].item[className] = this.resource.id;
-      let url = environment.backendUrl + '/' + childrenData[i].apiUrl;
-      this.objectTratament(childrenData[i].item);
-      this.http.post(url, childrenData[i].item).subscribe({
-        next: (response) => {
-          console.log("Response: ", response);
-        },
-        error: (error) => console.log("Error: ", error)
-      });
-    }
   }
 
 
@@ -292,7 +279,7 @@ export abstract class BaseResourceFormComponent<T extends BaseResourceModel> imp
       if(resourceForm[field] instanceof Object){
         // console.log("é um objeto o campo: ", resourceForm[field]);
         if(resourceForm[field] instanceof Array){
-          resourceForm[field] = resourceForm[field].map((value) => value.id == undefined || value.id == null ? value : value.id);
+          // resourceForm[field] = resourceForm[field].map((value) => value.id == undefined || value.id == null ? value : value.id);
         } else {
           if(resourceForm[field].id == undefined || resourceForm[field].id == null){
             continue;

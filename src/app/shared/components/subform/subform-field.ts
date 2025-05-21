@@ -26,7 +26,7 @@ export class SubFormField implements FormField {
       createdComponent.isSelectable = this.dataToCreatePage.config.edit;
       createdComponent.selectedItemsLimit = null;
       createdComponent.searchableFields = this.dataToCreatePage.config.searchableFields;
-      createdComponent.className = this.dataToCreatePage.config.name;
+      createdComponent.className = this.dataToCreatePage.attributes[createComponentData.index].className;
       createdComponent.dataToCreatePage = this.dataToCreatePage;
       createdComponent.objectDisplayedValue = this.dataToCreatePage.attributes.map(attribute => attribute.fieldDisplayedInLabel);
       createdComponent.route = this.dataToCreatePage.config.route;
