@@ -278,16 +278,7 @@ export class SubformComponent implements AfterViewInit {
       });
       return
     }
-    try {
-      if(!item.value.id){
-        this.editSubFormOffline(JSONDictionary, item, itemEdited.value);
-      }
-      else{
-        this.editSubFormOnApi(JSONDictionary, item, itemEdited.value);
-      }
-    } catch (error) {
       this.editSubFormOffline(JSONDictionary, item, itemEdited.value);
-    }
   }
 
   editSubFormOffline(JSONDictionary: IPageStructure, item: any, itemEdited: any) {
@@ -299,24 +290,13 @@ export class SubformComponent implements AfterViewInit {
     });
     let valueToInput = this.objectTratament({ ...itemEdited });
 
-    const currentValue = this.inputValue.value || [];
-    this.inputValue.setValue([...currentValue, valueToInput]);
+    let currentValue = this.inputValue.value as { id?: any }[] || [];
+    const updatedValue = currentValue.map(item => item.id === valueToInput.id ? valueToInput : item);
+    this.inputValue.setValue(updatedValue);
     let { itemDisplayedOnSubFormType, objectDisplayedValueOnSubForm, attributesOnSubForm } = this.getAttributesToSubForm(JSONDictionary);
     this.createItemsOnList(this.itemsDisplayed, itemDisplayedOnSubFormType, objectDisplayedValueOnSubForm, attributesOnSubForm);
+    console.log("currentValue subform", this.inputValue.value);
     this.matDialog.getDialogById(this.dataToCreatePage.attributes[this.index].name).close();
-  }
-
-  editSubFormOnApi(JSONDictionary: IPageStructure, item: any, itemEdited: any) {
-    const apiUrl = environment.backendUrl + '/' + JSONDictionary.config.apiUrl + '/' + itemEdited.id;
-    const treatedItem = this.objectTratament({ ...itemEdited });
-    this.http.put(apiUrl, treatedItem).pipe(takeUntil(this.ngUnsubscribe)).subscribe({
-      next: (response) => {
-      this.editSubFormOffline(JSONDictionary, item, itemEdited);
-      },
-      error: (err) => {
-      console.error('Failed to update item on API', err);
-      }
-    });
   }
   
   /**
