@@ -168,51 +168,62 @@ export class DefaultConsultaComponent {
         return;
       }
     
-      // Extract field names for column headers
-      const columnHeaders = this.return.map(field => field.fieldDisplayedInLabel || field.name);
-      
-      // Create data rows
-      const dataRows = this.itemsDisplayed.map(item => {
-        const row: any = {};
-        this.return.forEach(field => {
-          const columnLabel = field.fieldDisplayedInLabel || field.name;
-          row[columnLabel] = item[field.name] ?? '';
+      const isYelum = this.name === 'ConsultaYelum';
+    
+      if (isYelum) {
+        // Formato .fro (formato especial)
+        const exportFields = this.return.filter(f => f.name !== 'Contratação');
+    
+        const lines: string[] = ['[2.0.3.2]'];
+        this.itemsDisplayed.forEach(item => {
+          const line = exportFields.map(field => {
+            const value = item[field.name];
+            return value != null ? value : '';
+          }).join(';');
+          lines.push(line);
         });
-        return row;
-      });
-
-      // First create an empty worksheet
-      const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet([]);
-      
-      // Add empty first row and header row in second row
-      XLSX.utils.sheet_add_aoa(worksheet, [
-        [], // Empty first row
-        columnHeaders // Headers in second row
-      ], { origin: 0 }); // Start from first row (A1)
-
-      // Add data starting from third row (row index 2, which is the third row in Excel)
-      XLSX.utils.sheet_add_json(worksheet, dataRows, {
-        origin: 2, // Start from 3rd row (index 2)
-        header: columnHeaders,
-        skipHeader: true // Don't add headers again
-      });
-      const workbook: XLSX.WorkBook = {
-        Sheets: { 'Consulta': worksheet },
-        SheetNames: ['Consulta'],
-      };
     
-      const excelBuffer: any = XLSX.write(workbook, {
-        bookType: 'xlsx',
-        type: 'array',
-      });
+        const froContent = lines.join('\n');
+        const blob = new Blob([froContent], { type: 'text/plain;charset=utf-8' });
+        FileSaver.saveAs(blob, `${this.name}-${new Date().toISOString()}.fro`);
+      } else {
+        // Formato Excel (.xlsx ou .xlk)
+        const columnHeaders = this.return.map(field => field.fieldDisplayedInLabel || field.name);
     
-      const blob: Blob = new Blob([excelBuffer], {
-        type:
-          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8',
-      });
+        const dataRows = this.itemsDisplayed.map(item => {
+          const row: any = {};
+          this.return.forEach(field => {
+            const columnLabel = field.fieldDisplayedInLabel || field.name;
+            row[columnLabel] = item[field.name] ?? '';
+          });
+          return row;
+        });
     
-      FileSaver.saveAs(blob, `${this.name || 'consulta'}-${new Date().toISOString()}.xlsx`);
+        const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet([]);
+        XLSX.utils.sheet_add_aoa(worksheet, [[], columnHeaders], { origin: 0 });
+        XLSX.utils.sheet_add_json(worksheet, dataRows, {
+          origin: 2,
+          header: columnHeaders,
+          skipHeader: true
+        });
+    
+        const workbook: XLSX.WorkBook = {
+          Sheets: { 'Consulta': worksheet },
+          SheetNames: ['Consulta'],
+        };
+    
+        const excelBuffer: any = XLSX.write(workbook, {
+          bookType: 'xlsx',
+          type: 'array',
+        });
+    
+        const blob: Blob = new Blob([excelBuffer], {
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8',
+        });
+    
+        const fileExtension = this.name === 'ConsultaYelum' ? '.xlk' : '.xlsx';
+        FileSaver.saveAs(blob, `${this.name || 'consulta'}-${new Date().toISOString()}${fileExtension}`);
+      }
     }
-    
     
 }
